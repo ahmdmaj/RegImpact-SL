@@ -33,31 +33,4 @@ def generate_summary(corpus_path: str, benchmark_path: str):
     except Exception as e:
         print(f"Failed to load corpus: {e}\n")
 
-    try:
-        benchmark = load_benchmark(benchmark_path)
-        print("Benchmark:")
-        print(f"{len(benchmark)} scenarios")
-        
-        types = Counter([s.scenario_type for s in benchmark if s.scenario_type])
-        for t, count in types.items():
-            print(f"{count} {t}")
-            
-        app = Counter([s.expected_applicability for s in benchmark])
-        print("\nApplicability:")
-        for a, count in app.items():
-            print(f"{count} {a}")
-            
-        unique_biz = len(set([s.business_id for s in benchmark]))
-        unique_reg = len(set([s.regulation_id for s in benchmark]))
-        
-        print(f"\nNumber of unique businesses: {unique_biz}")
-        print(f"Number of unique regulations referenced: {unique_reg}")
-    except Exception as e:
-        print(f"Failed to load benchmark: {e}\n")
-
-if __name__ == "__main__":
-    import sys
-    if len(sys.argv) == 3:
-        generate_summary(sys.argv[1], sys.argv[2])
-    else:
-        generate_summary("data/regulatory_corpus_v0.1.json", "data/regimpact_sl_benchmark_v0.1.csv")
+    
