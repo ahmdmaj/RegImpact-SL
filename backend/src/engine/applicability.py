@@ -478,6 +478,7 @@ def evaluate_rule(
 
     # If not temporally valid: rule is NOT_APPLICABLE regardless of profile conditions
     if not is_temporally_valid:
+        cfs = generate_counterfactuals(evaluation_trace, OutcomeStatus.NOT_APPLICABLE)
         return EvaluationResult(
             status=OutcomeStatus.NOT_APPLICABLE,
             rule_id=rule_id,
@@ -485,10 +486,12 @@ def evaluate_rule(
             evaluation_trace=evaluation_trace,
             temporal_status=temporal_status,
             reason=temporal_reason,
+            counterfactuals=cfs,
         )
 
     # If an exception condition is satisfied -> NOT_APPLICABLE
     if exception_triggered:
+        cfs = generate_counterfactuals(evaluation_trace, OutcomeStatus.NOT_APPLICABLE)
         return EvaluationResult(
             status=OutcomeStatus.NOT_APPLICABLE,
             rule_id=rule_id,
@@ -496,10 +499,12 @@ def evaluate_rule(
             evaluation_trace=evaluation_trace,
             temporal_status=temporal_status,
             reason="Rule exception condition met.",
+            counterfactuals=cfs,
         )
 
     # Resolve outcome based on 3-valued condition status
     if conditions_state == TriState.FALSE:
+        cfs = generate_counterfactuals(evaluation_trace, OutcomeStatus.NOT_APPLICABLE)
         return EvaluationResult(
             status=OutcomeStatus.NOT_APPLICABLE,
             rule_id=rule_id,
@@ -507,6 +512,7 @@ def evaluate_rule(
             evaluation_trace=evaluation_trace,
             temporal_status=temporal_status,
             reason="Rule applicability conditions not satisfied.",
+            counterfactuals=cfs,
         )
     elif conditions_state == TriState.UNKNOWN or (conditions_state == TriState.TRUE and exception_unknown):
         return EvaluationResult(
@@ -516,8 +522,10 @@ def evaluate_rule(
             evaluation_trace=evaluation_trace,
             temporal_status=temporal_status,
             reason="Outcome depends on unknown business profile fields.",
+            counterfactuals=[],
         )
     else:  # conditions_state == TriState.TRUE and not exception_triggered and not exception_unknown
+        cfs = generate_counterfactuals(evaluation_trace, OutcomeStatus.APPLICABLE)
         return EvaluationResult(
             status=OutcomeStatus.APPLICABLE,
             rule_id=rule_id,
@@ -525,4 +533,150 @@ def evaluate_rule(
             evaluation_trace=evaluation_trace,
             temporal_status=temporal_status,
             reason="All applicability conditions satisfied and rule is currently in force.",
+            counterfactuals=cfs,
         )
+
+
+def format_field_metadata(field: str) -> Tuple[str, str]:
+    """Return (display_name, unit_string) for a field path."""
+    if field == "production_capacity.kg_per_day":
+        return "production capacity", " kg/day"
+    if field == "production_capacity.value":
+        return "production capacity", ""
+    if field == "employee_count":
+        return "employee count", ""
+    if field == "products.prepackaged":
+        return "products", ""
+
+    clean_name = field.split(".")[-1].replace("_", " ")
+    return clean_name, ""
+
+
+def format_numeric_counterfactual(
+    field_display: str,
+    unit: str,
+    op: str,
+    target_val: Any,
+    status: OutcomeStatus,
+) -> Optional[str]:
+    """Generate threshold counterfactual for numeric condition."""
+    try:
+        val_float = float(target_val)
+        val_str = str(int(val_float)) if val_float.is_integer() else str(val_float)
+    except (ValueError, TypeError):
+        val_str = str(target_val)
+
+    if status == OutcomeStatus.APPLICABLE:
+        if op == "gte":
+            return f"If {field_display} were below {val_str}{unit}, this obligation would not apply."
+        elif op == "gt":
+            return f"If {field_display} were {val_str}{unit} or below, this obligation would not apply."
+        elif op == "lte":
+            return f"If {field_display} were above {val_str}{unit}, this obligation would not apply."
+        elif op == "lt":
+            return f"If {field_display} were {val_str}{unit} or above, this obligation would not apply."
+    elif status == OutcomeStatus.NOT_APPLICABLE:
+        if op == "gte":
+            return f"If {field_display} were {val_str}{unit} or greater, this obligation would apply."
+        elif op == "gt":
+            return f"If {field_display} were greater than {val_str}{unit}, this obligation would apply."
+        elif op == "lte":
+            return f"If {field_display} were {val_str}{unit} or below, this obligation would apply."
+        elif op == "lt":
+            return f"If {field_display} were below {val_str}{unit}, this obligation would apply."
+    return None
+
+
+def format_boolean_counterfactual(
+    field: str,
+    field_display: str,
+    target_val: bool,
+    status: OutcomeStatus,
+) -> Optional[str]:
+    """Generate counterfactual for boolean condition."""
+    if field == "products.prepackaged":
+        if target_val is True:
+            if status == OutcomeStatus.APPLICABLE:
+                return "If products were not prepackaged, this obligation would not apply."
+            else:
+                return "If products were prepackaged, this obligation would apply."
+        else:
+            if status == OutcomeStatus.APPLICABLE:
+                return "If products were prepackaged, this obligation would not apply."
+            else:
+                return "If products were not prepackaged, this obligation would apply."
+
+    if status == OutcomeStatus.APPLICABLE:
+        inverted = not target_val
+        return f"If {field} were {inverted}, this obligation would not apply."
+    else:
+        return f"If {field} were {target_val}, this obligation would apply."
+
+
+def generate_counterfactuals(
+    evaluation_trace_or_rule: Any,
+    status_or_result: Any = None,
+    profile: Optional[Any] = None,
+) -> List[str]:
+    """Generate counterfactual explanations for decisive conditions.
+    
+    Supports both signatures:
+    - generate_counterfactuals(evaluation_trace, status)
+    - generate_counterfactuals(rule, evaluation_result, profile)
+    """
+    if isinstance(evaluation_trace_or_rule, list):
+        evaluation_trace = evaluation_trace_or_rule
+        status = status_or_result
+    elif hasattr(status_or_result, "evaluation_trace") and hasattr(status_or_result, "status"):
+        evaluation_trace = status_or_result.evaluation_trace
+        status = status_or_result.status
+    else:
+        return []
+
+    if status not in (OutcomeStatus.APPLICABLE, OutcomeStatus.NOT_APPLICABLE):
+        return []
+
+    counterfactuals: List[str] = []
+
+    for entry in evaluation_trace:
+        field = entry.get("field", "")
+        op = entry.get("op", "")
+        target_val = entry.get("target_value")
+        result = entry.get("result")
+
+        # In APPLICABLE: conditions that evaluated to TRUE are decisive in conjunction
+        # In NOT_APPLICABLE: conditions that evaluated to FALSE are decisive
+        is_decisive = (status == OutcomeStatus.APPLICABLE and result == "TRUE") or \
+                      (status == OutcomeStatus.NOT_APPLICABLE and result == "FALSE")
+
+        if not is_decisive:
+            continue
+
+        field_display, unit = format_field_metadata(field)
+
+        # 1. Numerical / ordinal conditions
+        if op in ("gt", "gte", "lt", "lte"):
+            cf = format_numeric_counterfactual(
+                field_display=field_display,
+                unit=unit,
+                op=op,
+                target_val=target_val,
+                status=status,
+            )
+            if cf and cf not in counterfactuals:
+                counterfactuals.append(cf)
+
+        # 2. Boolean flag conditions
+        elif op in ("eq", "==") and (isinstance(target_val, bool) or str(target_val).lower() in ("true", "false")):
+            target_bool = bool(target_val) if isinstance(target_val, bool) else (str(target_val).lower() == "true")
+            cf = format_boolean_counterfactual(
+                field=field,
+                field_display=field_display,
+                target_val=target_bool,
+                status=status,
+            )
+            if cf and cf not in counterfactuals:
+                counterfactuals.append(cf)
+
+    return counterfactuals
+
