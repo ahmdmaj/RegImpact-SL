@@ -1,6 +1,6 @@
 from enum import Enum
 from typing import List, Optional, Any, Dict
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 class OutcomeStatus(str, Enum):
     APPLICABLE = "APPLICABLE"
@@ -10,25 +10,36 @@ class OutcomeStatus(str, Enum):
     UNSUPPORTED = "UNSUPPORTED"
 
 
+class TriState(str, Enum):
+    TRUE = "TRUE"
+    FALSE = "FALSE"
+    UNKNOWN = "UNKNOWN"
+
+
 class Product(BaseModel):
+    model_config = ConfigDict(extra="allow")
     category: Optional[str] = None
     prepackaged: Optional[bool] = None
 
 class ProductionCapacity(BaseModel):
+    model_config = ConfigDict(extra="allow")
     value: Optional[float] = None
     unit: Optional[str] = None
     per_period: Optional[str] = None
 
 class Premises(BaseModel):
+    model_config = ConfigDict(extra="allow")
     type: Optional[str] = None
     location_authority_area: Optional[str] = None
 
 class Market(BaseModel):
+    model_config = ConfigDict(extra="allow")
     domestic: Optional[bool] = None
     import_flag: Optional[bool] = None
     export_flag: Optional[bool] = None
 
 class BusinessProfile(BaseModel):
+    model_config = ConfigDict(extra="allow")
     business_id: Optional[str] = None
     industry: Optional[str] = None
     activity: Optional[str] = None
@@ -42,6 +53,7 @@ class BusinessProfile(BaseModel):
 
 
 class Source(BaseModel):
+    model_config = ConfigDict(extra="allow")
     instrument: str
     authority: str
     gazette_no: str
@@ -50,34 +62,53 @@ class Source(BaseModel):
     quote_span: str
 
 class Validity(BaseModel):
+    model_config = ConfigDict(extra="allow")
     published: str
     commences: str
     transition_until: Optional[str] = None
     superseded_by: Optional[str] = None
+    superseded_date: Optional[str] = None
 
 class Condition(BaseModel):
+    model_config = ConfigDict(extra="allow")
     field: str
     op: str
     value: Any
 
 class AppliesIf(BaseModel):
-    all: List[Condition]
+    model_config = ConfigDict(extra="allow")
+    all: Optional[List[Condition]] = None
+    any: Optional[List[Condition]] = None
 
 class Obligation(BaseModel):
+    model_config = ConfigDict(extra="allow")
     type: str
     text: str
     impact_categories: List[str]
 
 class Verification(BaseModel):
+    model_config = ConfigDict(extra="allow")
     status: str
     extraction_model: str
     agreement: bool
 
 class Rule(BaseModel):
+    model_config = ConfigDict(extra="allow")
     rule_id: str
     source: Source
     validity: Validity
     applies_if: AppliesIf
-    exceptions: List[Any]
+    exceptions: Optional[List[Any]] = []
     obligation: Obligation
     verification: Verification
+
+
+class EvaluationResult(BaseModel):
+    model_config = ConfigDict(extra="allow")
+    status: OutcomeStatus
+    rule_id: str
+    missing_fields: List[str] = []
+    evaluation_trace: List[Dict[str, Any]] = []
+    temporal_status: Optional[str] = None
+    reason: Optional[str] = None
+
