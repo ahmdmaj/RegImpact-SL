@@ -236,6 +236,11 @@ def evaluate_single_condition(
         return TriState.FALSE, observed_val, None
 
 
+# Alias for backward compatibility and clean export
+evaluate_condition = evaluate_single_condition
+
+
+
 def evaluate_temporal_validity(
     validity: Union[Validity, Dict[str, Any]],
     as_at_date: Optional[Union[str, date, datetime]] = None,
