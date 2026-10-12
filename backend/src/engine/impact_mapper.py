@@ -98,10 +98,10 @@ OBLIGATION_MAPPINGS: Dict[str, Dict[str, Any]] = {
             "Traceability log sheets linking raw ingredient lots to finished product batches",
         ],
         "action_templates": [
-            "Establish and maintain verified documentation required by {instrument} ({clause}).",
+            "Establish and maintain verified documentation required by {authority} under {instrument} ({clause}).",
             "Implement standardized batch log sheets for raw ingredient sourcing, lot numbers, and processing dates.",
-            "Archive all production and compliance records on site for the mandatory statutory retention period.",
-            "Ensure food handler medical screening records and sanitation logs are kept up to date.",
+            "Archive all production and compliance records on site for statutory inspection by {authority}.",
+            "Ensure food handler medical screening records and sanitation logs are kept up to date for regulatory review.",
         ],
     },
     "reporting": {
@@ -136,7 +136,7 @@ OBLIGATION_MAPPINGS: Dict[str, Dict[str, Any]] = {
             "Staff hygiene training logs and sanitation checklists",
         ],
         "action_templates": [
-            "Calibrate manufacturing process parameters to satisfy the standard stipulated in {clause}.",
+            "Calibrate manufacturing process parameters to satisfy the standard stipulated in {clause} enforced by {authority}.",
             "Implement Good Manufacturing Practices (GMP) controls for sanitary handling and contamination prevention.",
             "Calibrate and verify measuring equipment (thermometers, weighing scales) and log results in daily registers.",
             "Train production line personnel on updated operational standards mandated by {instrument}.",
