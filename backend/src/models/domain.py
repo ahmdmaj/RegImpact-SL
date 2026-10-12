@@ -111,4 +111,15 @@ class EvaluationResult(BaseModel):
     evaluation_trace: List[Dict[str, Any]] = []
     temporal_status: Optional[str] = None
     reason: Optional[str] = None
+    counterfactuals: List[str] = []
+
+
+class BusinessImpact(BaseModel):
+    model_config = ConfigDict(extra="allow")
+    obligation_type: str
+    affected_activities: List[str]
+    affected_documents: List[str]
+    action_items: List[str]
+    timeline_note: Optional[str] = None
+
 
