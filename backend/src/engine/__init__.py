@@ -18,6 +18,16 @@ from backend.src.engine.verifier import (
     VerificationIssue,
 )
 
+from backend.src.engine.versioning import (
+    PatchError,
+    PatchOperation,
+    PatchType,
+    ClauseVersion,
+    apply_patch,
+    apply_patches,
+    create_clause_version,
+)
+
 __all__ = [
     "evaluate_rule",
     "evaluate_condition",
@@ -31,6 +41,14 @@ __all__ = [
     "verify_rule",
     "VerificationReport",
     "VerificationIssue",
+    "PatchError",
+    "PatchOperation",
+    "PatchType",
+    "ClauseVersion",
+    "apply_patch",
+    "apply_patches",
+    "create_clause_version",
 ]
+
 
 
