@@ -91,6 +91,8 @@ class Verification(BaseModel):
     status: str
     extraction_model: str
     agreement: bool
+    reason: Optional[str] = None
+    justification: Optional[str] = None
 
 class Rule(BaseModel):
     model_config = ConfigDict(extra="allow")
@@ -121,5 +123,20 @@ class BusinessImpact(BaseModel):
     affected_documents: List[str]
     action_items: List[str]
     timeline_note: Optional[str] = None
+
+
+class VerificationIssue(BaseModel):
+    model_config = ConfigDict(extra="allow")
+    stage: str  # "schema", "quote_grounding", "literal_check", "consistency"
+    severity: str  # "error", "warning"
+    message: str
+
+
+class VerificationReport(BaseModel):
+    model_config = ConfigDict(extra="allow")
+    is_valid: bool
+    issues: List[VerificationIssue] = []
+    status: str  # "verified", "rejected", "non_compilable"
+
 
 
