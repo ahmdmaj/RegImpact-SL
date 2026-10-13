@@ -1,6 +1,6 @@
 from enum import Enum
 from typing import List, Optional, Any, Dict
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, model_validator
 
 class OutcomeStatus(str, Enum):
     APPLICABLE = "APPLICABLE"
@@ -137,6 +137,49 @@ class VerificationReport(BaseModel):
     is_valid: bool
     issues: List[VerificationIssue] = []
     status: str  # "verified", "rejected", "non_compilable"
+
+
+class PatchType(str, Enum):
+    SUBSTITUTE = "substitute"
+    INSERT = "insert"
+    OMIT = "omit"
+    REPEAL = "repeal"
+
+
+class PatchOperation(BaseModel):
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+    patch_type: PatchType
+    target_text: Optional[str] = None
+    replacement_text: Optional[str] = ""
+
+    @model_validator(mode="before")
+    @classmethod
+    def normalize_fields(cls, data: Any) -> Any:
+        if isinstance(data, dict):
+            if "patch_type" not in data:
+                if "type" in data:
+                    data["patch_type"] = data["type"]
+                elif "operation_type" in data:
+                    data["patch_type"] = data["operation_type"]
+                elif "op" in data:
+                    data["patch_type"] = data["op"]
+        return data
+
+    @property
+    def operation_type(self) -> PatchType:
+        return self.patch_type
+
+
+class ClauseVersion(BaseModel):
+    model_config = ConfigDict(extra="allow")
+    clause_id: str
+    instrument: str
+    version_number: int = 1
+    text: str
+    valid_from: str
+    valid_to: Optional[str] = None
+    applied_patches: List[PatchOperation] = []
+
 
 
 
