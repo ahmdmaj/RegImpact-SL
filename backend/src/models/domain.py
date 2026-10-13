@@ -181,5 +181,49 @@ class ClauseVersion(BaseModel):
     applied_patches: List[PatchOperation] = []
 
 
+class BenchmarkScenario(BaseModel):
+    model_config = ConfigDict(extra="allow")
+    scenario_id: str
+    clause_id: str
+    scenario_type: str  # "direct", "minimal_pair", "invariance", "temporal", "incomplete"
+    business_profile: BusinessProfile
+    as_at_date: str
+    gold_outcome: OutcomeStatus
+    gold_missing_fields: Optional[List[str]] = None
+    gold_impact_categories: Optional[List[str]] = None
+    pair_id: Optional[str] = None
+
+
+class ScenarioEvaluation(BaseModel):
+    model_config = ConfigDict(extra="allow")
+    scenario_id: str
+    clause_id: str
+    scenario_type: str
+    predicted_outcome: OutcomeStatus
+    gold_outcome: OutcomeStatus
+    is_outcome_correct: bool
+    predicted_missing_fields: List[str] = []
+    gold_missing_fields: Optional[List[str]] = None
+    missing_fields_correct: bool = True
+    pair_id: Optional[str] = None
+
+
+class EvaluationReport(BaseModel):
+    model_config = ConfigDict(extra="allow")
+    system_name: str
+    total_scenarios: int
+    accuracy: float
+    macro_f1: float
+    per_class_metrics: Dict[str, Dict[str, float]] = {}
+    abstention_precision: float
+    abstention_recall: float
+    abstention_f1: float
+    missing_fields_accuracy: float
+    consistency_score: Optional[float] = None
+    temporal_accuracy: Optional[float] = None
+    scenario_evaluations: List[ScenarioEvaluation] = []
+
+
+
 
 
