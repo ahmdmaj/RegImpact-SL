@@ -1,4 +1,4 @@
-"""Deterministic applicability and impact engine package."""
+"""Deterministic applicability, impact, and verification engine package."""
 from backend.src.engine.applicability import (
     evaluate_rule,
     evaluate_condition,
@@ -11,6 +11,12 @@ from backend.src.engine.impact_mapper import (
     BusinessImpact,
     SUPPORTED_OBLIGATION_TYPES,
 )
+from backend.src.engine.verifier import (
+    RuleVerifier,
+    verify_rule,
+    VerificationReport,
+    VerificationIssue,
+)
 
 __all__ = [
     "evaluate_rule",
@@ -21,5 +27,10 @@ __all__ = [
     "map_impact",
     "BusinessImpact",
     "SUPPORTED_OBLIGATION_TYPES",
+    "RuleVerifier",
+    "verify_rule",
+    "VerificationReport",
+    "VerificationIssue",
 ]
+
 
