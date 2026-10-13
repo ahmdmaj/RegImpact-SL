@@ -498,7 +498,7 @@ class RuleVerifier:
                 VerificationIssue(
                     stage="consistency",
                     severity="error",
-                    message="NON_COMPILABLE clause contains executable conditions in applies_if. Non-compilable clauses must not contain partial condition trees.",
+                    message="NON_COMPILABLE clause cannot contain executable conditions in applies_if. Non-compilable clauses must not contain partial condition trees.",
                 )
             )
 
