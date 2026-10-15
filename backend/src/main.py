@@ -395,6 +395,7 @@ def run_analysis(request: AnalysisRequest) -> StructuredImpactReport:
                 status=eval_result.status,
                 reason=eval_result.reason,
                 temporal_status=eval_result.temporal_status,
+                quote_span=rule.source.quote_span,
                 missing_fields=eval_result.missing_fields,
                 counterfactuals=eval_result.counterfactuals,
                 evaluation_trace=eval_result.evaluation_trace,
@@ -407,7 +408,7 @@ def run_analysis(request: AnalysisRequest) -> StructuredImpactReport:
         format_clarifying_question(mf) for mf in all_missing_fields
     ]
 
-    return StructuredImpactReport(
+    report = StructuredImpactReport(
         as_at_date=eval_date,
         total_rules_evaluated=len(evaluations),
         applicable_rules_count=applicable_count,
@@ -421,3 +422,16 @@ def run_analysis(request: AnalysisRequest) -> StructuredImpactReport:
         affected_documents=all_documents,
         evaluations=evaluations,
     )
+
+    # Component [I] Explanation Layer & Component [J] Evidence Check
+    explanation_gen = getattr(app.state, "explanation_generator", None) or ExplanationGenerator()
+    summary = explanation_gen.generate_summary(report)
+    evidence_checker = getattr(app.state, "evidence_checker", None) or EvidenceChecker()
+
+    if evidence_checker.verify_claims(summary, report):
+        report.narrative_summary = summary
+    else:
+        report.narrative_summary = "Summary generation failed verification; narrative withheld."
+
+    return report
+
