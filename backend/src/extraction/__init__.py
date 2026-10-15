@@ -9,6 +9,11 @@ from backend.src.extraction.compiler import (
     construct_retry_prompt,
 )
 
+from backend.src.extraction.explanation import (
+    ExplanationGenerator,
+    construct_explanation_prompt,
+)
+
 __all__ = [
     "BaseLLMClient",
     "CompilationError",
@@ -16,4 +21,7 @@ __all__ = [
     "RuleCompiler",
     "construct_initial_prompt",
     "construct_retry_prompt",
+    "ExplanationGenerator",
+    "construct_explanation_prompt",
 ]
+
