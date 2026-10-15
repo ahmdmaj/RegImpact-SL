@@ -242,6 +242,7 @@ class RuleAnalysisDetail(BaseModel):
     status: OutcomeStatus
     reason: Optional[str] = None
     temporal_status: Optional[str] = None
+    quote_span: Optional[str] = None
     missing_fields: List[str] = []
     counterfactuals: List[str] = []
     evaluation_trace: List[Dict[str, Any]] = []
@@ -261,7 +262,9 @@ class StructuredImpactReport(BaseModel):
     action_checklist: List[str] = []
     affected_activities: List[str] = []
     affected_documents: List[str] = []
+    narrative_summary: Optional[str] = None
     evaluations: List[RuleAnalysisDetail] = []
+
 
 
 # Lifespan Context Manager
