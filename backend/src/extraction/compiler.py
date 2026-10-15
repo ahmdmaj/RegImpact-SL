@@ -29,10 +29,14 @@ class CompilationError(Exception):
 
 @runtime_checkable
 class LLMClient(Protocol):
-    """Abstract protocol for an LLM client capable of schema-constrained generation."""
+    """Abstract protocol for an LLM client capable of schema-constrained generation and text completion."""
 
     def generate_rule(self, prompt: str, schema: Dict[str, Any]) -> Dict[str, Any]:
         """Generate a structured rule dictionary from a prompt and JSON schema."""
+        ...
+
+    def generate_text(self, prompt: str) -> str:
+        """Generate a natural language text completion from a prompt."""
         ...
 
 
@@ -42,6 +46,10 @@ class BaseLLMClient(ABC):
     @abstractmethod
     def generate_rule(self, prompt: str, schema: Dict[str, Any]) -> Dict[str, Any]:
         """Generate a structured rule dictionary from a prompt and JSON schema."""
+        pass
+
+    def generate_text(self, prompt: str) -> str:
+        """Generate a natural language text completion from a prompt."""
         pass
 
 
