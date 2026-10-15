@@ -28,6 +28,12 @@ from backend.src.engine.versioning import (
     create_clause_version,
 )
 
+from backend.src.engine.evidence import (
+    EvidenceChecker,
+    EvidenceCheckResult,
+    EvidenceError,
+)
+
 __all__ = [
     "evaluate_rule",
     "evaluate_condition",
@@ -48,7 +54,11 @@ __all__ = [
     "apply_patch",
     "apply_patches",
     "create_clause_version",
+    "EvidenceChecker",
+    "EvidenceCheckResult",
+    "EvidenceError",
 ]
+
 
 
 
