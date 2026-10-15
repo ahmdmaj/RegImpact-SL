@@ -13,7 +13,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, ConfigDict, model_validator
 
 from backend.src.engine.applicability import evaluate_rule
+from backend.src.engine.evidence import EvidenceChecker
 from backend.src.engine.impact_mapper import BusinessImpact, map_impact
+from backend.src.extraction.explanation import ExplanationGenerator
 from backend.src.models.domain import (
     AppliesIf,
     BusinessProfile,
@@ -26,6 +28,7 @@ from backend.src.models.domain import (
     Validity,
     Verification,
 )
+
 
 # Friendly mapping from missing profile field paths to SME clarifying questions
 CLARIFYING_QUESTION_MAP: Dict[str, str] = {
