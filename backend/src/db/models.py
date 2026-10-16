@@ -34,6 +34,12 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import DeclarativeBase, relationship
 
+try:
+    from pgvector.sqlalchemy import Vector
+    EmbeddingColumnType = Vector(768).with_variant(JSON, "sqlite")
+except ImportError:
+    EmbeddingColumnType = JSON
+
 
 def _utcnow() -> datetime.datetime:
     """Return a timezone-aware UTC datetime."""
@@ -174,6 +180,7 @@ class ClauseORM(Base):
     applied_patches = Column(JSON, nullable=True)
     is_compilable = Column(Boolean, nullable=False, default=True)
     non_compilable_reason = Column(Text, nullable=True)
+    embedding = Column(EmbeddingColumnType, nullable=True)
     created_at = Column(DateTime(timezone=True), nullable=False, default=_utcnow)
     updated_at = Column(DateTime(timezone=True), nullable=False, default=_utcnow, onupdate=_utcnow)
 
