@@ -153,6 +153,12 @@ class OpenAILLMClient(BaseLLMClient):
             self.timeout_seconds,
         )
 
+    def __repr__(self) -> str:
+        return f"<OpenAILLMClient model={self.model!r} base_url={self.base_url!r} key={mask_secret(self.api_key)}>"
+
+    def __str__(self) -> str:
+        return self.__repr__()
+
     def _get_client(self) -> httpx.Client:
         if self._http_client is not None:
             return self._http_client
@@ -308,6 +314,12 @@ class GeminiLLMClient(BaseLLMClient):
             self.temperature,
             self.timeout_seconds,
         )
+
+    def __repr__(self) -> str:
+        return f"<GeminiLLMClient model={self.model!r} key={mask_secret(self.api_key)}>"
+
+    def __str__(self) -> str:
+        return self.__repr__()
 
     def _execute_with_retry(self, payload: Dict[str, Any]) -> Dict[str, Any]:
         """Execute request with bounded retries."""

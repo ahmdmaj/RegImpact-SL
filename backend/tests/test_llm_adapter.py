@@ -290,6 +290,7 @@ def test_llm_015_key_redaction_in_logs():
     raw_key = "sk-super-secret-production-key-998877"
     client = OpenAILLMClient(api_key=raw_key, http_client=MagicMock())
 
-    repr_str = str(client.__dict__)
-    assert raw_key not in repr_str or "sk-su...8877" in mask_secret(raw_key)
+    assert raw_key not in repr(client)
+    assert raw_key not in str(client)
+    assert mask_secret(raw_key) == "sk-s...8877"
     assert raw_key not in mask_secret(raw_key)

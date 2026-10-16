@@ -70,6 +70,10 @@ from backend.src.models.domain import (
 @pytest.fixture()
 def base_rule() -> Rule:
     """Standard baseline verified rule."""
+    quote = (
+        "Published on 2024-01-01, commences 2024-06-01. "
+        "Regulation 4. Food manufacturers with capacity of 50 kg/day shall label packages."
+    )
     return Rule(
         rule_id="RULE-AGREE-001",
         source=Source(
@@ -78,7 +82,7 @@ def base_rule() -> Rule:
             gazette_no="2024/01",
             clause="Regulation 4",
             page=1,
-            quote_span="Regulation 4. Food manufacturers with capacity of 50 kg/day shall label packages.",
+            quote_span=quote,
         ),
         validity=Validity(published="2024-01-01", commences="2024-06-01"),
         applies_if=AppliesIf(
@@ -125,18 +129,18 @@ def sample_persisted_rule(db_session: Session, base_rule: Rule) -> RuleORM:
         version_number=1,
         document_id="doc_test_review",
         clause_number="4",
-        text="Regulation 4. Food manufacturers with capacity of 50 kg/day shall label packages.",
+        text=base_rule.source.quote_span,
         start_page=1,
         end_page=1,
         char_start=0,
-        char_end=79,
+        char_end=len(base_rule.source.quote_span),
     )
     db_session.add(clause)
     db_session.flush()
 
     # 3. Rule
     repo = PostgresRegulatoryRepository(db_session)
-    repo.add_rule(base_rule, clause_id="clause_rev_01", clause_version=1)
+    repo.add_rule(base_rule)
     db_session.flush()
 
     orm = db_session.get(RuleORM, base_rule.rule_id)
@@ -240,8 +244,14 @@ def test_comp_002_compiler_marks_pending_review_on_discrepancy(base_rule):
 
     pass_b_dict = base_rule.model_dump()
     pass_b_dict["applies_if"]["all"][1]["value"] = 100  # Disagreement!
+    pass_b_quote = (
+        "Published on 2024-01-01, commences 2024-06-01. "
+        "Regulation 4. Food manufacturers with capacity of 100 kg/day shall label packages."
+    )
+    pass_b_dict["source"]["quote_span"] = pass_b_quote
 
     raw_text = (
+        "Published on 2024-01-01, commences 2024-06-01. "
         "Regulation 4. Food manufacturers with capacity of 50 kg/day shall label packages. "
         "Also capacity of 100 kg/day is mentioned."
     )
@@ -303,7 +313,13 @@ def test_comp_004_compiler_conditional_rule(base_rule):
     rule_dict = base_rule.model_dump()
     rule_dict["verification"]["status"] = "CONDITIONAL_RULE"
     raw_text = base_rule.source.quote_span
-    metadata = {"instrument": "Food Act", "authority": "FCAU"}
+    metadata = {
+        "instrument": base_rule.source.instrument,
+        "authority": base_rule.source.authority,
+        "gazette_no": base_rule.source.gazette_no,
+        "clause": base_rule.source.clause,
+        "page": base_rule.source.page,
+    }
 
     mock_client = MockLLMClient(canned_rule_dict=rule_dict)
     compiler = RuleCompiler(llm_client=mock_client)

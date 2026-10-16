@@ -101,6 +101,9 @@ class BaseLLMClient(ABC):
         pass
 
 
+from backend.src.extraction.llm_client import MockLLMClient  # noqa: E402
+
+
 # ---------------------------------------------------------------------------
 # Prompt Construction
 # ---------------------------------------------------------------------------
