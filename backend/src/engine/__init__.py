@@ -49,6 +49,15 @@ from backend.src.engine.review import (
     RuleNotFoundError,
 )
 
+from backend.src.engine.retrieval import (
+    BM25RetrievalEngine,
+    BaseRetrievalEngine,
+    DenseRetrievalEngine,
+    HybridRetrievalEngine,
+    RetrievalResult,
+    cross_reference_coverage_gaps,
+)
+
 __all__ = [
     "evaluate_rule",
     "evaluate_condition",
@@ -84,6 +93,12 @@ __all__ = [
     "ROLE_PRIMARY_ANNOTATOR",
     "ROLE_SECONDARY_ANNOTATOR",
     "ROLE_EXPERT_ADJUDICATOR",
+    "RetrievalResult",
+    "BaseRetrievalEngine",
+    "BM25RetrievalEngine",
+    "DenseRetrievalEngine",
+    "HybridRetrievalEngine",
+    "cross_reference_coverage_gaps",
 ]
 
 

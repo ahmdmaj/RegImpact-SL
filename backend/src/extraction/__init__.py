@@ -35,6 +35,14 @@ from backend.src.extraction.llm_client import (
     get_llm_client,
 )
 
+from backend.src.extraction.embedding_client import (
+    BaseEmbeddingClient,
+    GeminiEmbeddingClient,
+    MockEmbeddingClient,
+    OpenAIEmbeddingClient,
+    get_embedding_client,
+)
+
 __all__ = [
     "BaseLLMClient",
     "CompilationError",
@@ -59,4 +67,9 @@ __all__ = [
     "LLMRateLimitError",
     "LLMResponseError",
     "LLMTimeoutError",
+    "BaseEmbeddingClient",
+    "OpenAIEmbeddingClient",
+    "GeminiEmbeddingClient",
+    "MockEmbeddingClient",
+    "get_embedding_client",
 ]
