@@ -1,0 +1,47 @@
+# Environment variables
+.env
+.env.*
+.env*.local
+*.env
+!.env.example
+
+# Local regulatory source documents and raw PDFs (authoritative corpus files)
+*.pdf
+*.PDF
+backend/data/raw_sources/*
+!backend/data/raw_sources/.gitkeep
+data/raw_sources/*
+!data/raw_sources/.gitkeep
+
+# Database files, dumps, and persistent storage
+*.db
+*.sqlite3
+*.sql
+*.dump
+pg_data/
+
+# Python cache and environment artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+env/
+ENV/
+
+# Node & Next.js build artifacts
+node_modules/
+.next/
+out/
+build/
+*.tsbuildinfo
+next-env.d.ts
+
+# OS & Editor artifacts
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
