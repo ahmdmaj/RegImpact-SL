@@ -34,6 +34,21 @@ from backend.src.engine.evidence import (
     EvidenceError,
 )
 
+from backend.src.engine.review import (
+    DECISION_AMENDED,
+    DECISION_APPROVED,
+    DECISION_MARKED_NON_COMPILABLE,
+    DECISION_REJECTED,
+    InvalidReviewDecisionError,
+    InvalidReviewerRoleError,
+    ROLE_EXPERT_ADJUDICATOR,
+    ROLE_PRIMARY_ANNOTATOR,
+    ROLE_SECONDARY_ANNOTATOR,
+    ReviewError,
+    ReviewService,
+    RuleNotFoundError,
+)
+
 __all__ = [
     "evaluate_rule",
     "evaluate_condition",
@@ -57,6 +72,18 @@ __all__ = [
     "EvidenceChecker",
     "EvidenceCheckResult",
     "EvidenceError",
+    "ReviewService",
+    "ReviewError",
+    "RuleNotFoundError",
+    "InvalidReviewerRoleError",
+    "InvalidReviewDecisionError",
+    "DECISION_APPROVED",
+    "DECISION_REJECTED",
+    "DECISION_MARKED_NON_COMPILABLE",
+    "DECISION_AMENDED",
+    "ROLE_PRIMARY_ANNOTATOR",
+    "ROLE_SECONDARY_ANNOTATOR",
+    "ROLE_EXPERT_ADJUDICATOR",
 ]
 
 
