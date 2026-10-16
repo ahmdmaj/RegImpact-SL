@@ -610,3 +610,69 @@ class SystemP(BaselineSystem):
                 setattr(eval_result, "impact", impact.model_dump())
 
         return eval_result
+
+
+# ---------------------------------------------------------------------------
+# System P Ablations (Section 8.8 / Milestone 6)
+# ---------------------------------------------------------------------------
+
+class AblationPNoVerification(SystemP):
+    """Ablation P-A: System P without human-review verification safety gate.
+
+    Bypasses the approved-rule gate by executing unreviewed candidates or attempting
+    direct unverified completion when an approved rule is absent.
+    """
+
+    name: str = "P-A_NoVerification"
+
+    def evaluate_scenario(self, scenario: BenchmarkScenario) -> EvaluationResult:
+        res = super().evaluate_scenario(scenario)
+        if res.status == OutcomeStatus.UNSUPPORTED and res.model_extra.get("coverage_gap"):
+            return EvaluationResult(
+                status=OutcomeStatus.APPLICABLE,
+                rule_id=scenario.clause_id,
+                missing_fields=[],
+                evaluation_trace=[],
+                reason="[Ablation P-A: Unverified execution] Bypassed verification safety gate; ungrounded assumption of applicability.",
+                coverage_gap=False,
+                method="ablation_p_no_verification",
+            )
+        return res
+
+
+class AblationPNoTemporal(SystemP):
+    """Ablation P-B: System P without temporal / commencement validity checks.
+
+    Evaluates rules assuming they are in active effect regardless of the scenario as_at_date.
+    """
+
+    name: str = "P-B_NoTemporal"
+
+    def evaluate_scenario(self, scenario: BenchmarkScenario) -> EvaluationResult:
+        scen_future = scenario.model_copy(deep=True)
+        scen_future.as_at_date = "2099-12-31"
+        res = super().evaluate_scenario(scen_future)
+        setattr(res, "method", "ablation_p_no_temporal")
+        return res
+
+
+class AblationPNoAbstention(SystemP):
+    """Ablation P-C: System P with 2-valued forced choice logic (no 3-valued Kleene abstention).
+
+    Coerces CONDITIONAL_MISSING_DATA into NOT_APPLICABLE.
+    """
+
+    name: str = "P-C_NoAbstention"
+
+    def evaluate_scenario(self, scenario: BenchmarkScenario) -> EvaluationResult:
+        res = super().evaluate_scenario(scenario)
+        if res.status == OutcomeStatus.CONDITIONAL_MISSING_DATA:
+            res_dict = res.model_dump()
+            res_dict["status"] = OutcomeStatus.NOT_APPLICABLE
+            res_dict["missing_fields"] = []
+            res_dict["reason"] = f"[Ablation P-C: 2-valued forced choice] Missing data coerced to NOT_APPLICABLE: {res.reason}"
+            coerced = EvaluationResult(**res_dict)
+            setattr(coerced, "method", "ablation_p_no_abstention")
+            return coerced
+        return res
+
