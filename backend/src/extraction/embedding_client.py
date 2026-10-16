@@ -275,13 +275,10 @@ class MockEmbeddingClient(BaseEmbeddingClient):
         return self._dimension
 
     def _token_vector(self, token: str) -> List[float]:
-        """Compute a pseudo-random unit vector for a single token."""
-        h = hashlib.sha256(token.encode("utf-8")).digest()
-        vec = []
-        for i in range(self._dimension):
-            b = h[(i * 3 + (i // len(h))) % len(h)]
-            vec.append((b - 128.0) / 128.0)
-        return vec
+        """Compute a deterministic zero-mean Gaussian vector for a single token."""
+        import random
+        rng = random.Random(token)
+        return [rng.gauss(0.0, 1.0) for _ in range(self._dimension)]
 
     def embed_text(self, text: str) -> List[float]:
         """Compute normalized dense vector based on text token aggregation."""
