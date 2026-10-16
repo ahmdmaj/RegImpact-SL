@@ -14,6 +14,7 @@ from backend.src.evaluation.benchmark_runner import (
     BenchmarkRunner,
     compare_systems,
 )
+from backend.src.evaluation.dataset_split import split_scenarios_by_clause
 from backend.src.models.domain import (
     BenchmarkScenario,
     EvaluationReport,
@@ -29,6 +30,7 @@ __all__ = [
     "HybridBaseline",
     "BenchmarkRunner",
     "compare_systems",
+    "split_scenarios_by_clause",
     "BenchmarkScenario",
     "EvaluationReport",
     "ScenarioEvaluation",
