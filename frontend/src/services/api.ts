@@ -98,6 +98,15 @@ export interface RuleAnalysisDetail {
   counterfactuals: string[];
   evaluation_trace: EvaluationTraceEntry[];
   impact?: BusinessImpact | null;
+
+  // Milestone 7 Persistent Provenance & Audit Trail
+  document_title?: string | null;
+  document_id?: string | null;
+  page_number?: number | null;
+  char_start?: number | null;
+  char_end?: number | null;
+  review_status?: string | null;
+  coverage_gap?: boolean;
 }
 
 export interface StructuredImpactReport {
@@ -193,3 +202,82 @@ export async function runAnalysis(request: AnalysisRequest): Promise<StructuredI
   }
   return await res.json();
 }
+
+/**
+ * Benchmark Evaluation Results Schemas (Milestone 7)
+ */
+export interface MetricCI {
+  point_estimate: number;
+  ci_lower: number;
+  ci_upper: number;
+  std_err: number;
+  ci_level: number;
+  n_bootstraps: number;
+}
+
+export interface ClassPerformance {
+  precision: number;
+  recall: number;
+  f1: number;
+  support: number;
+}
+
+export interface SystemMetrics {
+  total_scenarios: number;
+  accuracy: number;
+  macro_f1: number;
+  per_class: Record<string, ClassPerformance>;
+  abstention_precision: number;
+  abstention_recall: number;
+  abstention_f1: number;
+  missing_fields_accuracy: number;
+  missing_fields_jaccard: number;
+  c_sens: number;
+  c_inv: number;
+  c_comb: number;
+  sens_pair_count: number;
+  inv_pair_count: number;
+  temporal_accuracy: number;
+  coverage_gap_accuracy: number;
+  direct_accuracy: number;
+}
+
+export interface PairedComparison {
+  system_a: string;
+  system_b: string;
+  metric_a: number;
+  metric_b: number;
+  difference: number;
+  ci_lower: number;
+  ci_upper: number;
+  p_value: number;
+  statistically_significant: boolean;
+  alpha: number;
+  n_bootstraps: number;
+  direction: string;
+}
+
+export interface EvaluationResultsPayload {
+  timestamp: string;
+  total_scenarios: number;
+  n_bootstraps: number;
+  metrics: Record<string, SystemMetrics>;
+  confidence_intervals: Record<string, { accuracy: MetricCI }>;
+  paired_comparisons_vs_system_p: Record<string, PairedComparison>;
+}
+
+/**
+ * Fetch latest compiled benchmark evaluation results
+ */
+export async function getEvaluationResults(): Promise<EvaluationResultsPayload> {
+  const res = await fetch(`${API_BASE_URL}/evaluation/results`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+    cache: "no-store",
+  });
+  if (!res.ok) {
+    throw new ApiError(res.status, `Failed to load evaluation results: ${res.statusText}`);
+  }
+  return await res.json();
+}
+

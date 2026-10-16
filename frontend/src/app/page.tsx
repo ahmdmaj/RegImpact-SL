@@ -13,6 +13,7 @@ import { ProfileForm } from "@/components/ProfileForm";
 import { ClarifyingQuestionsPanel } from "@/components/ClarifyingQuestionsPanel";
 import { ImpactReportView } from "@/components/ImpactReportView";
 import { EvidenceViewer } from "@/components/EvidenceViewer";
+import Link from "next/link";
 import {
   Shield,
   Activity,
@@ -24,6 +25,7 @@ import {
   CheckCircle,
   Cpu,
   Info,
+  BarChart3,
 } from "lucide-react";
 
 export default function Home() {
@@ -134,6 +136,14 @@ export default function Home() {
 
           {/* Backend Health Status & Catalog Button */}
           <div className="flex items-center gap-3">
+            <Link
+              href="/evaluation"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/30 text-xs text-indigo-300 border border-indigo-500/30 transition-colors"
+            >
+              <BarChart3 className="w-3.5 h-3.5 text-indigo-400" />
+              <span>Evaluation Dashboard</span>
+            </Link>
+
             <button
               type="button"
               onClick={() => setShowCatalogModal(!showCatalogModal)}

@@ -41,15 +41,20 @@ def create_engine_from_url(url: str | None = None) -> Engine:
     is_sqlite = resolved_url.startswith("sqlite")
 
     connect_args = {}
+    engine_kwargs = {}
     if is_sqlite:
         # Allow the same in-memory database to be used across threads in tests
         connect_args["check_same_thread"] = False
+        if ":memory:" in resolved_url:
+            from sqlalchemy.pool import StaticPool
+            engine_kwargs["poolclass"] = StaticPool
 
     engine = create_engine(
         resolved_url,
         connect_args=connect_args,
         echo=False,
         future=True,
+        **engine_kwargs,
     )
 
     if is_sqlite:

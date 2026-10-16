@@ -11,8 +11,11 @@ import {
   ChevronUp, 
   ShieldCheck, 
   Clock, 
-  ExternalLink,
-  Layers
+  Layers,
+  FileCheck,
+  MapPin,
+  AlertTriangle,
+  Award
 } from "lucide-react";
 
 interface EvidenceViewerProps {
@@ -21,10 +24,10 @@ interface EvidenceViewerProps {
 
 export const EvidenceViewer: React.FC<EvidenceViewerProps> = ({ evaluations }) => {
   const [expandedRules, setExpandedRules] = useState<Record<string, boolean>>(() => {
-    // Expand applicable and conditional rules by default
+    // Expand applicable, conditional, and unsupported coverage gap rules by default
     const initial: Record<string, boolean> = {};
     evaluations.forEach((ev) => {
-      if (ev.status === "APPLICABLE" || ev.status === "CONDITIONAL_MISSING_DATA") {
+      if (ev.status === "APPLICABLE" || ev.status === "CONDITIONAL_MISSING_DATA" || ev.coverage_gap) {
         initial[ev.rule_id] = true;
       }
     });
@@ -35,7 +38,16 @@ export const EvidenceViewer: React.FC<EvidenceViewerProps> = ({ evaluations }) =
     setExpandedRules((prev) => ({ ...prev, [ruleId]: !prev[ruleId] }));
   };
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: string, isCoverageGap?: boolean) => {
+    if (isCoverageGap || status === "UNSUPPORTED") {
+      return (
+        <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+          <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+          <span>COVERAGE GAP (UNSUPPORTED)</span>
+        </span>
+      );
+    }
+
     switch (status) {
       case "APPLICABLE":
         return (
@@ -67,6 +79,40 @@ export const EvidenceViewer: React.FC<EvidenceViewerProps> = ({ evaluations }) =
     }
   };
 
+  const getReviewStatusBadge = (reviewStatus?: string | null, isCoverageGap?: boolean) => {
+    if (isCoverageGap) {
+      return (
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-amber-950/60 text-amber-300 border border-amber-700/50">
+          <AlertCircle className="w-3 h-3 text-amber-400" />
+          <span>UNVERIFIED (NO EXECUTABLE RULE)</span>
+        </span>
+      );
+    }
+
+    if (!reviewStatus) {
+      return (
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-mono bg-slate-800 text-slate-400 border border-slate-700">
+          DRAFT
+        </span>
+      );
+    }
+
+    if (reviewStatus.includes("APPROVED")) {
+      return (
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-mono font-semibold bg-emerald-950/80 text-emerald-300 border border-emerald-600/60 shadow-sm shadow-emerald-900/30">
+          <Award className="w-3.5 h-3.5 text-emerald-400" />
+          <span>{reviewStatus}</span>
+        </span>
+      );
+    }
+
+    return (
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-mono bg-slate-800 text-slate-300 border border-slate-700">
+        {reviewStatus}
+      </span>
+    );
+  };
+
   const getTraceResultBadge = (res: string) => {
     switch (res) {
       case "TRUE":
@@ -96,7 +142,7 @@ export const EvidenceViewer: React.FC<EvidenceViewerProps> = ({ evaluations }) =
               </span>
             </h3>
             <p className="text-xs text-slate-400 mt-0.5">
-              Section 8.3 [E & J]: Authoritative source is always the official gazette quote span, never the model.
+              Section 8.3 [E & J]: Strict persistent provenance (Source Document, Page, Offsets, Review Status) anchored to the PostgreSQL repository.
             </p>
           </div>
         </div>
@@ -106,12 +152,15 @@ export const EvidenceViewer: React.FC<EvidenceViewerProps> = ({ evaluations }) =
       <div className="space-y-4">
         {evaluations.map((ev) => {
           const isExpanded = !!expandedRules[ev.rule_id];
+          const isCoverageGap = ev.coverage_gap || ev.status === "UNSUPPORTED";
 
           return (
             <div
               key={ev.rule_id}
               className={`rounded-xl border transition-all ${
-                ev.status === "APPLICABLE"
+                isCoverageGap
+                  ? "bg-slate-900/90 border-amber-500/40 shadow-lg shadow-amber-950/20"
+                  : ev.status === "APPLICABLE"
                   ? "bg-slate-900/90 border-emerald-500/30 shadow-lg shadow-emerald-950/20"
                   : ev.status === "CONDITIONAL_MISSING_DATA"
                   ? "bg-slate-900/90 border-amber-500/30"
@@ -125,14 +174,15 @@ export const EvidenceViewer: React.FC<EvidenceViewerProps> = ({ evaluations }) =
                 className="w-full p-4 flex items-center justify-between gap-3 text-left cursor-pointer hover:bg-slate-800/40 rounded-xl transition-colors"
               >
                 <div className="flex items-center gap-3 flex-wrap">
-                  {getStatusBadge(ev.status)}
+                  {getStatusBadge(ev.status, isCoverageGap)}
                   <div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-sm font-semibold text-slate-200">{ev.clause}</span>
                       <span className="text-xs text-slate-400 font-mono">({ev.rule_id})</span>
+                      {getReviewStatusBadge(ev.review_status, isCoverageGap)}
                     </div>
-                    <p className="text-xs text-slate-400 mt-0.5">
-                      {ev.instrument} &bull; <span className="text-blue-400">{ev.authority}</span>
+                    <p className="text-xs text-slate-400 mt-1">
+                      {ev.document_title || ev.instrument} &bull; <span className="text-blue-400">{ev.authority}</span>
                     </p>
                   </div>
                 </div>
@@ -155,6 +205,43 @@ export const EvidenceViewer: React.FC<EvidenceViewerProps> = ({ evaluations }) =
               {/* Card Body */}
               {isExpanded && (
                 <div className="p-4 pt-2 border-t border-slate-800 space-y-4">
+                  {/* Strict Persistent Provenance Strip */}
+                  <div className="p-3 rounded-lg bg-slate-950/80 border border-slate-800 grid grid-cols-1 md:grid-cols-3 gap-2 text-xs font-mono">
+                    <div className="flex items-center gap-2 text-slate-300">
+                      <FileCheck className="w-4 h-4 text-cyan-400 shrink-0" />
+                      <span className="truncate" title={ev.document_title || ev.instrument}>
+                        <span className="text-slate-500 font-sans">Doc:</span> {ev.document_title || ev.instrument}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-slate-300">
+                      <MapPin className="w-4 h-4 text-indigo-400 shrink-0" />
+                      <span>
+                        <span className="text-slate-500 font-sans">Page:</span> {ev.page_number ?? 1}
+                        <span className="text-slate-600 mx-1">|</span>
+                        <span className="text-slate-500 font-sans">Offsets:</span> [{ev.char_start ?? 0}:{ev.char_end ?? 0}]
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-slate-300 md:justify-end">
+                      <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <span className="truncate">
+                        <span className="text-slate-500 font-sans">Audit:</span> {ev.review_status || (isCoverageGap ? "UNVERIFIED" : "APPROVED")}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Coverage Gap Warning Banner */}
+                  {isCoverageGap && (
+                    <div className="p-3.5 rounded-lg bg-amber-950/40 border border-amber-600/40 text-amber-200/90 text-xs space-y-1">
+                      <div className="flex items-center gap-1.5 font-semibold text-amber-300">
+                        <AlertTriangle className="w-4 h-4 text-amber-400" />
+                        <span>Statutory Coverage Gap (Alignment Plan Section 8.3 [G]):</span>
+                      </div>
+                      <p className="leading-relaxed">
+                        {ev.reason || "This statutory clause was retrieved as potentially relevant to the enterprise profile, but has not yet received human expert adjudication or rule compilation. System P safely abstains with UNSUPPORTED to prevent hallucinated compliance liabilities."}
+                      </p>
+                    </div>
+                  )}
+
                   {/* Official Gazette Quote Span */}
                   {ev.quote_span && (
                     <div>

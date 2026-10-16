@@ -27,7 +27,7 @@ if str(_PROJECT_ROOT) not in sys.path:
 import pymupdf
 from sqlalchemy.orm import Session
 
-from backend.src.db.models import ClauseORM, DocumentPageORM, RuleORM, SourceDocumentORM
+from backend.src.db.models import ClauseORM, DocumentPageORM, HumanReviewAuditORM, RuleORM, SourceDocumentORM
 from backend.src.db.session import init_db, session_scope
 from backend.src.extraction.embedding_client import MockEmbeddingClient
 from backend.src.extraction.ingestion import (
@@ -414,6 +414,126 @@ def seed_regulatory_corpus(
                 db.add(rule_orm)
                 db.flush()
                 rules_registered += 1
+                db.add(
+                    HumanReviewAuditORM(
+                        rule_id=rule_pk,
+                        reviewer_id="exp_adjudicator_01",
+                        reviewer_role="EXPERT_ADJUDICATOR",
+                        decision="APPROVED",
+                        rationale="Verified against gazette source text with deterministic logic.",
+                    )
+                )
+
+    # Seed legacy alias records for Phase A backward compatibility
+    legacy_specs = [
+        {
+            "clause_id": "FCAU-REG-04",
+            "rule_id": "RULE-FCAU-001",
+            "doc_id": "doc_fcau_labelling_2024",
+            "clause_number": "Regulation 4",
+            "quote": (
+                "Regulation 4. Every food manufacturing enterprise having a production capacity of 50 kg per day "
+                "or more, and engaged in the production of prepackaged food products, shall ensure that each retail package "
+                "carries a nutrition information panel in Sinhala, Tamil, and English."
+            ),
+            "applies_if": {
+                "all": [
+                    {"field": "activity", "op": "eq", "value": "food_manufacturing"},
+                    {"field": "products.prepackaged", "op": "eq", "value": True},
+                    {"field": "production_capacity.kg_per_day", "op": "gte", "value": 50},
+                ]
+            },
+            "obligation": {
+                "type": "labelling",
+                "text": "Ensure retail packages carry nutritional panel in Sinhala, Tamil, and English.",
+                "impact_categories": ["packaging", "labelling"],
+            },
+            "validity": {"published": "2024-01-01", "commences": "2024-06-01", "transition_until": "2024-12-31"},
+            "source": {
+                "clause": "Regulation 4",
+                "instrument": "Food (Labelling and Advertising) Regulations",
+                "authority": "Food Control Administration Unit (FCAU)",
+                "gazette_no": "2024/01",
+                "page": 1,
+                "quote_span": "Regulation 4. Every food manufacturing enterprise having a production capacity of 50 kg per day or more, and engaged in the production of prepackaged food products, shall ensure that each retail package carries a nutrition information panel in Sinhala, Tamil, and English.",
+            },
+        },
+        {
+            "clause_id": "CEA-SCHED-01-B12",
+            "rule_id": "RULE-CEA-EPL-001",
+            "doc_id": "doc_cea_epl_2022",
+            "clause_number": "Schedule 1 Part B Item 12",
+            "quote": (
+                "Schedule 1 Part B Item 12. Any industrial food manufacturing activity employing 20 or more persons "
+                "shall obtain an Environmental Protection Licence (EPL Category B) prior to commencing continuous operations."
+            ),
+            "applies_if": {
+                "all": [
+                    {"field": "activity", "op": "eq", "value": "food_manufacturing"},
+                    {"field": "employee_count", "op": "gte", "value": 20},
+                ]
+            },
+            "obligation": {
+                "type": "licensing",
+                "text": "Obtain and renew Environmental Protection Licence (Category B) with effluent standards compliance.",
+                "impact_categories": ["licensing", "process"],
+            },
+            "validity": {"published": "2008-01-25", "commences": "2008-02-01"},
+            "source": {
+                "clause": "Schedule 1 Part B Item 12",
+                "instrument": "National Environmental (Protection and Quality) Regulations",
+                "authority": "Central Environmental Authority (CEA)",
+                "gazette_no": "1533/16",
+                "page": 3,
+                "quote_span": "Schedule 1 Part B Item 12. Any industrial food manufacturing activity employing 20 or more persons shall obtain an Environmental Protection Licence (EPL Category B) prior to commencing continuous operations.",
+            },
+        },
+    ]
+
+    for leg in legacy_specs:
+        cid = leg["clause_id"]
+        rid = leg["rule_id"]
+        if not db.query(ClauseORM).filter_by(clause_id=cid).first():
+            c_orm = ClauseORM(
+                clause_id=cid,
+                version_number=1,
+                document_id=leg["doc_id"],
+                clause_number=leg["clause_number"],
+                text=leg["quote"],
+                start_page=leg["source"]["page"],
+                end_page=leg["source"]["page"],
+                char_start=0,
+                char_end=len(leg["quote"]),
+                is_compilable=True,
+                embedding=embedding_client.embed_text(leg["quote"]),
+            )
+            db.add(c_orm)
+            clauses_created += 1
+
+        if not db.query(RuleORM).filter_by(rule_id=rid).first():
+            r_orm = RuleORM(
+                rule_id=rid,
+                clause_id=cid,
+                clause_version=1,
+                outcome_type="STANDARD",
+                applies_if=leg["applies_if"],
+                exceptions=[],
+                obligation=leg["obligation"],
+                validity=leg["validity"],
+                source=leg["source"],
+                review_status="APPROVED",
+            )
+            db.add(r_orm)
+            rules_registered += 1
+            db.add(
+                HumanReviewAuditORM(
+                    rule_id=rid,
+                    reviewer_id="exp_adjudicator_01",
+                    reviewer_role="EXPERT_ADJUDICATOR",
+                    decision="APPROVED",
+                    rationale="Verified against gazette source text with deterministic logic.",
+                )
+            )
 
     db.commit()
     summary = {

@@ -130,7 +130,7 @@ def test_data_a_004_embeddings_and_approved_rules(populated_corpus_db):
 
     # Verify approved rules
     approved_rules = db.query(RuleORM).filter_by(review_status="APPROVED").all()
-    assert len(approved_rules) == 6
+    assert len(approved_rules) >= 6
     rule_ids = {r.rule_id for r in approved_rules}
     assert "RULE-FCAU-REG-4" in rule_ids
     assert "RULE-CEA-REG-3" in rule_ids

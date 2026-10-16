@@ -140,3 +140,67 @@ def test_post_analysis_missing_profile(client: TestClient):
     response = client.post("/analysis", json={})
     assert response.status_code == 400
     assert "business profile" in response.json()["detail"].lower()
+
+
+# 7. Test GET /evaluation/results returns benchmark statistics
+def test_get_evaluation_results(client: TestClient):
+    response = client.get("/evaluation/results")
+    assert response.status_code == 200
+    data = response.json()
+    assert "metrics" in data
+    assert "P_Proposed_System" in data["metrics"]
+    assert "B0_Oracle_LongContext" in data["metrics"]
+    assert "confidence_intervals" in data
+    assert "paired_comparisons_vs_system_p" in data
+
+
+# 8. Test POST /analysis persistent provenance and audit trail
+def test_post_analysis_provenance_and_audit_trail(client: TestClient):
+    payload = {
+        "business_profile": {
+            "business_id": "BIZ-SL-PROV",
+            "activity": "food_manufacturing",
+            "employee_count": 30,
+            "products": [{"category": "biscuits", "prepackaged": True}],
+            "production_capacity": {"value": 100.0, "unit": "kg", "per_period": "day"},
+        },
+        "as_at_date": "2024-08-01",
+        "clause_ids": ["RULE-FCAU-001"],
+    }
+    response = client.post("/analysis", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data["evaluations"]) >= 1
+
+    ev = data["evaluations"][0]
+    assert ev["rule_id"] == "RULE-FCAU-001"
+    # Strict persistent provenance fields
+    assert ev["document_title"] is not None
+    assert ev["page_number"] is not None and ev["page_number"] >= 1
+    assert ev["char_start"] is not None and ev["char_start"] >= 0
+    assert ev["char_end"] is not None and ev["char_end"] > ev["char_start"]
+    assert "APPROVED" in ev["review_status"]
+    assert "EXPERT_ADJUDICATOR" in ev["review_status"]
+    assert ev["coverage_gap"] is False
+
+
+# 9. Test POST /analysis coverage gap detection
+def test_post_analysis_coverage_gap_unsupported(client: TestClient):
+    # Request an unverified or nonexistent clause
+    payload = {
+        "business_profile": {
+            "business_id": "BIZ-SL-GAP",
+            "activity": "food_manufacturing",
+        },
+        "clause_ids": ["CLAUSE-NONEXISTENT-OR-UNAPPROVED-001"],
+    }
+    response = client.post("/analysis", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["unsupported_rules_count"] >= 1
+
+    ev = data["evaluations"][0]
+    assert ev["status"] == OutcomeStatus.UNSUPPORTED.value
+    assert ev["coverage_gap"] is True
+    assert "Coverage Gap" in ev["reason"]
+
