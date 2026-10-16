@@ -66,32 +66,26 @@ def db_session(db_engine) -> Session:
 # ---------------------------------------------------------------------------
 
 def _make_minimal_pdf(text_pages: list[str]) -> bytes:
-    """Build a minimal, spec-compliant PDF in pure Python.
+    """Build a minimal, spec-compliant PDF for tests using PyMuPDF."""
+    try:
+        import pymupdf
+        doc = pymupdf.open()
+        for page_text in text_pages:
+            page = doc.new_page(width=612, height=792)
+            page.insert_text((72, 72), page_text, fontsize=10)
+        pdf_bytes = doc.tobytes()
+        doc.close()
+        return pdf_bytes
+    except ImportError:
+        pass
 
-    The generated PDF contains one page per string in *text_pages*, with
-    the string embedded as a Tf/Tj text stream.  This is sufficient for
-    PyMuPDF to extract the text without requiring any real PDF files.
-
-    The PDF is deliberately simple — not all features are exercised.
-    """
+    # Pure Python fallback for environments without PyMuPDF
     objects = []
-    page_content_ids = []
-
-    # Fonts and resources (object 1)
-    objects.append(
-        b"1 0 obj\n"
-        b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\n"
-        b"endobj\n"
-    )
-
-    # Build one content stream + page object per page
-    current_obj_id = 2
     page_obj_ids = []
+    current_obj_id = 2
 
     for page_text in text_pages:
-        # Escape PDF special chars in the text
         escaped = page_text.replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
-        # Content stream
         stream_content = f"BT /F1 10 Tf 72 700 Td ({escaped}) Tj ET".encode("latin-1", errors="replace")
         stream_length = len(stream_content)
         content_obj = (
@@ -103,53 +97,37 @@ def _make_minimal_pdf(text_pages: list[str]) -> bytes:
         content_id = current_obj_id
         current_obj_id += 1
 
-        # Page object
         page_obj = (
             f"{current_obj_id} 0 obj\n"
             f"<< /Type /Page /Parent 999 0 R "
             f"/MediaBox [0 0 612 792] "
             f"/Contents {content_id} 0 R "
-            f"/Resources << /Font << /F1 1 0 R >> >> >>\n"
+            f"/Resources << /Font << /F1 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> >> >> >>\n"
             f"endobj\n"
         ).encode()
         objects.append(page_obj)
         page_obj_ids.append(current_obj_id)
         current_obj_id += 1
 
-    # Pages dictionary (object 999)
     kids = " ".join(f"{oid} 0 R" for oid in page_obj_ids)
     pages_obj = (
         f"999 0 obj\n"
         f"<< /Type /Pages /Kids [{kids}] /Count {len(page_obj_ids)} >>\n"
         f"endobj\n"
     ).encode()
-
-    # Catalog (object 1000)
     catalog_obj = b"1000 0 obj\n<< /Type /Catalog /Pages 999 0 R >>\nendobj\n"
-
-    # Assemble the full body
     header = b"%PDF-1.4\n"
     body = b"".join(objects) + pages_obj + catalog_obj
-
-    # Cross-reference table (minimal)
     xref_pos = len(header) + len(body)
-    all_obj_ids = sorted(
-        [1]
-        + list(range(2, current_obj_id))
-        + [999, 1000]
-    )
+    all_obj_ids = sorted(list(range(2, current_obj_id)) + [999, 1000])
     max_id = max(all_obj_ids)
     xref = f"xref\n0 {max_id + 1}\n0000000000 65535 f \n".encode()
-    # We write a simplified xref that points to offset 0 for all objects.
-    # PyMuPDF tolerates this in minimal synthetic PDFs.
     for _ in range(max_id):
         xref += b"0000000000 00000 n \n"
-
     trailer = (
         f"trailer\n<< /Size {max_id + 1} /Root 1000 0 R >>\n"
         f"startxref\n{xref_pos}\n%%EOF\n"
     ).encode()
-
     return header + body + xref + trailer
 
 

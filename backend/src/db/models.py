@@ -113,7 +113,11 @@ class DocumentPageORM(Base):
         UniqueConstraint("document_id", "page_number", name="uq_page_in_document"),
     )
 
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    id = Column(
+        BigInteger().with_variant(Integer, "sqlite"),
+        primary_key=True,
+        autoincrement=True,
+    )
     document_id = Column(
         String(128),
         ForeignKey("source_documents.id", ondelete="CASCADE"),
@@ -270,7 +274,11 @@ class HumanReviewAuditORM(Base):
 
     __tablename__ = "human_review_audit"
 
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    id = Column(
+        BigInteger().with_variant(Integer, "sqlite"),
+        primary_key=True,
+        autoincrement=True,
+    )
     rule_id = Column(
         String(100),
         ForeignKey("rules.rule_id", ondelete="CASCADE"),
