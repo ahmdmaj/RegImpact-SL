@@ -128,16 +128,15 @@ def _parse_llm_response(
 
     reason = str(raw_dict.get("reason", "LLM baseline evaluation result."))
 
-    res = EvaluationResult(
+    extra = dict(retrieval_metadata or {})
+    return EvaluationResult(
         status=status_enum,
         rule_id=clause_id,
         missing_fields=missing_fields,
         evaluation_trace=[],
         reason=reason,
+        **extra,
     )
-    if retrieval_metadata:
-        res.model_extra = dict(retrieval_metadata)
-    return res
 
 
 # ---------------------------------------------------------------------------
@@ -202,7 +201,8 @@ class OracleBaseline(BaselineSystem):
                 rule_id=scenario.clause_id,
                 missing_fields=[],
                 reason=f"No oracle context found in context_store for '{scenario.clause_id}'.",
-                model_extra={"error": "missing_oracle_context"},
+                error="missing_oracle_context",
+                failed=True,
             )
 
         prompt = construct_baseline_prompt(oracle_text, scenario)
@@ -220,7 +220,9 @@ class OracleBaseline(BaselineSystem):
                 rule_id=scenario.clause_id,
                 missing_fields=[],
                 reason=f"Oracle LLM generation failed: {exc}",
-                model_extra={"error": str(exc), "failed": True},
+                error=str(exc),
+                failed=True,
+                method="oracle",
             )
 
 
@@ -268,7 +270,8 @@ class BM25Baseline(BaselineSystem):
                 rule_id=scenario.clause_id,
                 missing_fields=[],
                 reason=f"BM25 retrieval returned zero candidate passages for query {query!r}.",
-                model_extra={"retrieved_count": 0, "method": "bm25"},
+                retrieved_count=0,
+                method="bm25",
             )
 
         context_text = "\n\n---\n\n".join(
@@ -292,7 +295,9 @@ class BM25Baseline(BaselineSystem):
                 rule_id=scenario.clause_id,
                 missing_fields=[],
                 reason=f"BM25 LLM generation failed: {exc}",
-                model_extra={"error": str(exc), "method": "bm25", "failed": True},
+                error=str(exc),
+                method="bm25",
+                failed=True,
             )
 
 
@@ -339,7 +344,8 @@ class DenseBaseline(BaselineSystem):
                 rule_id=scenario.clause_id,
                 missing_fields=[],
                 reason=f"Dense retrieval returned zero candidate passages for query {query!r}.",
-                model_extra={"retrieved_count": 0, "method": "dense"},
+                retrieved_count=0,
+                method="dense",
             )
 
         context_text = "\n\n---\n\n".join(
@@ -363,7 +369,9 @@ class DenseBaseline(BaselineSystem):
                 rule_id=scenario.clause_id,
                 missing_fields=[],
                 reason=f"Dense LLM generation failed: {exc}",
-                model_extra={"error": str(exc), "method": "dense", "failed": True},
+                error=str(exc),
+                method="dense",
+                failed=True,
             )
 
 
@@ -410,7 +418,8 @@ class HybridBaseline(BaselineSystem):
                 rule_id=scenario.clause_id,
                 missing_fields=[],
                 reason=f"Hybrid retrieval returned zero candidate passages for query {query!r}.",
-                model_extra={"retrieved_count": 0, "method": "hybrid_rrf"},
+                retrieved_count=0,
+                method="hybrid_rrf",
             )
 
         context_text = "\n\n---\n\n".join(
@@ -434,7 +443,9 @@ class HybridBaseline(BaselineSystem):
                 rule_id=scenario.clause_id,
                 missing_fields=[],
                 reason=f"Hybrid LLM generation failed: {exc}",
-                model_extra={"error": str(exc), "method": "hybrid_rrf", "failed": True},
+                error=str(exc),
+                method="hybrid_rrf",
+                failed=True,
             )
 
 
@@ -496,48 +507,56 @@ class SystemP(BaselineSystem):
                     missing_fields=[],
                     evaluation_trace=[],
                     reason=f"System P: No candidate statutory clauses retrieved for {query!r}.",
-                    model_extra={"coverage_gap": True, "method": "system_p_retrieval"},
+                    coverage_gap=True,
+                    method="system_p_retrieval",
                 )
 
             # Cross-reference candidates against database rules
             candidate_ids = [c.clause_id for c in candidates]
             approved_set = cross_reference_coverage_gaps(self.db, candidate_ids)
 
-            # Find top candidate with an approved rule
-            matched_rule: Optional[Rule] = None
-            for candidate in candidates:
-                if candidate.clause_id in approved_set:
-                    # Load approved rule from database
-                    rule_orm = (
-                        self.db.query(RuleORM)
-                        .filter(
-                            RuleORM.clause_id == candidate.clause_id,
-                            RuleORM.review_status == "APPROVED",
-                        )
-                        .first()
-                    )
-                    if rule_orm:
-                        matched_rule = rule_orm_to_domain(rule_orm)
-                        break
-
-            # If no approved rule exists in any candidate -> Coverage Gap
-            if not matched_rule:
-                top_cid = candidates[0].clause_id
+            # In retrieval mode, examine the primary retrieved candidate (top rank)
+            top_candidate = candidates[0]
+            if top_candidate.clause_id not in approved_set:
                 return EvaluationResult(
                     status=OutcomeStatus.UNSUPPORTED,
                     rule_id=scenario.clause_id,
                     missing_fields=[],
                     evaluation_trace=[],
                     reason=(
-                        f"System P Coverage Gap: Candidate clause '{top_cid}' was retrieved "
+                        f"System P Coverage Gap: Candidate clause '{top_candidate.clause_id}' was retrieved "
                         "but does not have an approved, verified executable rule."
                     ),
-                    model_extra={
-                        "coverage_gap": True,
-                        "retrieved_clause_ids": candidate_ids,
-                        "method": "system_p_retrieval",
-                    },
+                    coverage_gap=True,
+                    retrieved_clause_ids=candidate_ids,
+                    method="system_p_retrieval",
                 )
+
+            # Retrieve the verified rule from database
+            rule_orm = (
+                self.db.query(RuleORM)
+                .filter(
+                    RuleORM.clause_id == top_candidate.clause_id,
+                    RuleORM.review_status == "APPROVED",
+                )
+                .first()
+            )
+            if not rule_orm:
+                return EvaluationResult(
+                    status=OutcomeStatus.UNSUPPORTED,
+                    rule_id=scenario.clause_id,
+                    missing_fields=[],
+                    evaluation_trace=[],
+                    reason=(
+                        f"System P Coverage Gap: Candidate clause '{top_candidate.clause_id}' was retrieved "
+                        "but does not have an approved, verified executable rule."
+                    ),
+                    coverage_gap=True,
+                    retrieved_clause_ids=candidate_ids,
+                    method="system_p_retrieval",
+                )
+
+            matched_rule = rule_orm_to_domain(rule_orm)
 
             # Deterministic execution of the verified approved rule
             eval_result = evaluate_rule(
@@ -546,18 +565,15 @@ class SystemP(BaselineSystem):
                 as_at_date=scenario.as_at_date,
             )
 
+            setattr(eval_result, "coverage_gap", False)
+            setattr(eval_result, "method", "system_p_retrieval")
+            setattr(eval_result, "grounded_rule_id", matched_rule.rule_id)
+
             if eval_result.status == OutcomeStatus.APPLICABLE:
                 impact = map_impact(matched_rule, eval_result)
                 if impact:
-                    if eval_result.model_extra is None:
-                        eval_result.model_extra = {}
-                    eval_result.model_extra["impact"] = impact.model_dump()
+                    setattr(eval_result, "impact", impact.model_dump())
 
-            if eval_result.model_extra is None:
-                eval_result.model_extra = {}
-            eval_result.model_extra["coverage_gap"] = False
-            eval_result.model_extra["method"] = "system_p_retrieval"
-            eval_result.model_extra["grounded_rule_id"] = matched_rule.rule_id
             return eval_result
 
         # --- Mode 2: Direct Rule Store Mode (Phase A compatibility) ---
@@ -575,7 +591,8 @@ class SystemP(BaselineSystem):
                 missing_fields=[],
                 evaluation_trace=[],
                 reason=f"No verified compiled rule found for clause '{scenario.clause_id}' (unsupported / coverage gap).",
-                model_extra={"coverage_gap": True, "method": "system_p_direct"},
+                coverage_gap=True,
+                method="system_p_direct",
             )
 
         eval_result = evaluate_rule(
@@ -584,11 +601,12 @@ class SystemP(BaselineSystem):
             as_at_date=scenario.as_at_date,
         )
 
+        setattr(eval_result, "coverage_gap", False)
+        setattr(eval_result, "method", "system_p_direct")
+
         if eval_result.status == OutcomeStatus.APPLICABLE:
             impact = map_impact(rule, eval_result)
             if impact:
-                if eval_result.model_extra is None:
-                    eval_result.model_extra = {}
-                eval_result.model_extra["impact"] = impact.model_dump()
+                setattr(eval_result, "impact", impact.model_dump())
 
         return eval_result
