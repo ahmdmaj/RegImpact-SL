@@ -259,6 +259,9 @@ def rule_domain_to_orm_dict(rule: Rule, clause_id: str, clause_version: int) -> 
             "quote_span": rule.source.quote_span,
         },
         "review_status": rule.verification.status if rule.verification.status else "DRAFT",
+        "outcome_type": getattr(rule, "outcome_type", None) or (
+            "CONDITIONAL_RULE" if (rule.verification.status or "").upper() == "CONDITIONAL_RULE" else "STANDARD"
+        ),
         "extraction_model": rule.verification.extraction_model,
         "verification_report": {
             "status": rule.verification.status,
