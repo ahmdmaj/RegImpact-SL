@@ -204,7 +204,7 @@ def rule_orm_to_domain(orm: "RuleORM") -> Rule:
         justification=ver_dict.get("justification"),
     )
 
-    return Rule(
+    rule = Rule(
         rule_id=orm.rule_id,
         source=source,
         validity=validity,
@@ -213,6 +213,9 @@ def rule_orm_to_domain(orm: "RuleORM") -> Rule:
         obligation=obligation,
         verification=verification,
     )
+    if hasattr(orm, "outcome_type") and orm.outcome_type:
+        setattr(rule, "outcome_type", orm.outcome_type)
+    return rule
 
 
 def rule_domain_to_orm_dict(rule: Rule, clause_id: str, clause_version: int) -> Dict[str, Any]:
