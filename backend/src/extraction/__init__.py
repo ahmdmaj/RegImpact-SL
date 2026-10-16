@@ -14,6 +14,12 @@ from backend.src.extraction.explanation import (
     construct_explanation_prompt,
 )
 
+from backend.src.extraction.ingestion import (
+    DocumentIngestionService,
+    IngestionResult,
+    segment_clauses_from_page,
+)
+
 __all__ = [
     "BaseLLMClient",
     "CompilationError",
@@ -23,5 +29,7 @@ __all__ = [
     "construct_retry_prompt",
     "ExplanationGenerator",
     "construct_explanation_prompt",
+    "DocumentIngestionService",
+    "IngestionResult",
+    "segment_clauses_from_page",
 ]
-

@@ -1,6 +1,17 @@
+# Core API
 fastapi
 pydantic
+
+# Testing
 pytest
-sqlalchemy
-psycopg2-binary
-pgvector
+httpx
+
+# Database (Milestone 1+)
+sqlalchemy>=2.0      # ORM and query layer
+alembic>=1.14        # Schema migrations
+# psycopg2-binary   # Uncomment when PostgreSQL daemon is configured
+# pgvector          # Uncomment for Milestone 3 vector embeddings
+
+# PDF Ingestion (Milestone 1)
+pymupdf>=1.24        # Primary text extractor (PyMuPDF / fitz)
+# pdfplumber        # Optional secondary extractor; install if needed for OCR docs
