@@ -38,6 +38,7 @@ except ImportError:
 LIVE_DATABASE_URL = os.environ.get("DATABASE_URL")
 LIVE_OPENAI_KEY = os.environ.get("OPENAI_API_KEY")
 LIVE_GEMINI_KEY = os.environ.get("GEMINI_API_KEY")
+print(f"DEBUG CONFTEST: LIVE_DATABASE_URL={LIVE_DATABASE_URL}")
 
 # Default offline test suites to in-memory SQLite and mock LLM providers
 os.environ["DATABASE_URL"] = "sqlite:///:memory:"

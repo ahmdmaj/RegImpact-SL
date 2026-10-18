@@ -42,6 +42,7 @@ def _can_connect_to_postgres() -> bool:
         return False
 
 POSTGRES_AVAILABLE = _can_connect_to_postgres()
+print(f"DEBUG AT TOP OF TEST FILE: POSTGRES_AVAILABLE={POSTGRES_AVAILABLE}, DATABASE_URL={DATABASE_URL}")
 
 
 @pytest.mark.skipif(not POSTGRES_AVAILABLE, reason="Live PostgreSQL daemon is not reachable.")
