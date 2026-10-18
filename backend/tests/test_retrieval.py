@@ -405,3 +405,31 @@ def test_ret_emb_003_factory_mock_fallback(monkeypatch):
 
     client = get_embedding_client(allow_mock_fallback=True)
     assert isinstance(client, MockEmbeddingClient)
+
+
+def test_ret_dense_native_pgvector_dispatch(monkeypatch, populated_db):
+    """DenseRetrievalEngine dispatches to native pgvector on postgres dialect and fallback on sqlite."""
+    engine = DenseRetrievalEngine(db=populated_db)
+    engine.index_clauses()
+
+    # On SQLite, verifies in-memory fallback runs successfully
+    results_sqlite = engine.search("prepackaged labelling", top_k=2)
+    assert len(results_sqlite) > 0
+    assert results_sqlite[0].retrieval_method == "dense"
+
+    # Verify that if dialect is postgresql, _search_native_pgvector is invoked
+    called = []
+    def fake_native(query_vec, top_k=10, filters=None):
+        called.append(True)
+        return results_sqlite
+
+    monkeypatch.setattr(engine, "_search_native_pgvector", fake_native)
+    class FakeDialect:
+        name = "postgresql"
+    class FakeBind:
+        dialect = FakeDialect()
+
+    monkeypatch.setattr(populated_db, "get_bind", lambda: FakeBind())
+    res = engine.search("prepackaged labelling", top_k=2)
+    assert len(called) == 1
+    assert res == results_sqlite
