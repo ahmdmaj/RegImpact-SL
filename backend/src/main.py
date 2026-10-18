@@ -218,6 +218,11 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# Initialize default app state attributes
+app.state.llm_client = None
+app.state.explanation_generator = ExplanationGenerator()
+app.state.evidence_checker = EvidenceChecker()
+
 # Enable CORS for local development (Section 8.7 thin UI)
 app.add_middleware(
     CORSMiddleware,
