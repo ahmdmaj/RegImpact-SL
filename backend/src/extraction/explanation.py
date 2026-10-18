@@ -77,20 +77,27 @@ class ExplanationGenerator:
         """Generate a natural-language executive summary of the impact report."""
         prompt = construct_explanation_prompt(report)
 
-        # 1. If an LLM client is provided, call it
+        # 1. If an LLM client is provided, call it with safe fallback on error
         if self.llm_client is not None:
-            if hasattr(self.llm_client, "generate_text"):
-                return self.llm_client.generate_text(prompt)
-            elif hasattr(self.llm_client, "generate_summary"):
-                return self.llm_client.generate_summary(prompt)
-            elif hasattr(self.llm_client, "generate_rule"):
-                res = self.llm_client.generate_rule(
-                    prompt,
-                    {"type": "object", "properties": {"summary": {"type": "string"}}},
+            try:
+                if hasattr(self.llm_client, "generate_text"):
+                    return self.llm_client.generate_text(prompt)
+                elif hasattr(self.llm_client, "generate_summary"):
+                    return self.llm_client.generate_summary(prompt)
+                elif hasattr(self.llm_client, "generate_rule"):
+                    res = self.llm_client.generate_rule(
+                        prompt,
+                        {"type": "object", "properties": {"summary": {"type": "string"}}},
+                    )
+                    if isinstance(res, dict) and "summary" in res:
+                        return res["summary"]
+                    return str(res)
+            except Exception as exc:
+                import logging
+                logging.getLogger(__name__).warning(
+                    "Live LLM summary call failed (%s); using deterministic grounded summary.", exc
                 )
-                if isinstance(res, dict) and "summary" in res:
-                    return res["summary"]
-                return str(res)
+                return self._generate_fallback_summary(report)
 
         # 2. Deterministic grounded fallback synthesis (when no LLM client is configured)
         return self._generate_fallback_summary(report)

@@ -20,11 +20,23 @@ import hashlib
 import logging
 import math
 import os
+from pathlib import Path
 import re
 import time
 from typing import Any, Dict, List, Optional
 
 import httpx
+
+try:
+    from dotenv import load_dotenv
+    for _p in [
+        Path(__file__).resolve().parent.parent.parent / ".env",
+        Path(__file__).resolve().parent.parent.parent.parent / ".env",
+    ]:
+        if _p.exists():
+            load_dotenv(_p, override=False)
+except ImportError:
+    pass
 
 from backend.src.extraction.llm_client import (
     LLMAuthenticationError,
