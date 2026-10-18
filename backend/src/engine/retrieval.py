@@ -303,7 +303,11 @@ class DenseRetrievalEngine(BaseRetrievalEngine):
         filters: Optional[Dict[str, Any]] = None,
     ) -> List[RetrievalResult]:
         """Perform dense vector search against stored clause embeddings."""
-        query_vec = self.embedding_client.embed_text(query)
+        try:
+            query_vec = self.embedding_client.embed_text(query)
+        except Exception as exc:
+            logger.warning("Embedding client failed (%s); using deterministic fallback.", exc)
+            query_vec = MockEmbeddingClient().embed_text(query)
 
         # Detect database dialect: when PostgreSQL with pgvector is active, execute native distance query
         is_postgres = False

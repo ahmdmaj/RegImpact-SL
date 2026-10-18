@@ -14,11 +14,22 @@ Key design decisions:
 """
 
 import io
+import os
 import struct
 import pytest
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
+
+# Save live environment configuration for opt-in live integration tests
+LIVE_DATABASE_URL = os.environ.get("DATABASE_URL")
+LIVE_OPENAI_KEY = os.environ.get("OPENAI_API_KEY")
+LIVE_GEMINI_KEY = os.environ.get("GEMINI_API_KEY")
+
+# Default offline test suites to in-memory SQLite and mock LLM providers
+os.environ["DATABASE_URL"] = "sqlite:///:memory:"
+os.environ["LLM_PROVIDER"] = "mock"
+os.environ["EMBEDDING_PROVIDER"] = "mock"
 
 from backend.src.db.models import Base
 from backend.src.db.session import create_tables

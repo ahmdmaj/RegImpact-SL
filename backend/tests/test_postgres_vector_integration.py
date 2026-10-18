@@ -15,8 +15,17 @@ from backend.src.db.models import Base, ClauseORM, SourceDocumentORM
 from backend.src.db.session import create_engine_from_url, create_tables, get_session_factory
 from backend.src.engine.retrieval import DenseRetrievalEngine
 from backend.src.extraction.embedding_client import MockEmbeddingClient
+from backend.tests.conftest import LIVE_DATABASE_URL
 
-DATABASE_URL = os.environ.get("DATABASE_URL", "")
+DATABASE_URL = (
+    LIVE_DATABASE_URL
+    or (
+        os.environ.get("DATABASE_URL")
+        if "postgresql" in os.environ.get("DATABASE_URL", "")
+        else None
+    )
+    or "postgresql://regimpact:regimpact@localhost:5432/regimpact"
+)
 IS_POSTGRES = "postgresql" in DATABASE_URL.lower()
 
 def _can_connect_to_postgres() -> bool:
