@@ -204,3 +204,39 @@ def test_post_analysis_coverage_gap_unsupported(client: TestClient):
     assert ev["coverage_gap"] is True
     assert "Coverage Gap" in ev["reason"]
 
+
+# 10. Test app state LLM client initialization and narrative summary generation
+def test_app_state_llm_client_initialization(client: TestClient):
+    assert hasattr(app.state, "explanation_generator")
+    assert app.state.explanation_generator is not None
+
+
+# 11. Test live LLM explanation generation with mock client
+def test_analysis_narrative_summary_generation(client: TestClient, monkeypatch):
+    class MockLLMForSummary:
+        def generate_text(self, prompt: str) -> str:
+            # Return text grounded strictly in facts so EvidenceChecker approves it
+            return "As of 2024-08-01, 1 of 2 evaluated regulatory rules apply to your business."
+
+    monkeypatch.setattr(
+        app.state,
+        "explanation_generator",
+        type(app.state.explanation_generator)(llm_client=MockLLMForSummary()),
+    )
+
+    payload = {
+        "business_profile": {
+            "business_id": "BIZ-SL-001",
+            "activity": "food_manufacturing",
+            "employee_count": 25,
+            "products": [{"category": "biscuits", "prepackaged": True}],
+            "production_capacity": {"value": 100.0, "unit": "kg", "per_period": "day"},
+        },
+        "as_at_date": "2024-08-01",
+    }
+    response = client.post("/analysis", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["narrative_summary"] == "As of 2024-08-01, 1 of 2 evaluated regulatory rules apply to your business."
+
+
