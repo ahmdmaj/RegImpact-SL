@@ -32,11 +32,13 @@ def _can_connect_to_postgres() -> bool:
     if not IS_POSTGRES:
         return False
     try:
-        engine = create_engine(DATABASE_URL, connect_args={"connect_timeout": 3})
+        engine = create_engine_from_url(DATABASE_URL)
         with engine.connect() as conn:
             conn.execute(text("SELECT 1"))
         return True
-    except Exception:
+    except Exception as exc:
+        import sys
+        print(f"DEBUG POSTGRES CONNECT ERROR: {exc}", file=sys.stderr)
         return False
 
 POSTGRES_AVAILABLE = _can_connect_to_postgres()
