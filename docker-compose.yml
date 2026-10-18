@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: regimpact-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-regimpact}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-regimpact}
+      POSTGRES_DB: ${POSTGRES_DB:-regimpact}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-regimpact} -d ${POSTGRES_DB:-regimpact}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
+    driver: local
