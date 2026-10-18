@@ -30,6 +30,7 @@ from backend.src.engine.retrieval import (
     cross_reference_coverage_gaps,
 )
 from backend.src.extraction.explanation import ExplanationGenerator
+from backend.src.extraction.llm_client import get_llm_client
 from backend.src.models.domain import (
     BusinessProfile,
     ClauseVersion,
@@ -189,6 +190,23 @@ async def lifespan(app: FastAPI):
     init_db()
     with session_scope() as session:
         ensure_database_seeded(session)
+
+    # Initialize live LLM client on application startup
+    try:
+        app.state.llm_client = get_llm_client(allow_mock_fallback=True)
+        app.state.explanation_generator = ExplanationGenerator(llm_client=app.state.llm_client)
+        logger.info(
+            "Initialized live LLM client on FastAPI app state: %s",
+            type(app.state.llm_client).__name__,
+        )
+    except Exception as exc:
+        logger.warning(
+            "Could not initialize live LLM client (%s); using deterministic explanation generator.",
+            exc,
+        )
+        app.state.llm_client = None
+        app.state.explanation_generator = ExplanationGenerator()
+
     yield
 
 
@@ -570,6 +588,11 @@ def run_analysis(
     if evidence_checker.verify_claims(summary, report):
         report.narrative_summary = summary
     else:
-        report.narrative_summary = "Summary generation failed verification; narrative withheld."
+        # If live LLM summary failed verification, fall back to deterministic grounded generator
+        fallback = explanation_gen._generate_fallback_summary(report)
+        if evidence_checker.verify_claims(fallback, report):
+            report.narrative_summary = fallback
+        else:
+            report.narrative_summary = "Summary generation failed verification; narrative withheld."
 
     return report
