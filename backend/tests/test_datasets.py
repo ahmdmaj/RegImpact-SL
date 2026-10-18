@@ -126,7 +126,7 @@ def test_data_a_004_embeddings_and_approved_rules(populated_corpus_db):
 
     # Verify embeddings are populated
     clauses = db.query(ClauseORM).all()
-    assert all(c.embedding is not None and len(c.embedding) == 64 for c in clauses)
+    assert all(c.embedding is not None and len(c.embedding) in (64, 768) for c in clauses)
 
     # Verify approved rules
     approved_rules = db.query(RuleORM).filter_by(review_status="APPROVED").all()

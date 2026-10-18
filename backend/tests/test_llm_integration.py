@@ -19,7 +19,8 @@ from backend.src.extraction.llm_client import (
 )
 
 HAS_LIVE_KEY = bool(
-    os.getenv("OPENAI_API_KEY") or os.getenv("GEMINI_API_KEY") or os.getenv("LLM_API_KEY")
+    os.getenv("RUN_LIVE_LLM_TESTS") == "1"
+    and (os.getenv("OPENAI_API_KEY") or os.getenv("GEMINI_API_KEY") or os.getenv("LLM_API_KEY"))
 )
 
 
