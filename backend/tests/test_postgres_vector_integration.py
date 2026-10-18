@@ -67,6 +67,9 @@ def test_live_postgres_native_vector_search():
                 sha256_hash="deadbeef" * 8,
                 title="Live Test Document for Vector Search",
                 authority="Test Authority",
+                file_path="backend/data/raw_sources/test_live.pdf",
+                file_size_bytes=1024,
+                page_count=1,
             )
             session.add(doc)
             session.commit()
