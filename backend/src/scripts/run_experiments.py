@@ -135,7 +135,7 @@ def run_full_experiments(
     embedding_client: Optional[Any] = None,
 ) -> Dict[str, Any]:
     """Execute all baselines and ablations, compute metrics, and run statistical tests."""
-    emb_client = embedding_client or MockEmbeddingClient(dimension=64)
+    emb_client = embedding_client or MockEmbeddingClient(dimension=768)
 
     # Configure mock LLM client to return standard realistic baseline response
     canned_res = {

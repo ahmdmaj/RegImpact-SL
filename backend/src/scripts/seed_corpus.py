@@ -310,7 +310,7 @@ def seed_regulatory_corpus(
     db: Session,
     raw_dir: Optional[Path] = None,
     force: bool = False,
-    embedding_dimension: int = 64,
+    embedding_dimension: int = 768,
 ) -> Dict[str, Any]:
     """Seed the database with official source documents, segmented clauses, and rules.
 
