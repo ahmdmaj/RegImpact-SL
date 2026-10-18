@@ -82,7 +82,7 @@ class OpenAIEmbeddingClient(BaseEmbeddingClient):
 
     DEFAULT_BASE_URL = "https://api.openai.com/v1"
     DEFAULT_MODEL = "text-embedding-3-small"
-    DEFAULT_DIMENSION = 1536
+    DEFAULT_DIMENSION = 768
 
     def __init__(
         self,
