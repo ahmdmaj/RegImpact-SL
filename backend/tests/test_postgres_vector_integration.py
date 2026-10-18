@@ -19,12 +19,8 @@ from backend.tests.conftest import LIVE_DATABASE_URL
 
 DATABASE_URL = (
     LIVE_DATABASE_URL
-    or (
-        os.environ.get("DATABASE_URL")
-        if "postgresql" in os.environ.get("DATABASE_URL", "")
-        else None
-    )
-    or "postgresql://regimpact:regimpact@localhost:5432/regimpact"
+    if (LIVE_DATABASE_URL and "postgresql" in LIVE_DATABASE_URL.lower())
+    else "postgresql://regimpact:regimpact@localhost:5432/regimpact"
 )
 IS_POSTGRES = "postgresql" in DATABASE_URL.lower()
 
@@ -36,13 +32,10 @@ def _can_connect_to_postgres() -> bool:
         with engine.connect() as conn:
             conn.execute(text("SELECT 1"))
         return True
-    except Exception as exc:
-        import sys
-        print(f"DEBUG POSTGRES CONNECT ERROR: {exc}", file=sys.stderr)
+    except Exception:
         return False
 
 POSTGRES_AVAILABLE = _can_connect_to_postgres()
-print(f"DEBUG AT TOP OF TEST FILE: POSTGRES_AVAILABLE={POSTGRES_AVAILABLE}, DATABASE_URL={DATABASE_URL}")
 
 
 @pytest.mark.skipif(not POSTGRES_AVAILABLE, reason="Live PostgreSQL daemon is not reachable.")

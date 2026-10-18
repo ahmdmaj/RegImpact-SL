@@ -23,22 +23,24 @@ from sqlalchemy.orm import sessionmaker, Session
 
 from pathlib import Path
 
+# Read live config from .env or os.environ
+_DOTENV_VALS = {}
 try:
-    from dotenv import load_dotenv
+    from dotenv import dotenv_values
     for _p in [
         Path(__file__).resolve().parent.parent / ".env",
         Path(__file__).resolve().parent.parent.parent / ".env",
     ]:
         if _p.exists():
-            load_dotenv(_p, override=False)
+            _DOTENV_VALS.update({k: v for k, v in dotenv_values(_p).items() if v is not None})
 except ImportError:
     pass
 
-# Save live environment configuration for opt-in live integration tests
-LIVE_DATABASE_URL = os.environ.get("DATABASE_URL")
-LIVE_OPENAI_KEY = os.environ.get("OPENAI_API_KEY")
-LIVE_GEMINI_KEY = os.environ.get("GEMINI_API_KEY")
-print(f"DEBUG CONFTEST: LIVE_DATABASE_URL={LIVE_DATABASE_URL}")
+LIVE_DATABASE_URL = _DOTENV_VALS.get("DATABASE_URL") or os.environ.get("LIVE_DATABASE_URL")
+if not LIVE_DATABASE_URL or LIVE_DATABASE_URL == "sqlite:///:memory:":
+    LIVE_DATABASE_URL = _DOTENV_VALS.get("DATABASE_URL")
+LIVE_OPENAI_KEY = _DOTENV_VALS.get("OPENAI_API_KEY") or os.environ.get("OPENAI_API_KEY")
+LIVE_GEMINI_KEY = _DOTENV_VALS.get("GEMINI_API_KEY") or os.environ.get("GEMINI_API_KEY")
 
 # Default offline test suites to in-memory SQLite and mock LLM providers
 os.environ["DATABASE_URL"] = "sqlite:///:memory:"
