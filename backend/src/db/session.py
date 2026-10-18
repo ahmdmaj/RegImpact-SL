@@ -12,10 +12,22 @@ all unit tests can run without a live PostgreSQL daemon.
 import os
 from collections.abc import Generator
 from contextlib import contextmanager
+from pathlib import Path
 
 from sqlalchemy import create_engine, event, text
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session, sessionmaker
+
+try:
+    from dotenv import load_dotenv
+    for _p in [
+        Path(__file__).resolve().parent.parent.parent / ".env",
+        Path(__file__).resolve().parent.parent.parent.parent / ".env",
+    ]:
+        if _p.exists():
+            load_dotenv(_p, override=False)
+except ImportError:
+    pass
 
 from backend.src.db.models import Base
 
@@ -70,7 +82,23 @@ def create_engine_from_url(url: str | None = None) -> Engine:
 
 def create_tables(engine: Engine) -> None:
     """Create all ORM tables on the given engine (idempotent: CREATE IF NOT EXISTS)."""
+    is_postgres = "postgresql" in engine.dialect.name
+    if is_postgres:
+        with engine.connect() as conn:
+            conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector;"))
+            conn.commit()
+
     Base.metadata.create_all(bind=engine)
+
+    if is_postgres:
+        with engine.connect() as conn:
+            conn.execute(
+                text(
+                    "CREATE INDEX IF NOT EXISTS idx_clauses_embedding_hnsw "
+                    "ON clauses USING hnsw (embedding vector_cosine_ops);"
+                )
+            )
+            conn.commit()
 
 
 def get_session_factory(engine: Engine) -> sessionmaker:
