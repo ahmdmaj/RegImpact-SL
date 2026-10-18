@@ -305,6 +305,81 @@ class DenseRetrievalEngine(BaseRetrievalEngine):
         """Perform dense vector search against stored clause embeddings."""
         query_vec = self.embedding_client.embed_text(query)
 
+        # Detect database dialect: when PostgreSQL with pgvector is active, execute native distance query
+        is_postgres = False
+        try:
+            bind = self.db.get_bind()
+            if bind and "postgresql" in bind.dialect.name:
+                is_postgres = True
+        except Exception:
+            is_postgres = False
+
+        if is_postgres:
+            return self._search_native_pgvector(query_vec, top_k=top_k, filters=filters)
+        return self._search_in_memory_fallback(query_vec, top_k=top_k, filters=filters)
+
+    def _search_native_pgvector(
+        self,
+        query_vec: List[float],
+        top_k: int = 10,
+        filters: Optional[Dict[str, Any]] = None,
+    ) -> List[RetrievalResult]:
+        """Perform native PostgreSQL vector search using the <=> cosine distance operator."""
+        distance_expr = ClauseORM.embedding.cosine_distance(query_vec)
+
+        query_builder = (
+            self.db.query(ClauseORM, SourceDocumentORM, distance_expr.label("distance"))
+            .outerjoin(SourceDocumentORM, ClauseORM.document_id == SourceDocumentORM.id)
+            .filter(ClauseORM.embedding.isnot(None))
+        )
+
+        if filters:
+            if "document_id" in filters:
+                query_builder = query_builder.filter(ClauseORM.document_id == filters["document_id"])
+            if "is_compilable" in filters:
+                query_builder = query_builder.filter(ClauseORM.is_compilable == filters["is_compilable"])
+            if "document_title" in filters:
+                query_builder = query_builder.filter(
+                    SourceDocumentORM.title.ilike(f"%{filters['document_title']}%")
+                )
+
+        rows = query_builder.order_by(distance_expr).limit(top_k).all()
+        if not rows:
+            return []
+
+        top_clause_ids = [clause.clause_id for clause, _, _ in rows]
+        approved_set = cross_reference_coverage_gaps(self.db, top_clause_ids)
+
+        results: List[RetrievalResult] = []
+        for rank, (clause, doc, distance) in enumerate(rows, start=1):
+            score = max(0.0, 1.0 - float(distance if distance is not None else 1.0))
+            cid = clause.clause_id
+            has_approved = cid in approved_set
+            results.append(
+                RetrievalResult(
+                    clause_id=cid,
+                    clause_version=clause.version_number,
+                    clause_number=clause.clause_number,
+                    text=clause.text,
+                    document_id=clause.document_id,
+                    document_title=doc.title if doc else "",
+                    score=round(score, 4),
+                    retrieval_method="dense",
+                    rank=rank,
+                    has_approved_rule=has_approved,
+                    coverage_gap=not has_approved,
+                )
+            )
+
+        return results
+
+    def _search_in_memory_fallback(
+        self,
+        query_vec: List[float],
+        top_k: int = 10,
+        filters: Optional[Dict[str, Any]] = None,
+    ) -> List[RetrievalResult]:
+        """In-memory cosine similarity search fallback for SQLite and offline test doubles."""
         query_builder = (
             self.db.query(ClauseORM, SourceDocumentORM)
             .outerjoin(SourceDocumentORM, ClauseORM.document_id == SourceDocumentORM.id)
