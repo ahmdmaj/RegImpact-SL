@@ -21,6 +21,19 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 
+from pathlib import Path
+
+try:
+    from dotenv import load_dotenv
+    for _p in [
+        Path(__file__).resolve().parent.parent / ".env",
+        Path(__file__).resolve().parent.parent.parent / ".env",
+    ]:
+        if _p.exists():
+            load_dotenv(_p, override=False)
+except ImportError:
+    pass
+
 # Save live environment configuration for opt-in live integration tests
 LIVE_DATABASE_URL = os.environ.get("DATABASE_URL")
 LIVE_OPENAI_KEY = os.environ.get("OPENAI_API_KEY")
