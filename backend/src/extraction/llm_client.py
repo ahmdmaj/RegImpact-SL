@@ -20,12 +20,24 @@ from __future__ import annotations
 import json
 import logging
 import os
+from pathlib import Path
 import re
 import time
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional, Union
 
 import httpx
+
+try:
+    from dotenv import load_dotenv
+    for _p in [
+        Path(__file__).resolve().parent.parent.parent / ".env",
+        Path(__file__).resolve().parent.parent.parent.parent / ".env",
+    ]:
+        if _p.exists():
+            load_dotenv(_p, override=False)
+except ImportError:
+    pass
 
 logger = logging.getLogger(__name__)
 
