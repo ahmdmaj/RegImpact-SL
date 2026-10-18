@@ -36,9 +36,9 @@ from sqlalchemy.orm import DeclarativeBase, relationship
 
 try:
     from pgvector.sqlalchemy import Vector
-    EmbeddingColumnType = Vector(768).with_variant(JSON, "sqlite")
+    EmbeddingColumnType = Vector(768).with_variant(JSON(none_as_null=True), "sqlite")
 except ImportError:
-    EmbeddingColumnType = JSON
+    EmbeddingColumnType = JSON(none_as_null=True)
 
 
 def _utcnow() -> datetime.datetime:
