@@ -593,11 +593,6 @@ def run_analysis(
     if evidence_checker.verify_claims(summary, report):
         report.narrative_summary = summary
     else:
-        # If live LLM summary failed verification, fall back to deterministic grounded generator
-        fallback = explanation_gen._generate_fallback_summary(report)
-        if evidence_checker.verify_claims(fallback, report):
-            report.narrative_summary = fallback
-        else:
-            report.narrative_summary = "Summary generation failed verification; narrative withheld."
+        report.narrative_summary = "Summary generation failed verification; narrative withheld."
 
     return report
