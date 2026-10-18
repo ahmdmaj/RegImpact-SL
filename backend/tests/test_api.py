@@ -8,9 +8,10 @@ from backend.src.models.domain import OutcomeStatus
 
 
 @pytest.fixture
-def client() -> TestClient:
-    """Fixture providing a TestClient for FastAPI app."""
-    return TestClient(app)
+def client():
+    """Fixture providing a TestClient for FastAPI app with lifespan active."""
+    with TestClient(app) as test_client:
+        yield test_client
 
 
 # 1. Test GET /health
