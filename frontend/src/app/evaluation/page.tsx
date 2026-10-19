@@ -23,6 +23,7 @@ import {
   TrendingUp,
   Cpu,
   Info,
+  Scale,
 } from "lucide-react";
 
 const SYSTEM_LABELS: Record<string, { label: string; desc: string; category: "proposed" | "baseline" | "ablation" }> = {
@@ -135,15 +136,25 @@ export default function EvaluationDashboard() {
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={loadData}
-            disabled={loading}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 border border-slate-700 transition-colors cursor-pointer"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
-            <span>Reload Metrics</span>
-          </button>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/admin/reviews"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-600/20 hover:bg-amber-600/30 text-xs text-amber-300 border border-amber-500/30 transition-colors"
+            >
+              <Scale className="w-3.5 h-3.5 text-amber-400" />
+              <span>Reviewer Portal</span>
+            </Link>
+
+            <button
+              type="button"
+              onClick={loadData}
+              disabled={loading}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 border border-slate-700 transition-colors cursor-pointer"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
+              <span>Reload Metrics</span>
+            </button>
+          </div>
         </div>
       </header>
 
