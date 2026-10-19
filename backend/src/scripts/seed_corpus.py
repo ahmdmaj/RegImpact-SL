@@ -531,13 +531,15 @@ def seed_regulatory_corpus(
         doc_id = fixture["doc_id"]
         # Ensure parent SourceDocumentORM exists
         if not db.get(SourceDocumentORM, doc_id):
+            pub_val = fixture.get("publication_date")
+            pub_date_obj = datetime.date.fromisoformat(pub_val) if isinstance(pub_val, str) else pub_val
             doc_orm = SourceDocumentORM(
                 id=doc_id,
                 title=fixture["title"],
                 authority=fixture["authority"],
                 instrument_type=fixture["instrument_type"],
                 gazette_no=fixture.get("gazette_no"),
-                publication_date=fixture.get("publication_date"),
+                publication_date=pub_date_obj,
                 sha256_hash=f"fixture_hash_{doc_id}".ljust(64, "0")[:64],
                 page_count=len(fixture.get("pages", [1])),
                 extraction_status="SUCCESS",
