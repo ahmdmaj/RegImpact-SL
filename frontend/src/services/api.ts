@@ -312,7 +312,7 @@ export interface EvaluationResultsPayload {
 export async function getEvaluationResults(): Promise<EvaluationResultsPayload> {
   const res = await fetch(`${API_BASE_URL}/evaluation/results`, {
     method: "GET",
-    headers: { "Content-Type": "application/json" },
+    headers: getAuthHeaders({ "Content-Type": "application/json" }),
     cache: "no-store",
   });
   if (!res.ok) {
@@ -362,7 +362,7 @@ export interface DocumentUploadResponse {
 export async function getPendingReviews(): Promise<ReviewItem[]> {
   const res = await fetch(`${API_BASE_URL}/admin/reviews`, {
     method: "GET",
-    headers: { "Content-Type": "application/json" },
+    headers: getAuthHeaders({ "Content-Type": "application/json" }),
     cache: "no-store",
   });
   if (!res.ok) {
@@ -380,7 +380,7 @@ export async function approveReview(
 ): Promise<{ status: string; rule_id: string; review_status: string; decision: string }> {
   const res = await fetch(`${API_BASE_URL}/admin/reviews/${encodeURIComponent(ruleId)}/approve`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: getAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(payload),
   });
   if (!res.ok) {
@@ -403,7 +403,7 @@ export async function rejectReview(
 ): Promise<{ status: string; rule_id: string; review_status: string; decision: string }> {
   const res = await fetch(`${API_BASE_URL}/admin/reviews/${encodeURIComponent(ruleId)}/reject`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: getAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(payload),
   });
   if (!res.ok) {
@@ -423,6 +423,7 @@ export async function rejectReview(
 export async function uploadDocument(formData: FormData): Promise<DocumentUploadResponse> {
   const res = await fetch(`${API_BASE_URL}/admin/documents/upload`, {
     method: "POST",
+    headers: getAuthHeaders(),
     body: formData,
   });
   if (!res.ok) {
