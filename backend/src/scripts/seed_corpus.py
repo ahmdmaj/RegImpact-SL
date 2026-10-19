@@ -487,44 +487,44 @@ def seed_regulatory_corpus(
                                     "page": seg.start_page,
                                 },
                             )
-                        if comp_res.rule:
-                            r = comp_res.rule
-                            rule_pk = f"RULE-{doc_id.upper()}-{seg.clause_number.replace(' ', '-').upper()}"
-                            if not db.query(RuleORM).filter_by(rule_id=rule_pk).first():
-                                r_applies = r.applies_if.model_dump() if hasattr(r.applies_if, "model_dump") else r.applies_if
-                                r_except = [e.model_dump() if hasattr(e, "model_dump") else e for e in (r.exceptions or [])]
-                                r_oblig = r.obligation.model_dump() if hasattr(r.obligation, "model_dump") else r.obligation
-                                r_valid = r.validity.model_dump() if hasattr(r.validity, "model_dump") else r.validity
-                                r_src = r.source.model_dump() if hasattr(r.source, "model_dump") else (r.source or {})
+                            if comp_res.rule:
+                                r = comp_res.rule
+                                rule_pk = f"RULE-{doc_id.upper()}-{seg.clause_number.replace(' ', '-').upper()}"
+                                if not db.query(RuleORM).filter_by(rule_id=rule_pk).first():
+                                    r_applies = r.applies_if.model_dump() if hasattr(r.applies_if, "model_dump") else r.applies_if
+                                    r_except = [e.model_dump() if hasattr(e, "model_dump") else e for e in (r.exceptions or [])]
+                                    r_oblig = r.obligation.model_dump() if hasattr(r.obligation, "model_dump") else r.obligation
+                                    r_valid = r.validity.model_dump() if hasattr(r.validity, "model_dump") else r.validity
+                                    r_src = r.source.model_dump() if hasattr(r.source, "model_dump") else (r.source or {})
 
-                                rule_orm = RuleORM(
-                                    rule_id=rule_pk,
-                                    clause_id=clause_pk,
-                                    clause_version=1,
-                                    outcome_type=comp_res.outcome_type,
-                                    applies_if=r_applies,
-                                    exceptions=r_except,
-                                    obligation=r_oblig,
-                                    validity=r_valid,
-                                    source=r_src,
-                                    review_status=comp_res.review_status,
-                                )
-                                db.add(rule_orm)
-                                db.flush()
-                                rules_registered += 1
-
-                                if comp_res.review_status == "APPROVED":
-                                    db.add(
-                                        HumanReviewAuditORM(
-                                            rule_id=rule_pk,
-                                            reviewer_id="system_dual_pass",
-                                            reviewer_role="PRIMARY_ANNOTATOR",
-                                            decision="APPROVED",
-                                            rationale="Dual-pass LLM extraction cross-agreement confirmed.",
-                                        )
+                                    rule_orm = RuleORM(
+                                        rule_id=rule_pk,
+                                        clause_id=clause_pk,
+                                        clause_version=1,
+                                        outcome_type=comp_res.outcome_type,
+                                        applies_if=r_applies,
+                                        exceptions=r_except,
+                                        obligation=r_oblig,
+                                        validity=r_valid,
+                                        source=r_src,
+                                        review_status=comp_res.review_status,
                                     )
-                    except Exception as exc:
-                        logger.debug("Compilation skipped for clause %s: %s", clause_pk, exc)
+                                    db.add(rule_orm)
+                                    db.flush()
+                                    rules_registered += 1
+
+                                    if comp_res.review_status == "APPROVED":
+                                        db.add(
+                                            HumanReviewAuditORM(
+                                                rule_id=rule_pk,
+                                                reviewer_id="system_dual_pass",
+                                                reviewer_role="PRIMARY_ANNOTATOR",
+                                                decision="APPROVED",
+                                                rationale="Dual-pass LLM extraction cross-agreement confirmed.",
+                                            )
+                                        )
+                        except Exception as exc:
+                            logger.debug("Compilation skipped for clause %s: %s", clause_pk, exc)
 
     # Register authoritative benchmark rules
     for fixture in DOCUMENT_FIXTURES:
