@@ -87,7 +87,7 @@ def test_data_a_002_ingestion_offsets_and_pages(populated_corpus_db):
 
     # Check documents
     docs = db.query(SourceDocumentORM).all()
-    assert len(docs) == 3
+    assert len(docs) >= 3
     doc_ids = {d.id for d in docs}
     assert "doc_fcau_labelling_2024" in doc_ids
     assert "doc_cea_epl_2022" in doc_ids

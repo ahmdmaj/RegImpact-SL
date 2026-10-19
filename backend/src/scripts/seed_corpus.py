@@ -446,6 +446,7 @@ def seed_regulatory_corpus(
             .all()
         )
 
+        compiles_for_doc = 0
         for page in pages:
             segmented = segment_clauses_from_page(page.raw_text, page.page_number)
             for seg in segmented:
@@ -471,18 +472,21 @@ def seed_regulatory_corpus(
                     db.flush()
                     clauses_created += 1
 
-                    # Attempt LLM compilation on newly segmented clause
-                    try:
-                        comp_res = compiler.compile_clause_with_agreement(
-                            raw_text=seg.text,
-                            source_metadata={
-                                "clause": seg.clause_number,
-                                "instrument": doc_title,
-                                "authority": doc_authority,
-                                "doc_id": doc_id,
-                                "page": seg.start_page,
-                            },
-                        )
+                    # Attempt LLM compilation on candidate mandate clauses (up to 5 per document)
+                    is_mandate = any(kw in seg.text.lower() for kw in ("shall", "must", "prohibit", "licence", "license", "penalty"))
+                    if is_mandate and compiles_for_doc < 5:
+                        compiles_for_doc += 1
+                        try:
+                            comp_res = compiler.compile_clause_with_agreement(
+                                raw_text=seg.text,
+                                source_metadata={
+                                    "clause": seg.clause_number,
+                                    "instrument": doc_title,
+                                    "authority": doc_authority,
+                                    "doc_id": doc_id,
+                                    "page": seg.start_page,
+                                },
+                            )
                         if comp_res.rule:
                             r = comp_res.rule
                             rule_pk = f"RULE-{doc_id.upper()}-{seg.clause_number.replace(' ', '-').upper()}"
