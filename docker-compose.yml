@@ -1,5 +1,5 @@
 services:
-  postgres:
+  db:
     image: pgvector/pgvector:pg16
     container_name: regimpact-postgres
     restart: unless-stopped
@@ -16,7 +16,53 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - regimpact-net
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: regimpact-backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-regimpact}:${POSTGRES_PASSWORD:-regimpact}@db:5432/${POSTGRES_DB:-regimpact}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      PORT: 8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/data:/app/backend/data
+    networks:
+      - regimpact-net
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+    container_name: regimpact-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      PORT: 3000
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+    ports:
+      - "3000:3000"
+    networks:
+      - regimpact-net
 
 volumes:
   pgdata:
     driver: local
+
+networks:
+  regimpact-net:
+    driver: bridge
