@@ -13,12 +13,12 @@ import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, ConfigDict, model_validator
 from sqlalchemy.orm import Session
 
-from backend.src.db.models import ClauseORM, HumanReviewAuditORM, RuleORM, SourceDocumentORM
+from backend.src.db.models import ClauseORM, DocumentPageORM, HumanReviewAuditORM, RuleORM, SourceDocumentORM
 from backend.src.db.repositories import PostgresRegulatoryRepository
 from backend.src.db.session import get_db, init_db, session_scope
 from backend.src.engine.applicability import evaluate_rule
@@ -29,7 +29,17 @@ from backend.src.engine.retrieval import (
     RetrievalResult,
     cross_reference_coverage_gaps,
 )
+from backend.src.engine.review import (
+    ReviewService,
+    RuleNotFoundError,
+)
+from backend.src.extraction.compiler import RuleCompiler
+from backend.src.extraction.embedding_client import get_embedding_client
 from backend.src.extraction.explanation import ExplanationGenerator
+from backend.src.extraction.ingestion import (
+    DocumentIngestionService,
+    segment_clauses_from_page,
+)
 from backend.src.extraction.llm_client import get_llm_client
 from backend.src.models.domain import (
     BusinessProfile,
