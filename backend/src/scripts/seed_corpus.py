@@ -566,6 +566,28 @@ def seed_regulatory_corpus(
                 )
                 db.flush()
 
+            segmented = segment_clauses_from_page(page_text, page_num)
+            for seg in segmented:
+                clause_pk = f"CLAUSE-{doc_id.upper()}-{seg.clause_number.replace(' ', '-').upper()}"
+                if not db.query(ClauseORM).filter_by(clause_id=clause_pk).first():
+                    emb = embedding_client.embed_text(seg.text)
+                    c_orm = ClauseORM(
+                        clause_id=clause_pk,
+                        version_number=1,
+                        document_id=doc_id,
+                        clause_number=seg.clause_number,
+                        text=seg.text,
+                        start_page=seg.start_page,
+                        end_page=seg.end_page,
+                        char_start=seg.char_start,
+                        char_end=seg.char_end,
+                        is_compilable=True,
+                        embedding=emb,
+                    )
+                    db.add(c_orm)
+                    db.flush()
+                    clauses_created += 1
+
         for r_spec in fixture.get("rules", []):
             target_clause_pk = f"CLAUSE-{doc_id.upper()}-{r_spec['clause_number'].replace(' ', '-').upper()}"
             if not db.query(ClauseORM).filter_by(clause_id=target_clause_pk).first():
@@ -580,7 +602,7 @@ def seed_regulatory_corpus(
                     start_page=1,
                     end_page=1,
                     char_start=0,
-                    char_end=len(quote),
+                    char_end=max(len(quote), 1),
                     is_compilable=True,
                     embedding=emb,
                 )
