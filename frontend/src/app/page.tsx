@@ -26,6 +26,7 @@ import {
   Cpu,
   Info,
   BarChart3,
+  Scale,
 } from "lucide-react";
 
 export default function Home() {
@@ -136,6 +137,14 @@ export default function Home() {
 
           {/* Backend Health Status & Catalog Button */}
           <div className="flex items-center gap-3">
+            <Link
+              href="/admin/reviews"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-600/20 hover:bg-amber-600/30 text-xs text-amber-300 border border-amber-500/30 transition-colors"
+            >
+              <Scale className="w-3.5 h-3.5 text-amber-400" />
+              <span>Reviewer Portal</span>
+            </Link>
+
             <Link
               href="/evaluation"
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/30 text-xs text-indigo-300 border border-indigo-500/30 transition-colors"
