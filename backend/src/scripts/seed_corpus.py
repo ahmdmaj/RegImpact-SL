@@ -554,31 +554,6 @@ def seed_regulatory_corpus(
                         rationale="Verified against gazette source text with deterministic logic.",
                     )
                 )
-                target_clause_pk = f"CLAUSE-{doc_id.upper()}-{r_spec['clause_number'].replace(' ', '-').upper()}"
-                rule_orm = RuleORM(
-                    rule_id=rule_pk,
-                    clause_id=target_clause_pk,
-                    clause_version=1,
-                    outcome_type=r_spec["outcome_type"],
-                    applies_if=r_spec["applies_if"],
-                    exceptions=r_spec.get("exceptions", []),
-                    obligation=r_spec["obligation"],
-                    validity=r_spec["validity"],
-                    source=r_spec["source"],
-                    review_status=r_spec.get("review_status", "APPROVED"),
-                )
-                db.add(rule_orm)
-                db.flush()
-                rules_registered += 1
-                db.add(
-                    HumanReviewAuditORM(
-                        rule_id=rule_pk,
-                        reviewer_id="exp_adjudicator_01",
-                        reviewer_role="EXPERT_ADJUDICATOR",
-                        decision="APPROVED",
-                        rationale="Verified against gazette source text with deterministic logic.",
-                    )
-                )
 
     # Seed legacy alias records for Phase A backward compatibility
     legacy_specs = [
