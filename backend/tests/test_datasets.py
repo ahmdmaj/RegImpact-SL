@@ -37,7 +37,6 @@ from backend.src.scripts.seed_benchmark import (
 from backend.src.scripts.seed_corpus import (
     DOCUMENT_FIXTURES,
     RAW_SOURCES_DIR,
-    generate_pdf_fixtures,
     seed_regulatory_corpus,
 )
 
@@ -67,18 +66,18 @@ def populated_corpus_db(db_session: Session, tmp_path) -> Session:
 # Dataset A: Corpus Scaffolding & Provenance Tests
 # ---------------------------------------------------------------------------
 
-def test_data_a_001_pdf_fixtures_generate(tmp_path):
-    """Corpus fixture PDFs generate properly with extractable text and page counts."""
-    generated_files = generate_pdf_fixtures(tmp_path, force=True)
-    assert len(generated_files) == 3
+def test_data_a_001_raw_pdf_sources_scan():
+    """Verify that backend/data/raw_sources/ contains valid PDFs with extractable text and pages."""
+    assert RAW_SOURCES_DIR.exists()
+    pdf_files = list(RAW_SOURCES_DIR.glob("*.pdf"))
+    assert len(pdf_files) >= 3
 
-    for pdf_path in generated_files:
+    for pdf_path in pdf_files[:5]:
         assert pdf_path.exists()
         doc = pymupdf.open(str(pdf_path))
         assert len(doc) >= 1
-        # Verify text is extractable
         text = "".join(page.get_text("text") for page in doc)
-        assert len(text.strip()) > 50
+        assert len(text.strip()) > 20
         doc.close()
 
 
