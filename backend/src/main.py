@@ -13,7 +13,7 @@ import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
 
-from fastapi import Depends, FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import Depends, FastAPI, File, Form, Header, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, ConfigDict, model_validator
 from sqlalchemy.orm import Session
@@ -72,6 +72,34 @@ def format_clarifying_question(field_path: str) -> str:
         return CLARIFYING_QUESTION_MAP[field_path]
     clean_name = field_path.replace(".", " ").replace("_", " ").title()
     return f"Please provide information regarding '{clean_name}' to resolve regulatory applicability."
+
+
+VALID_ROLES: Set[str] = {"sme_user", "reviewer", "admin"}
+
+
+def get_current_role(x_user_role: Optional[str] = Header(None, alias="X-User-Role")) -> str:
+    """Extract and validate role from X-User-Role header. Default to 'admin' when omitted."""
+    if not x_user_role:
+        return "admin"
+    role = x_user_role.strip().lower()
+    if role not in VALID_ROLES:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid X-User-Role '{x_user_role}'. Valid roles are: {', '.join(sorted(VALID_ROLES))}",
+        )
+    return role
+
+
+def require_role(allowed_roles: Set[str]):
+    """FastAPI dependency to enforce role-based access control."""
+    def role_dependency(role: str = Depends(get_current_role)) -> str:
+        if role not in allowed_roles:
+            raise HTTPException(
+                status_code=403,
+                detail=f"Access forbidden: role '{role}' is not authorized. Allowed roles: {', '.join(sorted(allowed_roles))}",
+            )
+        return role
+    return role_dependency
 
 
 def ensure_database_seeded(session: Session) -> None:
@@ -250,7 +278,10 @@ def health_check() -> Dict[str, str]:
 
 
 @app.get("/regulations", response_model=List[ClauseVersion])
-def get_regulations(db: Session = Depends(get_db)) -> List[ClauseVersion]:
+def get_regulations(
+    db: Session = Depends(get_db),
+    _role: str = Depends(require_role({"sme_user", "reviewer", "admin"})),
+) -> List[ClauseVersion]:
     """Return all available regulation clause versions in the persistent database."""
     ensure_database_seeded(db)
     repo = PostgresRegulatoryRepository(db)
@@ -259,7 +290,9 @@ def get_regulations(db: Session = Depends(get_db)) -> List[ClauseVersion]:
 
 @app.get("/evaluation/results")
 @app.get("/api/evaluation/results")
-def get_evaluation_results() -> Dict[str, Any]:
+def get_evaluation_results(
+    _role: str = Depends(require_role({"sme_user", "reviewer", "admin"})),
+) -> Dict[str, Any]:
     """Return the latest compiled benchmark evaluation results and clustered statistical testing."""
     primary_path = Path("backend/data/evaluation/results.json")
     if not primary_path.exists():
@@ -274,6 +307,7 @@ def get_evaluation_results() -> Dict[str, Any]:
 def run_analysis(
     request: AnalysisRequest,
     db: Session = Depends(get_db),
+    _role: str = Depends(require_role({"sme_user", "reviewer", "admin"})),
 ) -> StructuredImpactReport:
     """Execute regulatory impact analysis with persistent DB, retrieval, and coverage gap detection."""
     ensure_database_seeded(db)
@@ -642,7 +676,10 @@ class ReviewDecisionRequest(BaseModel):
 
 
 @app.get("/admin/reviews", response_model=List[ReviewItemResponse])
-def get_pending_reviews(db: Session = Depends(get_db)) -> List[ReviewItemResponse]:
+def get_pending_reviews(
+    db: Session = Depends(get_db),
+    _role: str = Depends(require_role({"reviewer", "admin"})),
+) -> List[ReviewItemResponse]:
     """Return all rules awaiting human review (review_status='PENDING_REVIEW')."""
     ensure_database_seeded(db)
     pending_rules = (
@@ -688,6 +725,7 @@ def approve_review(
     rule_id: str,
     payload: Optional[ReviewDecisionRequest] = None,
     db: Session = Depends(get_db),
+    _role: str = Depends(require_role({"reviewer", "admin"})),
 ) -> Dict[str, Any]:
     """Approve a pending rule, writing to the immutable human_review_audit table."""
     body = payload or ReviewDecisionRequest()
@@ -718,6 +756,7 @@ def reject_review(
     rule_id: str,
     payload: Optional[ReviewDecisionRequest] = None,
     db: Session = Depends(get_db),
+    _role: str = Depends(require_role({"reviewer", "admin"})),
 ) -> Dict[str, Any]:
     """Reject a pending rule, writing to the immutable human_review_audit table."""
     body = payload or ReviewDecisionRequest()
@@ -752,6 +791,7 @@ async def upload_document(
     gazette_no: Optional[str] = Form(None),
     publication_date: Optional[str] = Form(None),
     db: Session = Depends(get_db),
+    _role: str = Depends(require_role({"admin"})),
 ) -> Dict[str, Any]:
     """Upload a new regulatory PDF, store in raw_sources, ingest, segment, and compile rules."""
     if not file.filename or not file.filename.lower().endswith(".pdf"):
