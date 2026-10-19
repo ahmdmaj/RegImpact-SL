@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { StructuredImpactReport } from "@/services/api";
+import { ComplianceDossierModal } from "./ComplianceDossierModal";
 import { 
   ShieldCheck, 
   CheckSquare, 
@@ -14,7 +15,9 @@ import {
   FileSpreadsheet, 
   AlertCircle,
   Clock,
-  Compass
+  Compass,
+  FileDown,
+  FileCheck2,
 } from "lucide-react";
 
 interface ImpactReportViewProps {
@@ -24,6 +27,7 @@ interface ImpactReportViewProps {
 export const ImpactReportView: React.FC<ImpactReportViewProps> = ({ report }) => {
   const [checkedActions, setCheckedActions] = useState<Record<number, boolean>>({});
   const [copied, setCopied] = useState(false);
+  const [showDossierModal, setShowDossierModal] = useState(false);
 
   const toggleCheck = (idx: number) => {
     setCheckedActions((prev) => ({ ...prev, [idx]: !prev[idx] }));
@@ -53,6 +57,35 @@ export const ImpactReportView: React.FC<ImpactReportViewProps> = ({ report }) =>
 
   return (
     <div className="space-y-6">
+      {/* Dossier Modal */}
+      {showDossierModal && (
+        <ComplianceDossierModal
+          report={report}
+          onClose={() => setShowDossierModal(false)}
+        />
+      )}
+
+      {/* Dossier Export Header Action */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-850 to-slate-900 border border-slate-700/80 shadow-lg">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+            <FileCheck2 className="w-5 h-5 text-indigo-400" />
+          </div>
+          <div>
+            <span className="text-xs font-bold text-white block">Official Compliance Dossier</span>
+            <span className="text-[11px] text-slate-400">Export verified narrative, citations, and action plan as a formal printable document</span>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={() => setShowDossierModal(true)}
+          className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white shadow-md shadow-indigo-950/50 transition-all cursor-pointer"
+        >
+          <FileDown className="w-4 h-4 text-white" />
+          <span>Download Compliance Dossier</span>
+        </button>
+      </div>
+
       {/* 1. Metric Overview Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <div className="glass-panel p-4 rounded-xl border border-slate-700/60 flex flex-col justify-between">
