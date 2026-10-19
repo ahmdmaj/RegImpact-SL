@@ -241,3 +241,197 @@ def test_analysis_narrative_summary_generation(client: TestClient, monkeypatch):
     assert data["narrative_summary"] == "As of 2024-08-01, 1 of 2 evaluated regulatory rules apply to your business."
 
 
+# 12. Test Review Queue: GET /admin/reviews
+def test_admin_reviews_queue(client: TestClient, db_session):
+    from backend.src.db.models import ClauseORM, RuleORM
+
+    # Insert a clause and a pending review rule
+    clause = ClauseORM(
+        clause_id="CLAUSE-TEST-PENDING-01",
+        version_number=1,
+        document_id="doc_fcau_labelling_2024",
+        clause_number="Regulation 99",
+        text="Regulation 99. Synthetic preservatives require special testing certification.",
+        start_page=1,
+        end_page=1,
+        char_start=0,
+        char_end=76,
+        is_compilable=True,
+    )
+    db_session.add(clause)
+    db_session.flush()
+
+    rule = RuleORM(
+        rule_id="RULE-TEST-PENDING-01",
+        clause_id="CLAUSE-TEST-PENDING-01",
+        clause_version=1,
+        outcome_type="STANDARD",
+        applies_if={"all": [{"field": "uses_preservatives", "op": "eq", "value": True}]},
+        obligation={"type": "testing", "text": "Obtain testing certification."},
+        validity={"published": "2024-01-01"},
+        source={"clause": "Regulation 99", "quote_span": "Synthetic preservatives require special testing certification."},
+        review_status="PENDING_REVIEW",
+    )
+    db_session.add(rule)
+    db_session.commit()
+
+    response = client.get("/admin/reviews")
+    assert response.status_code == 200
+    reviews = response.json()
+    assert isinstance(reviews, list)
+    rule_ids = [r["rule_id"] for r in reviews]
+    assert "RULE-TEST-PENDING-01" in rule_ids
+
+    matching = next(r for r in reviews if r["rule_id"] == "RULE-TEST-PENDING-01")
+    assert matching["review_status"] == "PENDING_REVIEW"
+    assert matching["verbatim_quote_span"] == "Synthetic preservatives require special testing certification."
+    assert matching["applies_if"]["all"][0]["field"] == "uses_preservatives"
+
+
+# 13. Test Review Queue: POST /admin/reviews/{rule_id}/approve
+def test_admin_reviews_approve(client: TestClient, db_session):
+    from backend.src.db.models import ClauseORM, HumanReviewAuditORM, RuleORM
+
+    clause = ClauseORM(
+        clause_id="CLAUSE-TEST-APPROVE-01",
+        version_number=1,
+        document_id="doc_fcau_labelling_2024",
+        clause_number="Regulation 101",
+        text="Regulation 101. Storage humidity must not exceed 65 percent.",
+        start_page=1,
+        end_page=1,
+        char_start=0,
+        char_end=58,
+        is_compilable=True,
+    )
+    db_session.add(clause)
+    db_session.flush()
+
+    rule = RuleORM(
+        rule_id="RULE-TEST-APPROVE-01",
+        clause_id="CLAUSE-TEST-APPROVE-01",
+        clause_version=1,
+        outcome_type="STANDARD",
+        applies_if={"all": [{"field": "warehouse_humidity", "op": "gt", "value": 65}]},
+        obligation={"type": "storage", "text": "Maintain storage humidity below 65%"},
+        source={"clause": "Regulation 101", "quote_span": "Storage humidity must not exceed 65 percent."},
+        review_status="PENDING_REVIEW",
+    )
+    db_session.add(rule)
+    db_session.commit()
+
+    payload = {
+        "reviewer_id": "legal_auditor_42",
+        "reviewer_role": "PRIMARY_ANNOTATOR",
+        "rationale": "Verified quote span and statutory threshold exactly match.",
+    }
+    response = client.post("/admin/reviews/RULE-TEST-APPROVE-01/approve", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["success"] is True
+    assert data["review_status"] == "APPROVED"
+
+    # Verify database persistence & audit trail
+    updated_rule = db_session.get(RuleORM, "RULE-TEST-APPROVE-01")
+    assert updated_rule.review_status == "APPROVED"
+
+    audits = db_session.query(HumanReviewAuditORM).filter_by(rule_id="RULE-TEST-APPROVE-01").all()
+    assert len(audits) >= 1
+    assert audits[-1].reviewer_id == "legal_auditor_42"
+    assert audits[-1].decision == "APPROVED"
+
+    # Test 404 for nonexistent rule
+    res_404 = client.post("/admin/reviews/NONEXISTENT-RULE/approve", json=payload)
+    assert res_404.status_code == 404
+
+
+# 14. Test Review Queue: POST /admin/reviews/{rule_id}/reject
+def test_admin_reviews_reject(client: TestClient, db_session):
+    from backend.src.db.models import ClauseORM, HumanReviewAuditORM, RuleORM
+
+    clause = ClauseORM(
+        clause_id="CLAUSE-TEST-REJECT-01",
+        version_number=1,
+        document_id="doc_fcau_labelling_2024",
+        clause_number="Regulation 102",
+        text="Regulation 102. Ambiguous guideline text.",
+        start_page=1,
+        end_page=1,
+        char_start=0,
+        char_end=41,
+        is_compilable=True,
+    )
+    db_session.add(clause)
+    db_session.flush()
+
+    rule = RuleORM(
+        rule_id="RULE-TEST-REJECT-01",
+        clause_id="CLAUSE-TEST-REJECT-01",
+        clause_version=1,
+        outcome_type="STANDARD",
+        applies_if={"all": [{"field": "unknown_metric", "op": "gt", "value": 999}]},
+        obligation={"type": "guideline", "text": "Follow ambiguous guideline"},
+        source={"clause": "Regulation 102", "quote_span": "Ambiguous guideline text."},
+        review_status="PENDING_REVIEW",
+    )
+    db_session.add(rule)
+    db_session.commit()
+
+    payload = {
+        "reviewer_id": "legal_auditor_42",
+        "reviewer_role": "PRIMARY_ANNOTATOR",
+        "rationale": "Hallucinated threshold not supported by statutory text.",
+    }
+    response = client.post("/admin/reviews/RULE-TEST-REJECT-01/reject", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["success"] is True
+    assert data["review_status"] == "REJECTED"
+
+    updated_rule = db_session.get(RuleORM, "RULE-TEST-REJECT-01")
+    assert updated_rule.review_status == "REJECTED"
+
+    audits = db_session.query(HumanReviewAuditORM).filter_by(rule_id="RULE-TEST-REJECT-01").all()
+    assert len(audits) >= 1
+    assert audits[-1].decision == "REJECTED"
+
+
+# 15. Test Document Upload: POST /admin/documents/upload
+def test_admin_document_upload(client: TestClient, tmp_path):
+    import pymupdf
+
+    # Create a small valid test PDF
+    test_pdf = tmp_path / "test_gazette_upload.pdf"
+    doc = pymupdf.open()
+    page = doc.new_page(width=595, height=842)
+    sample_text = (
+        "THE FOOD ACT, No. 26 OF 1980\n\n"
+        "Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius "
+        "shall maintain continuous automated digital temperature logging records."
+    )
+    page.insert_textbox(pymupdf.Rect(50, 50, 545, 792), sample_text, fontsize=11)
+    doc.save(str(test_pdf))
+    doc.close()
+
+    with open(test_pdf, "rb") as f:
+        files = {"file": ("test_gazette_upload.pdf", f, "application/pdf")}
+        data = {
+            "title": "Food Cold Storage Temperature Regulations 2024",
+            "authority": "Food Control Administration Unit",
+            "instrument_type": "regulation",
+        }
+        response = client.post("/admin/documents/upload", files=files, data=data)
+
+    assert response.status_code == 200
+    res_data = response.json()
+    assert res_data["success"] is True
+    assert res_data["filename"] == "test_gazette_upload.pdf"
+    assert res_data["pages_ingested"] >= 1
+    assert res_data["clauses_extracted"] >= 1
+
+    # Test non-PDF rejection
+    txt_file = {"file": ("invalid.txt", b"plain text", "text/plain")}
+    res_bad = client.post("/admin/documents/upload", files=txt_file)
+    assert res_bad.status_code == 400
+
+
