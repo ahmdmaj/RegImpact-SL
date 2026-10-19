@@ -540,6 +540,8 @@ def seed_regulatory_corpus(
                 instrument_type=fixture["instrument_type"],
                 gazette_no=fixture.get("gazette_no"),
                 publication_date=pub_date_obj,
+                file_path=str(raw_path / f"{doc_id}.pdf"),
+                file_size_bytes=1024,
                 sha256_hash=f"fixture_hash_{doc_id}".ljust(64, "0")[:64],
                 page_count=len(fixture.get("pages", [1])),
                 extraction_status="SUCCESS",
