@@ -529,11 +529,64 @@ def seed_regulatory_corpus(
     # Register authoritative benchmark rules
     for fixture in DOCUMENT_FIXTURES:
         doc_id = fixture["doc_id"]
+        # Ensure parent SourceDocumentORM exists
+        if not db.get(SourceDocumentORM, doc_id):
+            doc_orm = SourceDocumentORM(
+                id=doc_id,
+                title=fixture["title"],
+                authority=fixture["authority"],
+                instrument_type=fixture["instrument_type"],
+                gazette_no=fixture.get("gazette_no"),
+                publication_date=fixture.get("publication_date"),
+                sha256_hash=f"fixture_hash_{doc_id}".ljust(64, "0")[:64],
+                page_count=len(fixture.get("pages", [1])),
+                extraction_status="SUCCESS",
+                extraction_tool="pymupdf",
+            )
+            db.add(doc_orm)
+            db.flush()
+            docs_ingested += 1
+
+        for page_idx, page_text in enumerate(fixture.get("pages", [])):
+            page_num = page_idx + 1
+            if not db.query(DocumentPageORM).filter_by(document_id=doc_id, page_number=page_num).first():
+                db.add(
+                    DocumentPageORM(
+                        document_id=doc_id,
+                        page_number=page_num,
+                        raw_text=page_text,
+                        char_count=len(page_text),
+                        page_hash=f"page_hash_{doc_id}_{page_num}".ljust(64, "0")[:64],
+                        is_ocr=False,
+                    )
+                )
+                db.flush()
+
         for r_spec in fixture.get("rules", []):
+            target_clause_pk = f"CLAUSE-{doc_id.upper()}-{r_spec['clause_number'].replace(' ', '-').upper()}"
+            if not db.query(ClauseORM).filter_by(clause_id=target_clause_pk).first():
+                quote = r_spec["source"].get("quote_span", "")
+                emb = embedding_client.embed_text(quote or r_spec["clause_number"])
+                clause_orm = ClauseORM(
+                    clause_id=target_clause_pk,
+                    version_number=1,
+                    document_id=doc_id,
+                    clause_number=r_spec["clause_number"],
+                    text=quote or r_spec["clause_number"],
+                    start_page=1,
+                    end_page=1,
+                    char_start=0,
+                    char_end=len(quote),
+                    is_compilable=True,
+                    embedding=emb,
+                )
+                db.add(clause_orm)
+                db.flush()
+                clauses_created += 1
+
             rule_pk = r_spec["rule_id"]
             existing_rule = db.query(RuleORM).filter_by(rule_id=rule_pk).first()
             if not existing_rule:
-                target_clause_pk = f"CLAUSE-{doc_id.upper()}-{r_spec['clause_number'].replace(' ', '-').upper()}"
                 rule_orm = RuleORM(
                     rule_id=rule_pk,
                     clause_id=target_clause_pk,
