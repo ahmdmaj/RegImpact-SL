@@ -246,7 +246,10 @@ def test_admin_reviews_queue(client: TestClient, db_session):
     from backend.src.db.models import ClauseORM, RuleORM, SourceDocumentORM
     from backend.src.db.session import get_db
 
-    app.dependency_overrides[get_db] = lambda: db_session
+    def override_db():
+        yield db_session
+
+    app.dependency_overrides[get_db] = override_db
 
     try:
         # Ensure parent document exists
@@ -315,7 +318,10 @@ def test_admin_reviews_approve(client: TestClient, db_session):
     from backend.src.db.models import ClauseORM, HumanReviewAuditORM, RuleORM, SourceDocumentORM
     from backend.src.db.session import get_db
 
-    app.dependency_overrides[get_db] = lambda: db_session
+    def override_db():
+        yield db_session
+
+    app.dependency_overrides[get_db] = override_db
 
     try:
         doc = db_session.get(SourceDocumentORM, "doc_fcau_labelling_2024")
@@ -355,6 +361,7 @@ def test_admin_reviews_approve(client: TestClient, db_session):
             outcome_type="STANDARD",
             applies_if={"all": [{"field": "warehouse_humidity", "op": "gt", "value": 65}]},
             obligation={"type": "storage", "text": "Maintain storage humidity below 65%"},
+            validity={"published": "2024-01-01"},
             source={"clause": "Regulation 101", "quote_span": "Storage humidity must not exceed 65 percent."},
             review_status="PENDING_REVIEW",
         )
@@ -393,7 +400,10 @@ def test_admin_reviews_reject(client: TestClient, db_session):
     from backend.src.db.models import ClauseORM, HumanReviewAuditORM, RuleORM, SourceDocumentORM
     from backend.src.db.session import get_db
 
-    app.dependency_overrides[get_db] = lambda: db_session
+    def override_db():
+        yield db_session
+
+    app.dependency_overrides[get_db] = override_db
 
     try:
         doc = db_session.get(SourceDocumentORM, "doc_fcau_labelling_2024")
@@ -433,6 +443,7 @@ def test_admin_reviews_reject(client: TestClient, db_session):
             outcome_type="STANDARD",
             applies_if={"all": [{"field": "unknown_metric", "op": "gt", "value": 999}]},
             obligation={"type": "guideline", "text": "Follow ambiguous guideline"},
+            validity={"published": "2024-01-01"},
             source={"clause": "Regulation 102", "quote_span": "Ambiguous guideline text."},
             review_status="PENDING_REVIEW",
         )
