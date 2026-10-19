@@ -510,3 +510,43 @@ def test_admin_document_upload(client: TestClient, tmp_path):
     assert res_bad.status_code == 400
 
 
+# 16. RBAC Tests: Role-Based Access Control Verification
+def test_rbac_sme_user_allowed_endpoints(client: TestClient):
+    """Verify that sme_user can access /regulations and /analysis."""
+    res_regs = client.get("/regulations", headers={"X-User-Role": "sme_user"})
+    assert res_regs.status_code == 200
+
+    profile = {"activity": "food_manufacturing"}
+    res_analysis = client.post("/analysis", json={"business_profile": profile}, headers={"X-User-Role": "sme_user"})
+    assert res_analysis.status_code == 200
+
+
+def test_rbac_sme_user_forbidden_on_admin_reviews(client: TestClient):
+    """Verify that sme_user cannot access /admin/reviews (403 Forbidden)."""
+    res = client.get("/admin/reviews", headers={"X-User-Role": "sme_user"})
+    assert res.status_code == 403
+    assert "Access forbidden" in res.json()["detail"]
+
+
+def test_rbac_reviewer_allowed_on_reviews_queue(client: TestClient):
+    """Verify that reviewer can access /admin/reviews."""
+    res = client.get("/admin/reviews", headers={"X-User-Role": "reviewer"})
+    assert res.status_code == 200
+
+
+def test_rbac_reviewer_forbidden_on_document_upload(client: TestClient):
+    """Verify that reviewer cannot access /admin/documents/upload (403 Forbidden)."""
+    files = {"file": ("test.pdf", b"%PDF-1.4 dummy", "application/pdf")}
+    res = client.post("/admin/documents/upload", files=files, headers={"X-User-Role": "reviewer"})
+    assert res.status_code == 403
+    assert "Access forbidden" in res.json()["detail"]
+
+
+def test_rbac_invalid_role_returns_400(client: TestClient):
+    """Verify that an unknown or invalid X-User-Role returns 400 Bad Request."""
+    res = client.get("/regulations", headers={"X-User-Role": "unauthorized_hacker"})
+    assert res.status_code == 400
+    assert "Invalid X-User-Role" in res.json()["detail"]
+
+
+
