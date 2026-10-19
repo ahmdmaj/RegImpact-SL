@@ -13,6 +13,7 @@ import { ProfileForm } from "@/components/ProfileForm";
 import { ClarifyingQuestionsPanel } from "@/components/ClarifyingQuestionsPanel";
 import { ImpactReportView } from "@/components/ImpactReportView";
 import { EvidenceViewer } from "@/components/EvidenceViewer";
+import { RoleSwitcher } from "@/components/RoleSwitcher";
 import Link from "next/link";
 import {
   Shield,
