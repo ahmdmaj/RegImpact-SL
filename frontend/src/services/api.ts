@@ -281,3 +281,119 @@ export async function getEvaluationResults(): Promise<EvaluationResultsPayload> 
   return await res.json();
 }
 
+/**
+ * Review Queue Schemas and Endpoints (Phase 2 & 3)
+ */
+export interface ReviewItem {
+  rule_id: string;
+  clause_id: string;
+  clause_number?: string | null;
+  document_id?: string | null;
+  outcome_type: string;
+  applies_if: Record<string, unknown>;
+  exceptions: Array<Record<string, unknown>>;
+  obligation: Record<string, unknown>;
+  validity: Record<string, unknown>;
+  source: Record<string, unknown>;
+  review_status: string;
+  clause_text?: string | null;
+  quote_span?: string | null;
+}
+
+export interface ReviewDecisionPayload {
+  reviewer_id?: string;
+  rationale?: string;
+  amendments?: Record<string, unknown>;
+}
+
+export interface DocumentUploadResponse {
+  status: string;
+  doc_id: string;
+  title: string;
+  authority: string;
+  file_path: string;
+  pages_indexed: number;
+  rules_compiled: number;
+}
+
+/**
+ * Fetch pending rules queue for human legal review
+ */
+export async function getPendingReviews(): Promise<ReviewItem[]> {
+  const res = await fetch(`${API_BASE_URL}/admin/reviews`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+    cache: "no-store",
+  });
+  if (!res.ok) {
+    throw new ApiError(res.status, `Failed to fetch pending reviews: ${res.statusText}`);
+  }
+  return await res.json();
+}
+
+/**
+ * Approve a candidate rule
+ */
+export async function approveReview(
+  ruleId: string,
+  payload: ReviewDecisionPayload = {}
+): Promise<{ status: string; rule_id: string; review_status: string; decision: string }> {
+  const res = await fetch(`${API_BASE_URL}/admin/reviews/${encodeURIComponent(ruleId)}/approve`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    let errorDetail = res.statusText;
+    try {
+      const err = await res.json();
+      if (err.detail) errorDetail = typeof err.detail === "string" ? err.detail : JSON.stringify(err.detail);
+    } catch {}
+    throw new ApiError(res.status, errorDetail);
+  }
+  return await res.json();
+}
+
+/**
+ * Reject a candidate rule
+ */
+export async function rejectReview(
+  ruleId: string,
+  payload: ReviewDecisionPayload = {}
+): Promise<{ status: string; rule_id: string; review_status: string; decision: string }> {
+  const res = await fetch(`${API_BASE_URL}/admin/reviews/${encodeURIComponent(ruleId)}/reject`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    let errorDetail = res.statusText;
+    try {
+      const err = await res.json();
+      if (err.detail) errorDetail = typeof err.detail === "string" ? err.detail : JSON.stringify(err.detail);
+    } catch {}
+    throw new ApiError(res.status, errorDetail);
+  }
+  return await res.json();
+}
+
+/**
+ * Upload official PDF document to trigger ingestion and rule compilation
+ */
+export async function uploadDocument(formData: FormData): Promise<DocumentUploadResponse> {
+  const res = await fetch(`${API_BASE_URL}/admin/documents/upload`, {
+    method: "POST",
+    body: formData,
+  });
+  if (!res.ok) {
+    let errorDetail = res.statusText;
+    try {
+      const err = await res.json();
+      if (err.detail) errorDetail = typeof err.detail === "string" ? err.detail : JSON.stringify(err.detail);
+    } catch {}
+    throw new ApiError(res.status, errorDetail);
+  }
+  return await res.json();
+}
+
+
