@@ -135,6 +135,46 @@ export interface AnalysisRequest {
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
+export type UserRole = "admin" | "reviewer" | "sme_user";
+
+let currentUserRole: UserRole = "admin";
+
+/**
+ * Get current active user role from memory or localStorage
+ */
+export function getCurrentUserRole(): UserRole {
+  if (typeof window !== "undefined") {
+    const saved = localStorage.getItem("regimpact_user_role");
+    if (saved === "admin" || saved === "reviewer" || saved === "sme_user") {
+      currentUserRole = saved;
+    }
+  }
+  return currentUserRole;
+}
+
+/**
+ * Update current active user role and persist to localStorage
+ */
+export function setCurrentUserRole(role: UserRole): void {
+  currentUserRole = role;
+  if (typeof window !== "undefined") {
+    localStorage.setItem("regimpact_user_role", role);
+    // Dispatch custom event so UI components can re-render reactively
+    window.dispatchEvent(new CustomEvent("regimpact:role_change", { detail: { role } }));
+  }
+}
+
+/**
+ * Helper to attach X-User-Role and Content-Type headers
+ */
+export function getAuthHeaders(extraHeaders: Record<string, string> = {}): Record<string, string> {
+  const headers: Record<string, string> = {
+    "X-User-Role": getCurrentUserRole(),
+    ...extraHeaders,
+  };
+  return headers;
+}
+
 class ApiError extends Error {
   constructor(public status: number, message: string) {
     super(message);
@@ -149,7 +189,7 @@ export async function getHealth(): Promise<{ status: string }> {
   try {
     const res = await fetch(`${API_BASE_URL}/health`, {
       method: "GET",
-      headers: { "Content-Type": "application/json" },
+      headers: getAuthHeaders({ "Content-Type": "application/json" }),
       cache: "no-store",
     });
     if (!res.ok) {
@@ -168,7 +208,7 @@ export async function getHealth(): Promise<{ status: string }> {
 export async function getRegulations(): Promise<ClauseVersion[]> {
   const res = await fetch(`${API_BASE_URL}/regulations`, {
     method: "GET",
-    headers: { "Content-Type": "application/json" },
+    headers: getAuthHeaders({ "Content-Type": "application/json" }),
     cache: "no-store",
   });
   if (!res.ok) {
@@ -183,7 +223,7 @@ export async function getRegulations(): Promise<ClauseVersion[]> {
 export async function runAnalysis(request: AnalysisRequest): Promise<StructuredImpactReport> {
   const res = await fetch(`${API_BASE_URL}/analysis`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: getAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(request),
   });
   if (!res.ok) {
