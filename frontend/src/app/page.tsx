@@ -163,6 +163,8 @@ export default function Home() {
               <span>Statutory Catalog ({regulations.length})</span>
             </button>
 
+            <RoleSwitcher />
+
             {/* Health Status Pill */}
             <div
               className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium border ${
