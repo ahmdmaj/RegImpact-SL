@@ -243,157 +243,221 @@ def test_analysis_narrative_summary_generation(client: TestClient, monkeypatch):
 
 # 12. Test Review Queue: GET /admin/reviews
 def test_admin_reviews_queue(client: TestClient, db_session):
-    from backend.src.db.models import ClauseORM, RuleORM
+    from backend.src.db.models import ClauseORM, RuleORM, SourceDocumentORM
+    from backend.src.db.session import get_db
 
-    # Insert a clause and a pending review rule
-    clause = ClauseORM(
-        clause_id="CLAUSE-TEST-PENDING-01",
-        version_number=1,
-        document_id="doc_fcau_labelling_2024",
-        clause_number="Regulation 99",
-        text="Regulation 99. Synthetic preservatives require special testing certification.",
-        start_page=1,
-        end_page=1,
-        char_start=0,
-        char_end=76,
-        is_compilable=True,
-    )
-    db_session.add(clause)
-    db_session.flush()
+    app.dependency_overrides[get_db] = lambda: db_session
 
-    rule = RuleORM(
-        rule_id="RULE-TEST-PENDING-01",
-        clause_id="CLAUSE-TEST-PENDING-01",
-        clause_version=1,
-        outcome_type="STANDARD",
-        applies_if={"all": [{"field": "uses_preservatives", "op": "eq", "value": True}]},
-        obligation={"type": "testing", "text": "Obtain testing certification."},
-        validity={"published": "2024-01-01"},
-        source={"clause": "Regulation 99", "quote_span": "Synthetic preservatives require special testing certification."},
-        review_status="PENDING_REVIEW",
-    )
-    db_session.add(rule)
-    db_session.commit()
+    try:
+        # Ensure parent document exists
+        doc = db_session.get(SourceDocumentORM, "doc_fcau_labelling_2024")
+        if not doc:
+            doc = SourceDocumentORM(
+                id="doc_fcau_labelling_2024",
+                title="Food (Labelling and Advertising) Regulations 2024",
+                authority="Food Control Administration Unit",
+                sha256_hash="hash_fcau_test_12345".ljust(64, "0"),
+                file_path="backend/data/raw_sources/doc_fcau_labelling_2024.pdf",
+                file_size_bytes=1024,
+                page_count=1,
+                extraction_status="SUCCESS",
+            )
+            db_session.add(doc)
+            db_session.flush()
 
-    response = client.get("/admin/reviews")
-    assert response.status_code == 200
-    reviews = response.json()
-    assert isinstance(reviews, list)
-    rule_ids = [r["rule_id"] for r in reviews]
-    assert "RULE-TEST-PENDING-01" in rule_ids
+        # Insert a clause and a pending review rule
+        clause = ClauseORM(
+            clause_id="CLAUSE-TEST-PENDING-01",
+            version_number=1,
+            document_id="doc_fcau_labelling_2024",
+            clause_number="Regulation 99",
+            text="Regulation 99. Synthetic preservatives require special testing certification.",
+            start_page=1,
+            end_page=1,
+            char_start=0,
+            char_end=76,
+            is_compilable=True,
+        )
+        db_session.add(clause)
+        db_session.flush()
 
-    matching = next(r for r in reviews if r["rule_id"] == "RULE-TEST-PENDING-01")
-    assert matching["review_status"] == "PENDING_REVIEW"
-    assert matching["verbatim_quote_span"] == "Synthetic preservatives require special testing certification."
-    assert matching["applies_if"]["all"][0]["field"] == "uses_preservatives"
+        rule = RuleORM(
+            rule_id="RULE-TEST-PENDING-01",
+            clause_id="CLAUSE-TEST-PENDING-01",
+            clause_version=1,
+            outcome_type="STANDARD",
+            applies_if={"all": [{"field": "uses_preservatives", "op": "eq", "value": True}]},
+            obligation={"type": "testing", "text": "Obtain testing certification."},
+            validity={"published": "2024-01-01"},
+            source={"clause": "Regulation 99", "quote_span": "Synthetic preservatives require special testing certification."},
+            review_status="PENDING_REVIEW",
+        )
+        db_session.add(rule)
+        db_session.commit()
+
+        response = client.get("/admin/reviews")
+        assert response.status_code == 200
+        reviews = response.json()
+        assert isinstance(reviews, list)
+        rule_ids = [r["rule_id"] for r in reviews]
+        assert "RULE-TEST-PENDING-01" in rule_ids
+
+        matching = next(r for r in reviews if r["rule_id"] == "RULE-TEST-PENDING-01")
+        assert matching["review_status"] == "PENDING_REVIEW"
+        assert matching["verbatim_quote_span"] == "Synthetic preservatives require special testing certification."
+        assert matching["applies_if"]["all"][0]["field"] == "uses_preservatives"
+    finally:
+        app.dependency_overrides.clear()
 
 
 # 13. Test Review Queue: POST /admin/reviews/{rule_id}/approve
 def test_admin_reviews_approve(client: TestClient, db_session):
-    from backend.src.db.models import ClauseORM, HumanReviewAuditORM, RuleORM
+    from backend.src.db.models import ClauseORM, HumanReviewAuditORM, RuleORM, SourceDocumentORM
+    from backend.src.db.session import get_db
 
-    clause = ClauseORM(
-        clause_id="CLAUSE-TEST-APPROVE-01",
-        version_number=1,
-        document_id="doc_fcau_labelling_2024",
-        clause_number="Regulation 101",
-        text="Regulation 101. Storage humidity must not exceed 65 percent.",
-        start_page=1,
-        end_page=1,
-        char_start=0,
-        char_end=58,
-        is_compilable=True,
-    )
-    db_session.add(clause)
-    db_session.flush()
+    app.dependency_overrides[get_db] = lambda: db_session
 
-    rule = RuleORM(
-        rule_id="RULE-TEST-APPROVE-01",
-        clause_id="CLAUSE-TEST-APPROVE-01",
-        clause_version=1,
-        outcome_type="STANDARD",
-        applies_if={"all": [{"field": "warehouse_humidity", "op": "gt", "value": 65}]},
-        obligation={"type": "storage", "text": "Maintain storage humidity below 65%"},
-        source={"clause": "Regulation 101", "quote_span": "Storage humidity must not exceed 65 percent."},
-        review_status="PENDING_REVIEW",
-    )
-    db_session.add(rule)
-    db_session.commit()
+    try:
+        doc = db_session.get(SourceDocumentORM, "doc_fcau_labelling_2024")
+        if not doc:
+            doc = SourceDocumentORM(
+                id="doc_fcau_labelling_2024",
+                title="Food (Labelling and Advertising) Regulations 2024",
+                authority="Food Control Administration Unit",
+                sha256_hash="hash_fcau_test_approve".ljust(64, "0"),
+                file_path="backend/data/raw_sources/doc_fcau_labelling_2024.pdf",
+                file_size_bytes=1024,
+                page_count=1,
+                extraction_status="SUCCESS",
+            )
+            db_session.add(doc)
+            db_session.flush()
 
-    payload = {
-        "reviewer_id": "legal_auditor_42",
-        "reviewer_role": "PRIMARY_ANNOTATOR",
-        "rationale": "Verified quote span and statutory threshold exactly match.",
-    }
-    response = client.post("/admin/reviews/RULE-TEST-APPROVE-01/approve", json=payload)
-    assert response.status_code == 200
-    data = response.json()
-    assert data["success"] is True
-    assert data["review_status"] == "APPROVED"
+        clause = ClauseORM(
+            clause_id="CLAUSE-TEST-APPROVE-01",
+            version_number=1,
+            document_id="doc_fcau_labelling_2024",
+            clause_number="Regulation 101",
+            text="Regulation 101. Storage humidity must not exceed 65 percent.",
+            start_page=1,
+            end_page=1,
+            char_start=0,
+            char_end=58,
+            is_compilable=True,
+        )
+        db_session.add(clause)
+        db_session.flush()
 
-    # Verify database persistence & audit trail
-    updated_rule = db_session.get(RuleORM, "RULE-TEST-APPROVE-01")
-    assert updated_rule.review_status == "APPROVED"
+        rule = RuleORM(
+            rule_id="RULE-TEST-APPROVE-01",
+            clause_id="CLAUSE-TEST-APPROVE-01",
+            clause_version=1,
+            outcome_type="STANDARD",
+            applies_if={"all": [{"field": "warehouse_humidity", "op": "gt", "value": 65}]},
+            obligation={"type": "storage", "text": "Maintain storage humidity below 65%"},
+            source={"clause": "Regulation 101", "quote_span": "Storage humidity must not exceed 65 percent."},
+            review_status="PENDING_REVIEW",
+        )
+        db_session.add(rule)
+        db_session.commit()
 
-    audits = db_session.query(HumanReviewAuditORM).filter_by(rule_id="RULE-TEST-APPROVE-01").all()
-    assert len(audits) >= 1
-    assert audits[-1].reviewer_id == "legal_auditor_42"
-    assert audits[-1].decision == "APPROVED"
+        payload = {
+            "reviewer_id": "legal_auditor_42",
+            "reviewer_role": "PRIMARY_ANNOTATOR",
+            "rationale": "Verified quote span and statutory threshold exactly match.",
+        }
+        response = client.post("/admin/reviews/RULE-TEST-APPROVE-01/approve", json=payload)
+        assert response.status_code == 200
+        data = response.json()
+        assert data["success"] is True
+        assert data["review_status"] == "APPROVED"
 
-    # Test 404 for nonexistent rule
-    res_404 = client.post("/admin/reviews/NONEXISTENT-RULE/approve", json=payload)
-    assert res_404.status_code == 404
+        # Verify database persistence & audit trail
+        updated_rule = db_session.get(RuleORM, "RULE-TEST-APPROVE-01")
+        assert updated_rule.review_status == "APPROVED"
+
+        audits = db_session.query(HumanReviewAuditORM).filter_by(rule_id="RULE-TEST-APPROVE-01").all()
+        assert len(audits) >= 1
+        assert audits[-1].reviewer_id == "legal_auditor_42"
+        assert audits[-1].decision == "APPROVED"
+
+        # Test 404 for nonexistent rule
+        res_404 = client.post("/admin/reviews/NONEXISTENT-RULE/approve", json=payload)
+        assert res_404.status_code == 404
+    finally:
+        app.dependency_overrides.clear()
 
 
 # 14. Test Review Queue: POST /admin/reviews/{rule_id}/reject
 def test_admin_reviews_reject(client: TestClient, db_session):
-    from backend.src.db.models import ClauseORM, HumanReviewAuditORM, RuleORM
+    from backend.src.db.models import ClauseORM, HumanReviewAuditORM, RuleORM, SourceDocumentORM
+    from backend.src.db.session import get_db
 
-    clause = ClauseORM(
-        clause_id="CLAUSE-TEST-REJECT-01",
-        version_number=1,
-        document_id="doc_fcau_labelling_2024",
-        clause_number="Regulation 102",
-        text="Regulation 102. Ambiguous guideline text.",
-        start_page=1,
-        end_page=1,
-        char_start=0,
-        char_end=41,
-        is_compilable=True,
-    )
-    db_session.add(clause)
-    db_session.flush()
+    app.dependency_overrides[get_db] = lambda: db_session
 
-    rule = RuleORM(
-        rule_id="RULE-TEST-REJECT-01",
-        clause_id="CLAUSE-TEST-REJECT-01",
-        clause_version=1,
-        outcome_type="STANDARD",
-        applies_if={"all": [{"field": "unknown_metric", "op": "gt", "value": 999}]},
-        obligation={"type": "guideline", "text": "Follow ambiguous guideline"},
-        source={"clause": "Regulation 102", "quote_span": "Ambiguous guideline text."},
-        review_status="PENDING_REVIEW",
-    )
-    db_session.add(rule)
-    db_session.commit()
+    try:
+        doc = db_session.get(SourceDocumentORM, "doc_fcau_labelling_2024")
+        if not doc:
+            doc = SourceDocumentORM(
+                id="doc_fcau_labelling_2024",
+                title="Food (Labelling and Advertising) Regulations 2024",
+                authority="Food Control Administration Unit",
+                sha256_hash="hash_fcau_test_reject".ljust(64, "0"),
+                file_path="backend/data/raw_sources/doc_fcau_labelling_2024.pdf",
+                file_size_bytes=1024,
+                page_count=1,
+                extraction_status="SUCCESS",
+            )
+            db_session.add(doc)
+            db_session.flush()
 
-    payload = {
-        "reviewer_id": "legal_auditor_42",
-        "reviewer_role": "PRIMARY_ANNOTATOR",
-        "rationale": "Hallucinated threshold not supported by statutory text.",
-    }
-    response = client.post("/admin/reviews/RULE-TEST-REJECT-01/reject", json=payload)
-    assert response.status_code == 200
-    data = response.json()
-    assert data["success"] is True
-    assert data["review_status"] == "REJECTED"
+        clause = ClauseORM(
+            clause_id="CLAUSE-TEST-REJECT-01",
+            version_number=1,
+            document_id="doc_fcau_labelling_2024",
+            clause_number="Regulation 102",
+            text="Regulation 102. Ambiguous guideline text.",
+            start_page=1,
+            end_page=1,
+            char_start=0,
+            char_end=41,
+            is_compilable=True,
+        )
+        db_session.add(clause)
+        db_session.flush()
 
-    updated_rule = db_session.get(RuleORM, "RULE-TEST-REJECT-01")
-    assert updated_rule.review_status == "REJECTED"
+        rule = RuleORM(
+            rule_id="RULE-TEST-REJECT-01",
+            clause_id="CLAUSE-TEST-REJECT-01",
+            clause_version=1,
+            outcome_type="STANDARD",
+            applies_if={"all": [{"field": "unknown_metric", "op": "gt", "value": 999}]},
+            obligation={"type": "guideline", "text": "Follow ambiguous guideline"},
+            source={"clause": "Regulation 102", "quote_span": "Ambiguous guideline text."},
+            review_status="PENDING_REVIEW",
+        )
+        db_session.add(rule)
+        db_session.commit()
 
-    audits = db_session.query(HumanReviewAuditORM).filter_by(rule_id="RULE-TEST-REJECT-01").all()
-    assert len(audits) >= 1
-    assert audits[-1].decision == "REJECTED"
+        payload = {
+            "reviewer_id": "legal_auditor_42",
+            "reviewer_role": "PRIMARY_ANNOTATOR",
+            "rationale": "Hallucinated threshold not supported by statutory text.",
+        }
+        response = client.post("/admin/reviews/RULE-TEST-REJECT-01/reject", json=payload)
+        assert response.status_code == 200
+        data = response.json()
+        assert data["success"] is True
+        assert data["review_status"] == "REJECTED"
+
+        updated_rule = db_session.get(RuleORM, "RULE-TEST-REJECT-01")
+        assert updated_rule.review_status == "REJECTED"
+
+        audits = db_session.query(HumanReviewAuditORM).filter_by(rule_id="RULE-TEST-REJECT-01").all()
+        assert len(audits) >= 1
+        assert audits[-1].decision == "REJECTED"
+    finally:
+        app.dependency_overrides.clear()
 
 
 # 15. Test Document Upload: POST /admin/documents/upload
