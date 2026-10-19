@@ -9,6 +9,7 @@ import {
   PairedComparison,
   getEvaluationResults,
 } from "@/services/api";
+import { RoleSwitcher } from "@/components/RoleSwitcher";
 import {
   BarChart3,
   ArrowLeft,
@@ -144,6 +145,8 @@ export default function EvaluationDashboard() {
               <Scale className="w-3.5 h-3.5 text-amber-400" />
               <span>Reviewer Portal</span>
             </Link>
+
+            <RoleSwitcher />
 
             <button
               type="button"
