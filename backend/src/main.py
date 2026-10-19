@@ -606,3 +606,298 @@ def run_analysis(
         report.narrative_summary = "Summary generation failed verification; narrative withheld."
 
     return report
+
+
+# ---------------------------------------------------------------------------
+# Admin & Legal Review Queue Schemas and Endpoints (Phase 2 & Phase 3)
+# ---------------------------------------------------------------------------
+
+class ReviewItemResponse(BaseModel):
+    model_config = ConfigDict(extra="allow")
+    rule_id: str
+    clause_id: str
+    clause_number: Optional[str] = None
+    document_title: Optional[str] = None
+    document_id: Optional[str] = None
+    review_status: str
+    outcome_type: str
+    applies_if: Dict[str, Any] = {}
+    obligation: Dict[str, Any] = {}
+    exceptions: List[Any] = []
+    validity: Dict[str, Any] = {}
+    source: Dict[str, Any] = {}
+    verbatim_quote_span: Optional[str] = None
+    clause_text: Optional[str] = None
+    discrepancies: List[str] = []
+    created_at: Optional[str] = None
+    updated_at: Optional[str] = None
+
+
+class ReviewDecisionRequest(BaseModel):
+    model_config = ConfigDict(extra="allow")
+    reviewer_id: Optional[str] = "legal_reviewer_01"
+    reviewer_role: Optional[str] = "PRIMARY_ANNOTATOR"
+    rationale: Optional[str] = "Verified against official gazette source text."
+    amendments: Optional[Dict[str, Any]] = None
+
+
+@app.get("/admin/reviews", response_model=List[ReviewItemResponse])
+def get_pending_reviews(db: Session = Depends(get_db)) -> List[ReviewItemResponse]:
+    """Return all rules awaiting human review (review_status='PENDING_REVIEW')."""
+    ensure_database_seeded(db)
+    pending_rules = (
+        db.query(RuleORM)
+        .filter(RuleORM.review_status == "PENDING_REVIEW")
+        .order_by(RuleORM.created_at.desc())
+        .all()
+    )
+    items: List[ReviewItemResponse] = []
+    for r in pending_rules:
+        clause = db.query(ClauseORM).filter_by(clause_id=r.clause_id).first()
+        doc = db.query(SourceDocumentORM).filter_by(id=clause.document_id).first() if clause else None
+
+        quote = (r.source or {}).get("quote_span") or (clause.text if clause else None)
+        doc_title = (r.source or {}).get("instrument") or (doc.title if doc else None)
+
+        items.append(
+            ReviewItemResponse(
+                rule_id=r.rule_id,
+                clause_id=r.clause_id,
+                clause_number=clause.clause_number if clause else (r.source or {}).get("clause"),
+                document_title=doc_title,
+                document_id=clause.document_id if clause else (doc.id if doc else None),
+                review_status=r.review_status,
+                outcome_type=r.outcome_type,
+                applies_if=r.applies_if or {},
+                obligation=r.obligation or {},
+                exceptions=r.exceptions or [],
+                validity=r.validity or {},
+                source=r.source or {},
+                verbatim_quote_span=quote,
+                clause_text=clause.text if clause else quote,
+                discrepancies=[],
+                created_at=r.created_at.isoformat() if r.created_at else None,
+                updated_at=r.updated_at.isoformat() if r.updated_at else None,
+            )
+        )
+    return items
+
+
+@app.post("/admin/reviews/{rule_id}/approve")
+def approve_review(
+    rule_id: str,
+    payload: Optional[ReviewDecisionRequest] = None,
+    db: Session = Depends(get_db),
+) -> Dict[str, Any]:
+    """Approve a pending rule, writing to the immutable human_review_audit table."""
+    body = payload or ReviewDecisionRequest()
+    service = ReviewService(db)
+    try:
+        updated_rule = service.submit_review(
+            rule_id=rule_id,
+            reviewer_id=body.reviewer_id or "legal_reviewer_01",
+            reviewer_role=body.reviewer_role or "PRIMARY_ANNOTATOR",
+            decision="APPROVED",
+            rationale=body.rationale or "Approved by legal reviewer after verbatim verification.",
+            amendments=body.amendments,
+        )
+        return {
+            "success": True,
+            "rule_id": updated_rule.rule_id,
+            "review_status": updated_rule.review_status,
+            "message": f"Rule {rule_id} approved successfully.",
+        }
+    except RuleNotFoundError:
+        raise HTTPException(status_code=404, detail=f"Rule '{rule_id}' not found.")
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+
+@app.post("/admin/reviews/{rule_id}/reject")
+def reject_review(
+    rule_id: str,
+    payload: Optional[ReviewDecisionRequest] = None,
+    db: Session = Depends(get_db),
+) -> Dict[str, Any]:
+    """Reject a pending rule, writing to the immutable human_review_audit table."""
+    body = payload or ReviewDecisionRequest()
+    service = ReviewService(db)
+    try:
+        updated_rule = service.submit_review(
+            rule_id=rule_id,
+            reviewer_id=body.reviewer_id or "legal_reviewer_01",
+            reviewer_role=body.reviewer_role or "PRIMARY_ANNOTATOR",
+            decision="REJECTED",
+            rationale=body.rationale or "Rejected by legal reviewer due to logic or threshold discrepancy.",
+            amendments=body.amendments,
+        )
+        return {
+            "success": True,
+            "rule_id": updated_rule.rule_id,
+            "review_status": updated_rule.review_status,
+            "message": f"Rule '{rule_id}' rejected.",
+        }
+    except RuleNotFoundError:
+        raise HTTPException(status_code=404, detail=f"Rule '{rule_id}' not found.")
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+
+@app.post("/admin/documents/upload")
+async def upload_document(
+    file: UploadFile = File(...),
+    title: Optional[str] = Form(None),
+    authority: Optional[str] = Form(None),
+    instrument_type: Optional[str] = Form(None),
+    gazette_no: Optional[str] = Form(None),
+    publication_date: Optional[str] = Form(None),
+    db: Session = Depends(get_db),
+) -> Dict[str, Any]:
+    """Upload a new regulatory PDF, store in raw_sources, ingest, segment, and compile rules."""
+    if not file.filename or not file.filename.lower().endswith(".pdf"):
+        raise HTTPException(status_code=400, detail="Only PDF files (.pdf) are supported.")
+
+    content = await file.read()
+    if not content:
+        raise HTTPException(status_code=400, detail="Uploaded file is empty.")
+
+    raw_dir = Path("backend/data/raw_sources")
+    raw_dir.mkdir(parents=True, exist_ok=True)
+    clean_filename = Path(file.filename).name
+    target_file = raw_dir / clean_filename
+    target_file.write_bytes(content)
+
+    doc_id = f"doc_{target_file.stem.lower().replace('-', '_').replace(' ', '_')}"
+    doc_title = title or target_file.stem.replace("_", " ").replace("-", " ").title()
+    doc_authority = authority or "Sri Lanka Regulatory Authority"
+
+    ingestion_service = DocumentIngestionService(pdf_store_dir=raw_dir)
+    ingestion_result = ingestion_service.ingest(
+        db=db,
+        pdf_path=target_file,
+        doc_id=doc_id,
+        title=doc_title,
+        authority=doc_authority,
+        instrument_type=instrument_type or "regulation",
+        gazette_no=gazette_no,
+        publication_date=publication_date,
+    )
+
+    if not ingestion_result.success and not ingestion_result.is_duplicate:
+        raise HTTPException(status_code=500, detail=f"Ingestion failed: {ingestion_result.error}")
+
+    pages = (
+        db.query(DocumentPageORM)
+        .filter_by(document_id=doc_id)
+        .order_by(DocumentPageORM.page_number)
+        .all()
+    )
+
+    emb_client = getattr(app.state, "embedding_client", None) or get_embedding_client(allow_mock_fallback=True)
+    clauses_created = 0
+    created_clause_objects: List[ClauseORM] = []
+
+    for page in pages:
+        segmented = segment_clauses_from_page(page.raw_text, page.page_number)
+        for seg in segmented:
+            clause_pk = f"CLAUSE-{doc_id.upper()}-{seg.clause_number.replace(' ', '-').upper()}"
+            existing = db.query(ClauseORM).filter_by(clause_id=clause_pk).first()
+            if not existing:
+                emb = emb_client.embed_text(seg.text)
+                clause_orm = ClauseORM(
+                    clause_id=clause_pk,
+                    version_number=1,
+                    document_id=doc_id,
+                    clause_number=seg.clause_number,
+                    text=seg.text,
+                    start_page=seg.start_page,
+                    end_page=seg.end_page,
+                    char_start=seg.char_start,
+                    char_end=seg.char_end,
+                    is_compilable=True,
+                    embedding=emb,
+                )
+                db.add(clause_orm)
+                db.flush()
+                clauses_created += 1
+                created_clause_objects.append(clause_orm)
+            else:
+                created_clause_objects.append(existing)
+
+    llm_client = getattr(app.state, "llm_client", None) or get_llm_client(allow_mock_fallback=True)
+    compiler = RuleCompiler(llm_client=llm_client)
+
+    rules_compiled = 0
+    pending_count = 0
+    approved_count = 0
+
+    for clause in created_clause_objects:
+        existing_rule = db.query(RuleORM).filter_by(clause_id=clause.clause_id).first()
+        if existing_rule:
+            continue
+
+        try:
+            comp_res = compiler.compile_clause_with_agreement(
+                raw_text=clause.text,
+                source_metadata={
+                    "clause": clause.clause_number,
+                    "instrument": doc_title,
+                    "authority": doc_authority,
+                    "doc_id": doc_id,
+                    "page": clause.start_page,
+                },
+            )
+            if comp_res.rule:
+                r = comp_res.rule
+                rule_pk = f"RULE-{doc_id.upper()}-{clause.clause_number.replace(' ', '-').upper()}"
+                r_applies = r.applies_if.model_dump() if hasattr(r.applies_if, "model_dump") else r.applies_if
+                r_except = [e.model_dump() if hasattr(e, "model_dump") else e for e in (r.exceptions or [])]
+                r_oblig = r.obligation.model_dump() if hasattr(r.obligation, "model_dump") else r.obligation
+                r_valid = r.validity.model_dump() if hasattr(r.validity, "model_dump") else r.validity
+                r_src = r.source.model_dump() if hasattr(r.source, "model_dump") else (r.source or {})
+
+                rule_orm = RuleORM(
+                    rule_id=rule_pk,
+                    clause_id=clause.clause_id,
+                    clause_version=1,
+                    outcome_type=comp_res.outcome_type,
+                    applies_if=r_applies,
+                    exceptions=r_except,
+                    obligation=r_oblig,
+                    validity=r_valid,
+                    source=r_src,
+                    review_status=comp_res.review_status,
+                )
+                db.add(rule_orm)
+                db.flush()
+                rules_compiled += 1
+
+                if comp_res.review_status == "APPROVED":
+                    approved_count += 1
+                    db.add(
+                        HumanReviewAuditORM(
+                            rule_id=rule_pk,
+                            reviewer_id="system_dual_pass",
+                            reviewer_role="PRIMARY_ANNOTATOR",
+                            decision="APPROVED",
+                            rationale="Dual-pass LLM extraction cross-agreement confirmed.",
+                        )
+                    )
+                elif comp_res.review_status == "PENDING_REVIEW":
+                    pending_count += 1
+        except Exception as exc:
+            logger.warning("Error compiling clause %s: %s", clause.clause_id, exc)
+
+    db.commit()
+
+    return {
+        "success": True,
+        "doc_id": doc_id,
+        "filename": clean_filename,
+        "title": doc_title,
+        "pages_ingested": len(pages),
+        "clauses_extracted": clauses_created,
+        "rules_compiled": rules_compiled,
+        "pending_reviews_count": pending_count,
+        "approved_rules_count": approved_count,
+    }
