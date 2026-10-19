@@ -9,6 +9,7 @@ import {
   rejectReview,
   uploadDocument,
 } from "@/services/api";
+import { RoleSwitcher } from "@/components/RoleSwitcher";
 import {
   ShieldCheck,
   FileCheck,
@@ -209,6 +210,8 @@ export default function AdminReviewsPage() {
               <BarChart3 className="w-3.5 h-3.5 text-indigo-400" />
               <span>Evaluation Dashboard</span>
             </Link>
+
+            <RoleSwitcher />
 
             <button
               onClick={fetchQueue}
