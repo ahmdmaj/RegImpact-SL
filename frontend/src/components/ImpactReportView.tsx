@@ -290,7 +290,7 @@ export const ImpactReportView: React.FC<ImpactReportViewProps> = ({ report }) =>
         </div>
       </div>
 
-      {/* 5. Counterfactual Reasoning Callout */}
+      {/* 5. What-If Sensitivity Analysis */}
       {allCounterfactuals.length > 0 && (
         <div className="glass-panel rounded-2xl p-6 border border-purple-500/30 bg-purple-950/15 shadow-xl space-y-3">
           <div className="flex items-center gap-2.5 pb-2 border-b border-purple-500/20">
@@ -299,10 +299,10 @@ export const ImpactReportView: React.FC<ImpactReportViewProps> = ({ report }) =>
             </div>
             <div>
               <h3 className="text-xs font-semibold text-purple-200">
-                Counterfactual Boundary Reasoning (Section 8.3 [G])
+                What-If Sensitivity Analysis (Statutory Thresholds)
               </h3>
               <p className="text-[11px] text-purple-300/70">
-                Minimal perturbations to profile parameters that flip the applicability outcome
+                How threshold changes would affect your legal status:
               </p>
             </div>
           </div>
