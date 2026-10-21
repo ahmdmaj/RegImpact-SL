@@ -63,6 +63,10 @@ CLARIFYING_QUESTION_MAP: Dict[str, str] = {
     "market.import_flag": "Does your business import raw materials or finished products from overseas?",
     "premises.type": "What is the physical classification of your premises (e.g. factory, cottage industry, commercial kitchen)?",
     "premises.location_authority_area": "In which Local Authority area (Municipal Council / Urban Council / Pradeshiya Sabha) are your premises located?",
+    "hazardous_chemicals_storage_liters": "Does your facility store hazardous industrial chemicals exceeding 500 liters? (Enter liters or 0 if none)",
+    "uses_synthetic_colorings": "Does your business use synthetic food colorings in your products? (Yes / No)",
+    "industry_category": "Is your facility categorized under Part A prescribed industrial activities? (e.g. Part A, Part B, or General SME)",
+    "wastewater_discharge_m3_per_day": "Does your facility discharge industrial wastewater exceeding 10 cubic meters (m³) per day? (Enter m³/day or 0)",
 }
 
 
