@@ -166,31 +166,34 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
         </p>
 
         {/* Quick Scenario Pills */}
-        <div className="flex flex-wrap gap-2 pt-1">
-          <span className="text-xs text-slate-400 flex items-center gap-1">
-            <Sparkles className="w-3.5 h-3.5 text-blue-400" /> Presets:
+        <div className="space-y-1.5 pt-1">
+          <span className="text-xs text-slate-300 font-medium flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-blue-400" />
+            <span>Quick Test Presets (Click to load):</span>
           </span>
-          <button
-            type="button"
-            onClick={() => loadPreset("compliant")}
-            className="px-2.5 py-1 text-xs font-medium rounded-lg bg-emerald-950/80 text-emerald-300 border border-emerald-700/50 hover:bg-emerald-900/80 transition-all cursor-pointer"
-          >
-            Scenario 1: Large Manufacturer (FCAU & EPL Apply)
-          </button>
-          <button
-            type="button"
-            onClick={() => loadPreset("incomplete")}
-            className="px-2.5 py-1 text-xs font-medium rounded-lg bg-amber-950/80 text-amber-300 border border-amber-700/50 hover:bg-amber-900/80 transition-all cursor-pointer"
-          >
-            Scenario 2: Missing Capacity (Unknown State)
-          </button>
-          <button
-            type="button"
-            onClick={() => loadPreset("exempt")}
-            className="px-2.5 py-1 text-xs font-medium rounded-lg bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 transition-all cursor-pointer"
-          >
-            Scenario 3: Micro Producer (Under Thresholds)
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => loadPreset("compliant")}
+              className="px-2.5 py-1 text-xs font-medium rounded-lg bg-emerald-950/80 text-emerald-300 border border-emerald-700/50 hover:bg-emerald-900/80 transition-all cursor-pointer"
+            >
+              Preset 1: Large Manufacturer (Mandatory Rules Apply)
+            </button>
+            <button
+              type="button"
+              onClick={() => loadPreset("incomplete")}
+              className="px-2.5 py-1 text-xs font-medium rounded-lg bg-amber-950/80 text-amber-300 border border-amber-700/50 hover:bg-amber-900/80 transition-all cursor-pointer"
+            >
+              Preset 2: Incomplete Data (Clarifying Questions Demo)
+            </button>
+            <button
+              type="button"
+              onClick={() => loadPreset("exempt")}
+              className="px-2.5 py-1 text-xs font-medium rounded-lg bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 transition-all cursor-pointer"
+            >
+              Preset 3: Micro Cottage Producer (Exempt Demo)
+            </button>
+          </div>
         </div>
       </div>
 
