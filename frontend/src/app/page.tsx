@@ -81,6 +81,7 @@ export default function Home() {
         as_at_date: asAtDate,
       });
       setReport(res);
+      setActiveResultTab("overview");
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Failed to run regulatory analysis.";
       setErrorMessage(msg);
@@ -210,6 +211,38 @@ export default function Home() {
 
       {/* 2. Main Workspace Layout */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Quick Tour / How it Works Guide */}
+        {showQuickGuide && (
+          <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-blue-950/60 via-slate-900 to-indigo-950/60 border border-blue-500/30 text-xs text-slate-200 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex items-start md:items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-blue-500/20 text-blue-400 border border-blue-500/30 shrink-0">
+                <Compass className="w-5 h-5" />
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-white text-sm">How to Use RegImpact-SL</span>
+                  <span className="px-2 py-0.2 rounded-full text-[10px] font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                    3 Simple Steps
+                  </span>
+                </div>
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-slate-300 text-xs">
+                  <span><strong>Step 1:</strong> Select a <strong>Preset</strong> on the left (e.g. <em>Large Manufacturer</em>).</span>
+                  <span>&rarr;</span>
+                  <span><strong>Step 2:</strong> Click <strong>Analyze</strong> to see your mandatory obligations & action plan.</span>
+                  <span>&rarr;</span>
+                  <span><strong>Step 3:</strong> Click <strong>Download Compliance Dossier</strong> to get an official printable legal report.</span>
+                </div>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowQuickGuide(false)}
+              className="text-slate-400 hover:text-white px-2.5 py-1 rounded-lg text-xs bg-slate-800/80 hover:bg-slate-700 transition-colors shrink-0 cursor-pointer self-end md:self-auto"
+            >
+              Got it, close
+            </button>
+          </div>
+        )}
+
         {/* Offline Warning Notice if Backend is not running */}
         {healthStatus === "disconnected" && (
           <div className="mb-6 p-4 rounded-xl bg-rose-950/40 border border-rose-500/40 text-rose-200 text-xs flex items-center justify-between">
@@ -296,9 +329,65 @@ export default function Home() {
           {/* Right Column: Dynamic Analysis Dashboard, Clarifying Questions, and Evidence */}
           <div className="lg:col-span-7 space-y-6">
             {report ? (
-              <>
-                {/* 1. Clarifying Questions (rendered when CONDITIONAL_MISSING_DATA occurs) */}
-                {report.clarifying_questions && report.clarifying_questions.length > 0 && (
+              <div className="space-y-5">
+                {/* Result Tabs Navigation */}
+                <div className="flex items-center justify-between flex-wrap gap-3 pb-1 border-b border-slate-800">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <button
+                      type="button"
+                      onClick={() => setActiveResultTab("overview")}
+                      className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                        activeResultTab === "overview"
+                          ? "bg-indigo-600 text-white shadow-md shadow-indigo-950/50"
+                          : "bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800"
+                      }`}
+                    >
+                      <ListChecks className="w-4 h-4" />
+                      <span>Action Plan & Summary</span>
+                    </button>
+
+                    {report.clarifying_questions && report.clarifying_questions.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setActiveResultTab("questions")}
+                        className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                          activeResultTab === "questions"
+                            ? "bg-amber-600 text-white shadow-md shadow-amber-950/50"
+                            : "bg-slate-900 text-amber-400 hover:text-amber-300 border border-amber-500/30"
+                        }`}
+                      >
+                        <HelpCircle className="w-4 h-4" />
+                        <span>Optional Clarifications ({report.clarifying_questions.length})</span>
+                      </button>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={() => setActiveResultTab("evidence")}
+                      className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                        activeResultTab === "evidence"
+                          ? "bg-indigo-600 text-white shadow-md shadow-indigo-950/50"
+                          : "bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800"
+                      }`}
+                    >
+                      <ShieldCheck className="w-4 h-4" />
+                      <span>Legal Citations ({report.evaluations.length})</span>
+                    </button>
+                  </div>
+
+                  {/* Quick Indicator */}
+                  <span className="text-[11px] text-slate-400 font-mono hidden sm:inline-block">
+                    Evaluated as-at: {currentAsAtDate}
+                  </span>
+                </div>
+
+                {/* Tab 1: Overview, Summary & Actions */}
+                {activeResultTab === "overview" && (
+                  <ImpactReportView report={report} />
+                )}
+
+                {/* Tab 2: Clarifying Questions */}
+                {activeResultTab === "questions" && (
                   <ClarifyingQuestionsPanel
                     questions={report.clarifying_questions}
                     missingFields={report.missing_fields}
@@ -309,12 +398,11 @@ export default function Home() {
                   />
                 )}
 
-                {/* 2. Structured Impact Report View */}
-                <ImpactReportView report={report} />
-
-                {/* 3. Statutory Evidence & Trace Audit Viewer */}
-                <EvidenceViewer evaluations={report.evaluations} />
-              </>
+                {/* Tab 3: Detailed Statutory Evidence */}
+                {activeResultTab === "evidence" && (
+                  <EvidenceViewer evaluations={report.evaluations} />
+                )}
+              </div>
             ) : (
               /* Empty / Welcome State */
               <div className="glass-panel rounded-2xl p-10 border border-slate-700/60 shadow-xl text-center space-y-6">
