@@ -32,6 +32,7 @@ import {
   ListChecks,
   HelpCircle,
   CheckCircle2,
+  ShieldCheck,
 } from "lucide-react";
 
 export default function Home() {
