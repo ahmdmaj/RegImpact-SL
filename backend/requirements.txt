@@ -1,5 +1,6 @@
 # Core API
 fastapi
+uvicorn[standard]
 pydantic
 python-dotenv>=1.0.0
 python-multipart>=0.0.9
