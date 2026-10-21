@@ -44,6 +44,8 @@ export default function Home() {
   const [report, setReport] = useState<StructuredImpactReport | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [activeResultTab, setActiveResultTab] = useState<"overview" | "questions" | "evidence">("overview");
+  const [showQuickGuide, setShowQuickGuide] = useState(true);
 
   // Check health and load catalog on mount
   const checkBackendHealth = useCallback(async () => {
