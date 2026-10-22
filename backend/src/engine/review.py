@@ -152,6 +152,27 @@ class ReviewService:
 
         elif decision_clean == DECISION_AMENDED:
             rule.review_status = "APPROVED"
+            # Version preservation: capture immutable snapshot of prior rule state before mutation
+            prior_state = {
+                "applies_if": rule.applies_if,
+                "obligation": rule.obligation,
+                "validity": rule.validity,
+                "exceptions": rule.exceptions,
+                "outcome_type": rule.outcome_type,
+                "review_status": rule.review_status,
+            }
+            rep = dict(rule.verification_report) if isinstance(rule.verification_report, dict) else {}
+            history = list(rep.get("version_history", []))
+            history.append({
+                "amended_at": now_utc.isoformat(),
+                "amended_by": reviewer_id.strip(),
+                "reviewer_role": role_clean,
+                "prior_state": prior_state,
+                "rationale": rationale.strip(),
+            })
+            rep["version_history"] = history
+            rule.verification_report = rep
+
             if amendments:
                 if "applies_if" in amendments:
                     rule.applies_if = amendments["applies_if"]
