@@ -262,6 +262,8 @@ export const ComplianceDossierModal: React.FC<ComplianceDossierModalProps> = ({
                               ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
                               : ev.status === "CONDITIONAL_MISSING_DATA"
                               ? "bg-amber-100 text-amber-800 border border-amber-300"
+                              : ev.status === "CONDITIONAL_RULE"
+                              ? "bg-sky-100 text-sky-800 border border-sky-300"
                               : "bg-zinc-100 text-zinc-600 border border-zinc-300"
                           }`}
                         >
