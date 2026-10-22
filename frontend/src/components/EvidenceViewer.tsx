@@ -3,11 +3,7 @@
 import React, { useState, useMemo } from "react";
 import { RuleAnalysisDetail } from "@/services/api";
 import { StatutoryCitationCard } from "./StatutoryCitationCard";
-import { 
-  ShieldCheck, 
-  Filter,
-  Layers
-} from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 
 interface EvidenceViewerProps {
   evaluations: RuleAnalysisDetail[];
@@ -39,37 +35,37 @@ export const EvidenceViewer: React.FC<EvidenceViewerProps> = ({ evaluations }) =
   }, [evaluations]);
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900 shadow-sm p-6 space-y-5">
+    <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-5 space-y-4">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-zinc-800">
         <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-lg bg-slate-800 text-slate-200 border border-slate-700">
-            <ShieldCheck className="w-4 h-4 text-slate-300" />
+          <div className="p-1.5 rounded-md bg-zinc-800 text-zinc-300 border border-zinc-700">
+            <ShieldCheck className="w-4 h-4 text-zinc-300" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-semibold text-white">
+              <h3 className="text-xs font-semibold text-zinc-100">
                 Statutory Evidence & Legal Audit Citations
               </h3>
-              <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
-                {counts.total} Total
+              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-300 border border-zinc-700">
+                {counts.total} Citations
               </span>
             </div>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Deterministic provenance grounded in verbatim Sri Lankan Gazette quote spans with zero LLM hallucinations.
+            <p className="text-[11px] text-zinc-400 mt-0.5">
+              Grounded against verbatim Sri Lankan Gazette quote spans with zero hallucinations.
             </p>
           </div>
         </div>
 
-        {/* Filter Toolbar */}
-        <div className="flex items-center gap-1.5 flex-wrap">
+        {/* Filter Toolbar: Vercel/Linear Minimalist Segmented Buttons */}
+        <div className="flex items-center gap-1 flex-wrap">
           <button
             type="button"
             onClick={() => setFilter("ALL")}
-            className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+            className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors cursor-pointer ${
               filter === "ALL"
-                ? "bg-slate-100 text-slate-900 font-semibold"
-                : "bg-slate-800 text-slate-400 hover:text-slate-200"
+                ? "bg-zinc-800 text-white border border-zinc-700"
+                : "text-zinc-400 hover:text-zinc-200"
             }`}
           >
             All ({counts.total})
@@ -77,54 +73,58 @@ export const EvidenceViewer: React.FC<EvidenceViewerProps> = ({ evaluations }) =
           <button
             type="button"
             onClick={() => setFilter("APPLICABLE")}
-            className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+            className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
               filter === "APPLICABLE"
-                ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
-                : "bg-slate-800/80 text-emerald-400/90 hover:bg-slate-800"
+                ? "bg-zinc-800 text-white border border-zinc-700"
+                : "text-zinc-400 hover:text-zinc-200"
             }`}
           >
-            Mandatory ({counts.app})
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+            <span>Mandatory ({counts.app})</span>
           </button>
           <button
             type="button"
             onClick={() => setFilter("CONDITIONAL")}
-            className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+            className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
               filter === "CONDITIONAL"
-                ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
-                : "bg-slate-800/80 text-amber-400/90 hover:bg-slate-800"
+                ? "bg-zinc-800 text-white border border-zinc-700"
+                : "text-zinc-400 hover:text-zinc-200"
             }`}
           >
-            Data Needed ({counts.cond})
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+            <span>Missing Data ({counts.cond})</span>
           </button>
           <button
             type="button"
             onClick={() => setFilter("EXEMPT")}
-            className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+            className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
               filter === "EXEMPT"
-                ? "bg-slate-700 text-white font-semibold"
-                : "bg-slate-800/80 text-slate-400 hover:bg-slate-800"
+                ? "bg-zinc-800 text-white border border-zinc-700"
+                : "text-zinc-400 hover:text-zinc-200"
             }`}
           >
-            Exempt ({counts.exempt})
+            <span className="w-1.5 h-1.5 rounded-full bg-zinc-500" />
+            <span>Exempt ({counts.exempt})</span>
           </button>
           <button
             type="button"
             onClick={() => setFilter("COVERAGE_GAP")}
-            className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+            className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
               filter === "COVERAGE_GAP"
-                ? "bg-sky-500/20 text-sky-300 border border-sky-500/30"
-                : "bg-slate-800/80 text-sky-400/90 hover:bg-slate-800"
+                ? "bg-zinc-800 text-white border border-zinc-700"
+                : "text-zinc-400 hover:text-zinc-200"
             }`}
           >
-            Gazette Notices ({counts.gap})
+            <span className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
+            <span>Notices ({counts.gap})</span>
           </button>
         </div>
       </div>
 
       {/* Rules Citation List */}
-      <div className="space-y-3">
+      <div className="space-y-2.5">
         {filteredEvaluations.length === 0 ? (
-          <div className="p-8 text-center text-xs text-slate-500 border border-slate-800 rounded-lg">
+          <div className="p-8 text-center text-xs text-zinc-500 border border-zinc-800 rounded-md">
             No statutory citations found for the selected filter.
           </div>
         ) : (
