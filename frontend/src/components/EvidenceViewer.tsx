@@ -16,7 +16,7 @@ export const EvidenceViewer: React.FC<EvidenceViewerProps> = ({ evaluations }) =
   const filteredEvaluations = useMemo(() => {
     if (filter === "ALL") return evaluations;
     if (filter === "APPLICABLE") return evaluations.filter((e) => e.status === "APPLICABLE");
-    if (filter === "CONDITIONAL") return evaluations.filter((e) => e.status === "CONDITIONAL_MISSING_DATA");
+    if (filter === "CONDITIONAL") return evaluations.filter((e) => e.status === "CONDITIONAL_MISSING_DATA" || e.status === "CONDITIONAL_RULE");
     if (filter === "EXEMPT") return evaluations.filter((e) => e.status === "NOT_APPLICABLE");
     if (filter === "COVERAGE_GAP") return evaluations.filter((e) => e.coverage_gap || e.status === "UNSUPPORTED");
     return evaluations;
@@ -28,7 +28,7 @@ export const EvidenceViewer: React.FC<EvidenceViewerProps> = ({ evaluations }) =
     evaluations.forEach((e) => {
       if (e.coverage_gap || e.status === "UNSUPPORTED") gap++;
       else if (e.status === "APPLICABLE") app++;
-      else if (e.status === "CONDITIONAL_MISSING_DATA") cond++;
+      else if (e.status === "CONDITIONAL_MISSING_DATA" || e.status === "CONDITIONAL_RULE") cond++;
       else if (e.status === "NOT_APPLICABLE") exempt++;
     });
     return { app, cond, exempt, gap, total: evaluations.length };
