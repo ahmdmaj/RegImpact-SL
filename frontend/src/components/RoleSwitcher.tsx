@@ -94,8 +94,8 @@ export const RoleSwitcher: React.FC = () => {
                   key={r.role}
                   type="button"
                   onClick={() => handleSelectRole(r.role)}
-                  className={`w-full text-left p-2.5 rounded-xl transition-colors cursor-pointer flex items-start justify-between gap-2 ${
-                    active ? "bg-slate-800 text-white" : "hover:bg-slate-850 text-slate-300"
+                  className={`w-full text-left p-2.5 rounded-lg transition-colors cursor-pointer flex items-start justify-between gap-2 ${
+                    active ? "bg-slate-800 text-white" : "hover:bg-slate-800/60 text-slate-300"
                   }`}
                 >
                   <div className="space-y-0.5">
