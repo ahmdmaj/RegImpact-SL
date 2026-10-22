@@ -5,14 +5,7 @@ import { RuleAnalysisDetail } from "@/services/api";
 import { 
   ChevronDown, 
   ChevronUp, 
-  CheckCircle2, 
-  AlertCircle, 
-  XCircle, 
   Code2, 
-  FileText,
-  Clock,
-  ShieldCheck,
-  Compass
 } from "lucide-react";
 
 interface StatutoryCitationCardProps {
@@ -59,102 +52,93 @@ export const StatutoryCitationCard: React.FC<StatutoryCitationCardProps> = ({
   const isCoverageGap = ev.coverage_gap || ev.status === "UNSUPPORTED";
   const gazetteTitle = formatGazetteTitle(ev.document_title || ev.instrument, ev.document_id);
 
-  // Status configuration
+  // Status configuration with minimal dots instead of loud colored blocks
   const getStatusConfig = () => {
     if (isCoverageGap) {
       return {
         badge: "GAZETTE NOTICE",
-        badgeStyle: "bg-sky-500/10 text-sky-400 border-sky-500/20",
-        cardBorder: "border-sky-900/40",
-        icon: null,
+        dotColor: "bg-zinc-400",
       };
     }
     if (ev.status === "APPLICABLE") {
       return {
         badge: "MANDATORY",
-        badgeStyle: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-        cardBorder: "border-emerald-900/40",
-        icon: CheckCircle2,
+        dotColor: "bg-emerald-400",
       };
     }
     if (ev.status === "CONDITIONAL_MISSING_DATA") {
       return {
         badge: "DATA NEEDED",
-        badgeStyle: "bg-amber-500/10 text-amber-400 border-amber-500/20",
-        cardBorder: "border-amber-900/40",
-        icon: AlertCircle,
+        dotColor: "bg-amber-400",
       };
     }
     return {
       badge: "EXEMPT",
-      badgeStyle: "bg-slate-800 text-slate-400 border-slate-700",
-      cardBorder: "border-slate-800",
-      icon: XCircle,
+      dotColor: "bg-zinc-500",
     };
   };
 
   const statusConfig = getStatusConfig();
-  const StatusIcon = statusConfig.icon;
 
   return (
-    <div className={`rounded-xl border ${statusConfig.cardBorder} bg-slate-900 overflow-hidden transition-all shadow-sm`}>
+    <div className="rounded-lg border border-zinc-800 bg-zinc-900 overflow-hidden transition-colors">
       {/* Clickable Header */}
       <button
         type="button"
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full p-4 flex items-center justify-between gap-3 text-left hover:bg-slate-800/40 transition-colors cursor-pointer"
+        className="w-full p-3.5 flex items-center justify-between gap-3 text-left hover:bg-zinc-850/50 transition-colors cursor-pointer"
       >
-        <div className="flex items-center gap-3 flex-wrap">
-          {/* Status Badge */}
-          <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border ${statusConfig.badgeStyle}`}>
-            {StatusIcon && <StatusIcon className="w-3.5 h-3.5" />}
+        <div className="flex items-center gap-2.5 flex-wrap">
+          {/* Subtle Status Badge */}
+          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-zinc-800 text-[10px] font-mono font-medium text-zinc-300 border border-zinc-700">
+            <span className={`w-1.5 h-1.5 rounded-full ${statusConfig.dotColor}`} />
             <span>{statusConfig.badge}</span>
           </span>
 
           {/* Clause & Document */}
           <div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-sm font-semibold text-white">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="text-xs font-semibold text-zinc-100">
                 {ev.clause}
               </span>
-              <span className="text-xs text-slate-400">
+              <span className="text-[11px] text-zinc-400">
                 &bull; {gazetteTitle}
               </span>
               {ev.review_status && ev.review_status.includes("APPROVED") && (
-                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-emerald-950/60 text-emerald-400 border border-emerald-800/40">
+                <span className="text-[10px] font-mono px-1 py-0.2 rounded bg-zinc-800 text-zinc-300 border border-zinc-700">
                   Certified
                 </span>
               )}
             </div>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Authority: <span className="text-slate-300">{ev.authority || "Sri Lanka Statutory Authority"}</span>
+            <p className="text-[11px] text-zinc-500 mt-0.5">
+              Authority: <span className="text-zinc-400">{ev.authority || "Sri Lanka Statutory Authority"}</span>
             </p>
           </div>
         </div>
 
-        <div className="text-slate-400">
+        <div className="text-zinc-500">
           {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
         </div>
       </button>
 
       {/* Expanded Details */}
       {isExpanded && (
-        <div className="p-4 pt-2 border-t border-slate-800 space-y-3.5 bg-slate-950/30">
+        <div className="p-3.5 pt-1 border-t border-zinc-800/80 space-y-3 bg-zinc-950/40">
           {/* Notice for coverage gaps */}
           {isCoverageGap && (
-            <div className="p-3 rounded-lg bg-sky-950/30 border border-sky-800/30 text-xs text-sky-200/90 leading-relaxed">
-              <span className="font-semibold text-sky-300 block mb-0.5">Statutory Ingestion Notice:</span>
-              This clause was indexed directly from official Gazettes as relevant to food businesses, and is awaiting formal reviewer sign-off in the Reviewer Portal. The engine abstains from creating obligations until certified.
+            <div className="p-2.5 rounded-md bg-zinc-900 border border-zinc-800 text-xs text-zinc-300 leading-relaxed">
+              <span className="font-semibold text-zinc-200 block mb-0.5 text-[11px]">Corpus Notice:</span>
+              This clause was indexed from official Gazettes and is pending formal reviewer sign-off in the Reviewer Portal. The engine abstains from creating obligations until certified.
             </div>
           )}
 
           {/* Verbatim Gazette Quote in Distinct Serif */}
           {ev.quote_span && (
             <div className="space-y-1">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 block">
-                Official Gazette Text (Verbatim Excerpt)
+              <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 block">
+                Gazette Excerpt (Verbatim)
               </span>
-              <div className="p-3.5 rounded-lg bg-[#080d16] border-l-2 border-slate-600 border-r border-t border-b border-slate-800 text-xs text-slate-200 legal-quote-text italic">
+              <div className="p-3 rounded-md bg-zinc-950 border-l-2 border-zinc-600 border-r border-t border-b border-zinc-800 text-xs text-zinc-300 legal-quote-text italic">
                 &ldquo;{ev.quote_span}&rdquo;
               </div>
             </div>
@@ -162,40 +146,40 @@ export const StatutoryCitationCard: React.FC<StatutoryCitationCardProps> = ({
 
           {/* Engine Reason & Temporal Status */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
-            <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
-              <span className="text-slate-400 block text-[11px] mb-0.5 font-medium">Evaluation Verdict:</span>
-              <span className="text-slate-200 leading-relaxed">{ev.reason || "Evaluated by deterministic Kleene logic."}</span>
+            <div className="p-2 rounded-md bg-zinc-900 border border-zinc-800">
+              <span className="text-zinc-500 block text-[10px] uppercase font-mono mb-0.5">Verdict Reason:</span>
+              <span className="text-zinc-300 leading-relaxed text-[11px]">{ev.reason || "Evaluated by deterministic Kleene logic."}</span>
             </div>
-            <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
-              <span className="text-slate-400 block text-[11px] mb-0.5 font-medium">Statutory Enforcement:</span>
-              <span className="text-slate-200 font-mono text-[11px]">{ev.temporal_status || "Active & In Effect"}</span>
+            <div className="p-2 rounded-md bg-zinc-900 border border-zinc-800">
+              <span className="text-zinc-500 block text-[10px] uppercase font-mono mb-0.5">Enforcement Window:</span>
+              <span className="text-zinc-300 font-mono text-[11px]">{ev.temporal_status || "Active & In Effect"}</span>
             </div>
           </div>
 
           {/* Collapsible Technical Details / Provenance Accordion */}
-          <div className="pt-2">
+          <div className="pt-1">
             <button
               type="button"
               onClick={() => setShowTechnical(!showTechnical)}
-              className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-200 transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 text-[11px] text-zinc-500 hover:text-zinc-300 transition-colors cursor-pointer"
             >
-              <Code2 className="w-3.5 h-3.5" />
-              <span>{showTechnical ? "Hide Technical Audit Data" : "Inspect Technical Audit Data & Trace"}</span>
+              <Code2 className="w-3 h-3" />
+              <span>{showTechnical ? "Hide Audit Data" : "Inspect Technical Audit Data & Trace"}</span>
             </button>
 
             {showTechnical && (
-              <div className="mt-2 p-3 rounded-lg bg-slate-950 border border-slate-800 font-mono text-[11px] space-y-2">
-                <div className="grid grid-cols-2 gap-2 text-slate-400">
-                  <div>Rule ID: <span className="text-slate-200">{ev.rule_id}</span></div>
-                  <div>Page No: <span className="text-slate-200">{ev.page_number ?? 1}</span></div>
-                  <div>Char Offsets: <span className="text-slate-200">[{ev.char_start ?? 0} &ndash; {ev.char_end ?? 0}]</span></div>
-                  <div>Review Status: <span className="text-slate-200">{ev.review_status || "APPROVED"}</span></div>
+              <div className="mt-2 p-2.5 rounded-md bg-zinc-950 border border-zinc-800 font-mono text-[11px] space-y-1.5">
+                <div className="grid grid-cols-2 gap-1.5 text-zinc-500">
+                  <div>Rule ID: <span className="text-zinc-300">{ev.rule_id}</span></div>
+                  <div>Page No: <span className="text-zinc-300">{ev.page_number ?? 1}</span></div>
+                  <div>Offsets: <span className="text-zinc-300">[{ev.char_start ?? 0} &ndash; {ev.char_end ?? 0}]</span></div>
+                  <div>Review: <span className="text-zinc-300">{ev.review_status || "APPROVED"}</span></div>
                 </div>
 
                 {ev.evaluation_trace && ev.evaluation_trace.length > 0 && (
-                  <div className="mt-2 pt-2 border-t border-slate-800">
-                    <span className="text-slate-400 block mb-1">Kleene Evaluation Trace:</span>
-                    <pre className="p-2 rounded bg-[#060a12] text-slate-300 text-[10px] overflow-x-auto max-h-40">
+                  <div className="mt-1.5 pt-1.5 border-t border-zinc-800">
+                    <span className="text-zinc-500 block mb-1">Kleene Evaluation Trace:</span>
+                    <pre className="p-2 rounded bg-zinc-900 text-zinc-300 text-[10px] overflow-x-auto max-h-40">
                       {JSON.stringify(ev.evaluation_trace, null, 2)}
                     </pre>
                   </div>
