@@ -75,7 +75,7 @@ VERBATIM_QUOTE_SPAN = (
 )
 
 COMMENCEMENT_DATE = "2026-07-01"
-PUBLICATION_DATE = "2026-02-11"
+PUBLICATION_DATE = "2026-07-01"
 
 
 @pytest.fixture
@@ -266,6 +266,8 @@ def test_provenance_distinction_draft_verified_reviewed(test_db):
         source={
             "clause": CLAUSE_NUMBER,
             "instrument": DOC_TITLE,
+            "authority": DOC_AUTHORITY,
+            "gazette_no": DOC_GAZETTE_NO,
             "page": CLAUSE_PAGE,
             "quote_span": VERBATIM_QUOTE_SPAN,
         },
@@ -292,7 +294,10 @@ def test_provenance_distinction_draft_verified_reviewed(test_db):
         obligation=Obligation(**persisted.obligation),
         verification=Verification(status="PENDING_REVIEW", extraction_model="test", agreement=True),
     )
-    v_report = verifier.verify(rule_domain, raw_clause_text=VERBATIM_QUOTE_SPAN)
+    doc = pymupdf.open(str(REAL_PDF_PATH))
+    p1_text = doc[0].get_text()
+    doc.close()
+    v_report = verifier.verify(rule_domain, source_text=p1_text)
     assert v_report.is_valid is True
     assert v_report.status == "verified"
     
@@ -567,10 +572,21 @@ def test_version_preservation_on_amendment(test_db):
         applies_if=original_applies_if,
         obligation={"type": "labelling", "text": "Original text", "impact_categories": []},
         validity={"published": PUBLICATION_DATE, "commences": COMMENCEMENT_DATE},
-        source={"clause": "Reg 2", "instrument": DOC_TITLE, "page": 1, "quote_span": VERBATIM_QUOTE_SPAN},
+        source={
+            "clause": "Reg 2",
+            "instrument": DOC_TITLE,
+            "authority": DOC_AUTHORITY,
+            "gazette_no": DOC_GAZETTE_NO,
+            "page": 1,
+            "quote_span": VERBATIM_QUOTE_SPAN,
+        },
         review_status="PENDING_REVIEW",
     )
-    test_db.add_all([doc_orm, clause_orm, rule_orm])
+    test_db.add(doc_orm)
+    test_db.commit()
+    test_db.add(clause_orm)
+    test_db.commit()
+    test_db.add(rule_orm)
     test_db.commit()
 
     # Apply amendment via ReviewService

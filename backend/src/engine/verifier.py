@@ -275,7 +275,7 @@ class RuleVerifier:
             )
 
         # Stage 3: Literal Check (for standard compilable rules)
-        literal_issues = self.verify_literals(rule_obj)
+        literal_issues = self.verify_literals(rule_obj, source_text=source_text)
         issues.extend(literal_issues)
 
         has_errors = any(i.severity == "error" for i in issues)
@@ -376,8 +376,8 @@ class RuleVerifier:
 
         return issues
 
-    def verify_literals(self, rule: Rule) -> List[VerificationIssue]:
-        """Stage 3: Verify that every numeric literal, unit, and date exists in quote_span."""
+    def verify_literals(self, rule: Rule, source_text: Optional[str] = None) -> List[VerificationIssue]:
+        """Stage 3: Verify that every numeric literal, unit, and date exists in quote_span or source text."""
         issues: List[VerificationIssue] = []
         quote = rule.source.quote_span or ""
 
@@ -449,14 +449,15 @@ class RuleVerifier:
             ("superseded_date", val.superseded_date),
         ]
 
+        text_for_dates = f"{quote} {source_text or ''}".strip()
         for field_name, d_str in dates_to_check:
             if d_str and d_str.strip():
-                if not date_in_text(d_str, quote):
+                if not date_in_text(d_str, text_for_dates):
                     issues.append(
                         VerificationIssue(
                             stage="literal_check",
                             severity="error",
-                            message=f"Date '{d_str}' in validity.{field_name} does not appear in quote_span.",
+                            message=f"Date '{d_str}' in validity.{field_name} does not appear in quote_span or source text.",
                         )
                     )
 
