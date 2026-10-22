@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Sparkles, Building2, HelpCircle, ShieldCheck } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
 interface ScenarioPresetCardsProps {
   onSelectPreset: (type: "compliant" | "incomplete" | "exempt") => void;
@@ -15,44 +15,38 @@ export const ScenarioPresetCards: React.FC<ScenarioPresetCardsProps> = ({
   const presets = [
     {
       id: "compliant" as const,
-      title: "Large Industrial Manufacturer",
-      subtitle: "Mandatory Thresholds Triggered",
-      desc: "25 employees (>20 EPL), 100 kg/day (>50 kg/day FCAU), prepackaged biscuits.",
-      badge: "Mandatory Rules",
-      badgeColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-      activeBorder: "border-emerald-500/50 bg-emerald-950/20",
+      title: "Large Manufacturer",
+      desc: "25 employees, 100 kg/day capacity, prepackaged biscuits.",
+      tag: "Mandatory Rules",
+      dot: "bg-emerald-400",
     },
     {
       id: "incomplete" as const,
-      title: "Incomplete Bakery Data",
-      subtitle: "Kleene Abstention & Clarifications",
-      desc: "15 employees, capacity left blank (UNKNOWN). Demonstrates missing data questions.",
-      badge: "Questions Demo",
-      badgeColor: "bg-amber-500/10 text-amber-400 border-amber-500/20",
-      activeBorder: "border-amber-500/50 bg-amber-950/20",
+      title: "Incomplete Bakery",
+      desc: "15 employees, capacity unknown. Tests Kleene clarifications.",
+      tag: "Missing Data",
+      dot: "bg-amber-400",
     },
     {
       id: "exempt" as const,
-      title: "Micro Cottage Producer",
-      subtitle: "Exemption Boundaries",
-      desc: "8 employees (<20), 30 kg/day (<50), non-packaged traditional confectioneries.",
-      badge: "Exemptions Demo",
-      badgeColor: "bg-slate-800 text-slate-300 border-slate-700",
-      activeBorder: "border-slate-500 bg-slate-800/40",
+      title: "Micro Cottage",
+      desc: "8 employees, 30 kg/day capacity, bulk unpackaged sweets.",
+      tag: "Exemptions",
+      dot: "bg-zinc-400",
     },
   ];
 
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <label className="text-xs font-medium text-slate-400 flex items-center gap-1.5">
-          <Sparkles className="w-3.5 h-3.5 text-slate-400" />
-          <span>Interactive Benchmark Scenarios</span>
+        <label className="text-xs font-medium text-zinc-400 flex items-center gap-1.5">
+          <Sparkles className="w-3.5 h-3.5 text-zinc-500" />
+          <span>Scenario Presets</span>
         </label>
-        <span className="text-[11px] text-slate-500 font-mono">1-Click Quick Configuration</span>
+        <span className="text-[11px] text-zinc-500 font-mono">1-Click Test Scenarios</span>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
         {presets.map((p) => {
           const isActive = activePreset === p.id;
           return (
@@ -60,29 +54,28 @@ export const ScenarioPresetCards: React.FC<ScenarioPresetCardsProps> = ({
               key={p.id}
               type="button"
               onClick={() => onSelectPreset(p.id)}
-              className={`p-3 rounded-lg border text-left transition-all cursor-pointer flex flex-col justify-between gap-2 ${
+              className={`p-2.5 rounded-lg border text-left transition-colors cursor-pointer flex flex-col justify-between gap-1.5 ${
                 isActive
-                  ? p.activeBorder
-                  : "bg-slate-900 border-slate-800 hover:border-slate-700 hover:bg-slate-850"
+                  ? "bg-zinc-800/80 border-zinc-600 text-zinc-100"
+                  : "bg-zinc-900/60 border-zinc-800 hover:border-zinc-700 hover:bg-zinc-800/40 text-zinc-300"
               }`}
             >
               <div>
-                <div className="flex items-center justify-between gap-1 mb-1">
-                  <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded border ${p.badgeColor}`}>
-                    {p.badge}
-                  </span>
+                <div className="flex items-center gap-1.5 mb-1">
+                  <span className={`w-1.5 h-1.5 rounded-full ${p.dot}`} />
+                  <span className="text-[10px] font-mono text-zinc-400">{p.tag}</span>
                 </div>
-                <h4 className="text-xs font-semibold text-slate-100">
+                <h4 className="text-xs font-medium text-zinc-200">
                   {p.title}
                 </h4>
-                <p className="text-[11px] text-slate-400 mt-1 leading-snug line-clamp-2">
+                <p className="text-[11px] text-zinc-500 mt-0.5 leading-snug">
                   {p.desc}
                 </p>
               </div>
 
-              <div className="pt-1 text-[11px] font-medium text-slate-300 flex items-center justify-between border-t border-slate-800/60 mt-1">
-                <span>Load Scenario</span>
-                <span className="text-slate-500">&rarr;</span>
+              <div className="text-[10px] text-zinc-500 flex items-center justify-between pt-1 border-t border-zinc-800/60 mt-0.5">
+                <span>{isActive ? "Active Preset" : "Apply"}</span>
+                <span>&rarr;</span>
               </div>
             </button>
           );
