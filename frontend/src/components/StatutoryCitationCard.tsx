@@ -72,6 +72,12 @@ export const StatutoryCitationCard: React.FC<StatutoryCitationCardProps> = ({
         dotColor: "bg-amber-400",
       };
     }
+    if (ev.status === "CONDITIONAL_RULE") {
+      return {
+        badge: "CONDITIONAL RULE",
+        dotColor: "bg-sky-400",
+      };
+    }
     return {
       badge: "EXEMPT",
       dotColor: "bg-zinc-500",
