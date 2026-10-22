@@ -9,9 +9,6 @@ import {
   FileCheck2, 
   Scale, 
   BarChart3, 
-  Activity, 
-  CheckCircle2, 
-  AlertCircle,
   Menu,
   X,
 } from "lucide-react";
@@ -71,26 +68,21 @@ export const Navbar: React.FC = () => {
   ];
 
   return (
-    <nav className="sticky top-0 z-50 bg-[#0d131f]/95 backdrop-blur-md border-b border-slate-800">
+    <nav className="sticky top-0 z-50 bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-14">
           {/* Brand & Badge */}
-          <div className="flex items-center gap-8">
-            <Link href="/" className="flex items-center gap-3 group">
-              <div className="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-100 font-bold text-sm group-hover:border-slate-500 transition-colors">
+          <div className="flex items-center gap-6">
+            <Link href="/" className="flex items-center gap-2.5 group">
+              <div className="w-7 h-7 rounded-md bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-100 font-bold text-xs group-hover:border-zinc-700 transition-colors">
                 R
               </div>
-              <div className="flex flex-col">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold text-white tracking-tight">
-                    RegImpact-SL
-                  </span>
-                  <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-800 text-slate-400 border border-slate-700">
-                    SL-Corpus
-                  </span>
-                </div>
-                <span className="text-[11px] text-slate-400 hidden sm:block">
-                  Neuro-Symbolic Legal Intelligence
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold text-zinc-100 tracking-tight">
+                  RegImpact-SL
+                </span>
+                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-900 text-zinc-400 border border-zinc-800">
+                  v1.0
                 </span>
               </div>
             </Link>
@@ -103,16 +95,16 @@ export const Navbar: React.FC = () => {
                   <Link
                     key={item.name}
                     href={item.href}
-                    className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-medium transition-all ${
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                       item.active
-                        ? "bg-slate-800 text-white border border-slate-700 shadow-sm"
-                        : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+                        ? "bg-zinc-900 text-zinc-100 border border-zinc-800"
+                        : "text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900/50"
                     }`}
                   >
-                    <Icon className="w-4 h-4" />
+                    <Icon className="w-3.5 h-3.5" />
                     <span>{item.name}</span>
                     {item.badge !== undefined && (
-                      <span className="ml-1 px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                      <span className="ml-0.5 px-1.5 py-0.2 text-[10px] font-mono rounded bg-zinc-800 text-zinc-300 border border-zinc-700">
                         {item.badge}
                       </span>
                     )}
@@ -123,29 +115,21 @@ export const Navbar: React.FC = () => {
           </div>
 
           {/* Right Status Controls */}
-          <div className="hidden sm:flex items-center gap-3">
+          <div className="hidden sm:flex items-center gap-2.5">
             {/* Engine Status */}
-            <div
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs border ${
-                engineConnected === true
-                  ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                  : engineConnected === false
-                  ? "bg-rose-500/10 text-rose-400 border-rose-500/20"
-                  : "bg-slate-800 text-slate-400 border-slate-700"
-              }`}
-            >
+            <div className="flex items-center gap-2 px-2.5 py-1 rounded-md text-xs border border-zinc-800 bg-zinc-900 text-zinc-300">
               {engineConnected === true ? (
                 <>
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="font-mono text-[11px]">Engine Active</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  <span className="font-mono text-[11px] text-zinc-400">Engine Online</span>
                 </>
               ) : engineConnected === false ? (
                 <>
-                  <AlertCircle className="w-3.5 h-3.5 text-rose-400" />
-                  <span className="font-mono text-[11px]">Engine Offline</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
+                  <span className="font-mono text-[11px] text-zinc-400">Engine Offline</span>
                 </>
               ) : (
-                <span className="font-mono text-[11px]">Connecting...</span>
+                <span className="font-mono text-[11px] text-zinc-500">Connecting...</span>
               )}
             </div>
 
@@ -159,10 +143,10 @@ export const Navbar: React.FC = () => {
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg text-slate-400 hover:text-white bg-slate-800 border border-slate-700"
+              className="p-1.5 rounded-md text-zinc-400 hover:text-zinc-100 bg-zinc-900 border border-zinc-800"
               aria-label="Toggle navigation menu"
             >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
             </button>
           </div>
         </div>
@@ -170,7 +154,7 @@ export const Navbar: React.FC = () => {
 
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-slate-800 bg-[#0d131f] px-4 pt-2 pb-4 space-y-1">
+        <div className="md:hidden border-t border-zinc-800 bg-zinc-950 px-4 pt-2 pb-3 space-y-1">
           {navLinks.map((item) => {
             const Icon = item.icon;
             return (
@@ -178,18 +162,18 @@ export const Navbar: React.FC = () => {
                 key={item.name}
                 href={item.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium ${
+                className={`flex items-center justify-between px-3 py-2 rounded-md text-xs font-medium ${
                   item.active
-                    ? "bg-slate-800 text-white border border-slate-700"
-                    : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+                    ? "bg-zinc-900 text-zinc-100 border border-zinc-800"
+                    : "text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900/50"
                 }`}
               >
-                <div className="flex items-center gap-2.5">
-                  <Icon className="w-4 h-4" />
+                <div className="flex items-center gap-2">
+                  <Icon className="w-3.5 h-3.5" />
                   <span>{item.name}</span>
                 </div>
                 {item.badge !== undefined && (
-                  <span className="px-2 py-0.5 text-xs font-bold rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                  <span className="px-1.5 py-0.2 text-[10px] font-mono rounded bg-zinc-800 text-zinc-300 border border-zinc-700">
                     {item.badge}
                   </span>
                 )}
