@@ -2,44 +2,42 @@
 
 @layer base {
   :root {
-    --background: #0b0f19;
-    --foreground: #f8fafc;
-    --card: #111827;
-    --card-muted: #0f172a;
-    --border: #1e293b;
-    --border-subtle: #1e293b;
-    --primary: #3b82f6;
+    --background: #09090b;
+    --foreground: #fafafa;
+    --card: #18181b;
+    --card-subtle: #121215;
+    --border: #27272a;
+    --border-subtle: #27272a;
   }
 
   body {
-    background-color: #0b0f19;
-    color: #f8fafc;
+    background-color: #09090b;
+    color: #fafafa;
     min-height: 100vh;
-    font-family: var(--font-geist-sans), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 }
 
-/* Enterprise Neutral Panels */
-.enterprise-card {
-  background-color: #111827;
-  border: 1px solid #1f2937;
-  border-radius: 0.75rem; /* rounded-xl */
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px -1px rgba(0, 0, 0, 0.3);
+/* Linear/Vercel Minimalist Panels */
+.linear-card {
+  background-color: #18181b;
+  border: 1px solid #27272a;
+  border-radius: 0.5rem; /* rounded-lg */
 }
 
-.enterprise-card-subtle {
-  background-color: #0f172a;
-  border: 1px solid #1e293b;
-  border-radius: 0.75rem;
+.linear-card-subtle {
+  background-color: #121215;
+  border: 1px solid #27272a;
+  border-radius: 0.5rem;
 }
 
-/* Gazette Legal Text (Authoritative Serif Distinction) */
+/* Legal text quote font */
 .legal-quote-text {
   font-family: Georgia, Cambria, "Times New Roman", Times, serif;
   letter-spacing: 0.01em;
-  line-height: 1.65;
+  line-height: 1.6;
 }
 
 /* Subtle, standard scrollbar */
@@ -48,21 +46,21 @@
   height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #0b0f19;
+  background: #09090b;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
+  background: #27272a;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: #3f3f46;
 }
 
 /* Print styles for Compliance Dossier */
 @media print {
   body {
     background: #ffffff !important;
-    color: #111827 !important;
+    color: #09090b !important;
   }
   header, nav, button, .no-print {
     display: none !important;
@@ -74,7 +72,7 @@
     display: block !important;
     position: static !important;
     background: #ffffff !important;
-    color: #111827 !important;
+    color: #09090b !important;
     padding: 0 !important;
     margin: 0 !important;
     box-shadow: none !important;
