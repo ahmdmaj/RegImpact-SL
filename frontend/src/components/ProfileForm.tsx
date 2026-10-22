@@ -2,7 +2,17 @@
 
 import React, { useState } from "react";
 import { BusinessProfile } from "@/services/api";
-import { Building2, Sparkles, RotateCcw, Play, Users, Scale, PackageCheck, Globe2, Calendar } from "lucide-react";
+import { ScenarioPresetCards } from "./ScenarioPresetCards";
+import { 
+  Building2, 
+  RotateCcw, 
+  Play, 
+  Users, 
+  Scale, 
+  PackageCheck, 
+  Globe2, 
+  Calendar 
+} from "lucide-react";
 
 interface ProfileFormProps {
   initialProfile?: BusinessProfile;
@@ -17,7 +27,8 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
   onAnalyze,
   isLoading,
 }) => {
-  const [businessId, setBusinessId] = useState(initialProfile?.business_id || "BIZ-SL-101");
+  const [activePreset, setActivePreset] = useState<"compliant" | "incomplete" | "exempt" | null>("compliant");
+  const [businessId, setBusinessId] = useState(initialProfile?.business_id || "BIZ-COLOMBO-FOODS");
   const [activity, setActivity] = useState(initialProfile?.activity || "food_manufacturing");
   const [employeeCount, setEmployeeCount] = useState<string>(
     initialProfile?.employee_count !== undefined && initialProfile?.employee_count !== null
@@ -40,7 +51,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
       ? "true"
       : initialProfile?.products?.[0]?.prepackaged === false
       ? "false"
-      : "unknown"
+      : "true"
   );
 
   const [marketDomestic, setMarketDomestic] = useState<string>(
@@ -55,13 +66,14 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
       ? "true"
       : initialProfile?.market?.export_flag === false
       ? "false"
-      : "unknown"
+      : "false"
   );
 
   const [asAtDate, setAsAtDate] = useState(initialAsAtDate);
 
-  // Quick Scenario Presets for instant demonstration
-  const loadPreset = (type: "compliant" | "incomplete" | "exempt") => {
+  // Load Preset
+  const handleSelectPreset = (type: "compliant" | "incomplete" | "exempt") => {
+    setActivePreset(type);
     if (type === "compliant") {
       setBusinessId("BIZ-COLOMBO-FOODS");
       setActivity("food_manufacturing");
@@ -102,7 +114,8 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
   };
 
   const handleReset = () => {
-    setBusinessId("BIZ-DEMO-001");
+    setActivePreset(null);
+    setBusinessId("");
     setActivity("food_manufacturing");
     setEmployeeCount("");
     setCapacityValue("");
@@ -119,7 +132,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
     const capNum = capacityValue.trim() === "" ? null : Number(capacityValue);
 
     const profile: BusinessProfile = {
-      business_id: businessId,
+      business_id: businessId.trim() || "BIZ-SL-CUSTOM",
       activity: activity.trim() || null,
       industry: "food_and_beverage",
       employee_count: empCountNum,
@@ -144,84 +157,71 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
   };
 
   return (
-    <div className="glass-panel rounded-2xl p-6 border border-slate-700/60 shadow-xl">
-      {/* Header & Presets */}
-      <div className="flex flex-col gap-3 pb-6 border-b border-slate-700/60">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-blue-400 font-semibold text-lg">
-            <Building2 className="w-5 h-5 text-blue-400" />
-            <span>SME Business Profile</span>
+    <div className="rounded-xl border border-slate-800 bg-slate-900 shadow-sm p-6 space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+        <div className="flex items-center gap-2.5">
+          <div className="p-2 rounded-lg bg-slate-800 text-slate-200 border border-slate-700">
+            <Building2 className="w-4 h-4 text-slate-300" />
           </div>
-          <button
-            type="button"
-            onClick={handleReset}
-            className="flex items-center gap-1 text-xs text-slate-400 hover:text-slate-200 transition-colors"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            <span>Clear</span>
-          </button>
+          <div>
+            <h2 className="text-sm font-semibold text-white">
+              Food Manufacturer Profile
+            </h2>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Specify enterprise parameters to evaluate statutory applicability under Kleene 3-valued logic.
+            </p>
+          </div>
         </div>
-        <p className="text-xs text-slate-400">
-          Fields left blank represent <span className="text-amber-400 font-mono">UNKNOWN</span> in 3-valued Kleene logic.
-        </p>
 
-        {/* Quick Scenario Pills */}
-        <div className="space-y-1.5 pt-1">
-          <span className="text-xs text-slate-300 font-medium flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-            <span>Quick Test Presets (Click to load):</span>
-          </span>
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={() => loadPreset("compliant")}
-              className="px-2.5 py-1 text-xs font-medium rounded-lg bg-emerald-950/80 text-emerald-300 border border-emerald-700/50 hover:bg-emerald-900/80 transition-all cursor-pointer"
-            >
-              Preset 1: Large Manufacturer (Mandatory Rules Apply)
-            </button>
-            <button
-              type="button"
-              onClick={() => loadPreset("incomplete")}
-              className="px-2.5 py-1 text-xs font-medium rounded-lg bg-amber-950/80 text-amber-300 border border-amber-700/50 hover:bg-amber-900/80 transition-all cursor-pointer"
-            >
-              Preset 2: Incomplete Data (Clarifying Questions Demo)
-            </button>
-            <button
-              type="button"
-              onClick={() => loadPreset("exempt")}
-              className="px-2.5 py-1 text-xs font-medium rounded-lg bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 transition-all cursor-pointer"
-            >
-              Preset 3: Micro Cottage Producer (Exempt Demo)
-            </button>
-          </div>
-        </div>
+        <button
+          type="button"
+          onClick={handleReset}
+          className="flex items-center gap-1.5 px-2.5 py-1 text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-md transition-colors"
+          title="Clear all inputs"
+        >
+          <RotateCcw className="w-3.5 h-3.5" />
+          <span>Reset</span>
+        </button>
       </div>
 
+      {/* Preset Cards */}
+      <ScenarioPresetCards
+        onSelectPreset={handleSelectPreset}
+        activePreset={activePreset}
+      />
+
       {/* Form Fields */}
-      <form onSubmit={handleSubmit} className="space-y-4 pt-5">
+      <form onSubmit={handleSubmit} className="space-y-4 pt-2">
         {/* Identifier and Activity */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">
-              Business ID / Registration Name
+            <label className="block text-xs font-medium text-slate-300 mb-1.5">
+              Registration / Business ID
             </label>
             <input
               type="text"
               value={businessId}
-              onChange={(e) => setBusinessId(e.target.value)}
-              className="w-full bg-slate-900/80 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-              placeholder="e.g. BIZ-SL-001"
+              onChange={(e) => {
+                setActivePreset(null);
+                setBusinessId(e.target.value);
+              }}
+              className="w-full h-10 bg-slate-950 border border-slate-800 rounded-lg px-3 text-xs text-slate-100 focus:outline-none focus:border-slate-500 focus:ring-1 focus:ring-slate-500 transition-colors"
+              placeholder="e.g. BIZ-COLOMBO-FOODS"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">
-              Primary Activity
+            <label className="block text-xs font-medium text-slate-300 mb-1.5">
+              Primary Industrial Activity
             </label>
             <select
               value={activity}
-              onChange={(e) => setActivity(e.target.value)}
-              className="w-full bg-slate-900/80 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 cursor-pointer"
+              onChange={(e) => {
+                setActivePreset(null);
+                setActivity(e.target.value);
+              }}
+              className="w-full h-10 bg-slate-950 border border-slate-800 rounded-lg px-3 text-xs text-slate-100 focus:outline-none focus:border-slate-500 focus:ring-1 focus:ring-slate-500 cursor-pointer transition-colors"
             >
               <option value="food_manufacturing">Food Manufacturing (Industrial / Commercial)</option>
               <option value="catering">Catering & Food Service</option>
@@ -231,27 +231,36 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
           </div>
         </div>
 
-        {/* Employees & Production Capacity */}
+        {/* Workforce & Production Capacity */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1 flex items-center gap-1.5">
-              <Users className="w-3.5 h-3.5 text-slate-400" />
-              <span>Total Employees (CEA EPL Threshold: 20)</span>
+            <label className="block text-xs font-medium text-slate-300 mb-1.5 flex items-center justify-between">
+              <span className="flex items-center gap-1.5">
+                <Users className="w-3.5 h-3.5 text-slate-400" />
+                <span>Total Employees</span>
+              </span>
+              <span className="text-[11px] font-mono text-slate-500">Threshold: 20 (EPL)</span>
             </label>
             <input
               type="number"
               min="0"
               value={employeeCount}
-              onChange={(e) => setEmployeeCount(e.target.value)}
-              className="w-full bg-slate-900/80 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-blue-500 placeholder-slate-600"
+              onChange={(e) => {
+                setActivePreset(null);
+                setEmployeeCount(e.target.value);
+              }}
+              className="w-full h-10 bg-slate-950 border border-slate-800 rounded-lg px-3 text-xs text-slate-100 focus:outline-none focus:border-slate-500 focus:ring-1 focus:ring-slate-500 transition-colors placeholder:text-slate-600"
               placeholder="Leave blank for UNKNOWN"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1 flex items-center gap-1.5">
-              <Scale className="w-3.5 h-3.5 text-slate-400" />
-              <span>Production Capacity (FCAU Threshold: 50 kg/day)</span>
+            <label className="block text-xs font-medium text-slate-300 mb-1.5 flex items-center justify-between">
+              <span className="flex items-center gap-1.5">
+                <Scale className="w-3.5 h-3.5 text-slate-400" />
+                <span>Daily Capacity</span>
+              </span>
+              <span className="text-[11px] font-mono text-slate-500">Threshold: 50 kg/day (FCAU)</span>
             </label>
             <div className="flex gap-2">
               <input
@@ -259,14 +268,17 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
                 min="0"
                 step="any"
                 value={capacityValue}
-                onChange={(e) => setCapacityValue(e.target.value)}
-                className="w-2/3 bg-slate-900/80 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-blue-500 placeholder-slate-600"
+                onChange={(e) => {
+                  setActivePreset(null);
+                  setCapacityValue(e.target.value);
+                }}
+                className="w-2/3 h-10 bg-slate-950 border border-slate-800 rounded-lg px-3 text-xs text-slate-100 focus:outline-none focus:border-slate-500 focus:ring-1 focus:ring-slate-500 transition-colors placeholder:text-slate-600"
                 placeholder="Leave blank for UNKNOWN"
               />
               <select
                 value={capacityUnit}
                 onChange={(e) => setCapacityUnit(e.target.value)}
-                className="w-1/3 bg-slate-900/80 border border-slate-700 rounded-lg px-2 py-2 text-sm text-slate-100 focus:outline-none focus:border-blue-500 cursor-pointer"
+                className="w-1/3 h-10 bg-slate-950 border border-slate-800 rounded-lg px-2 text-xs text-slate-100 focus:outline-none focus:border-slate-500 focus:ring-1 focus:ring-slate-500 cursor-pointer"
               >
                 <option value="kg">kg / day</option>
                 <option value="metric_tons">tons / day</option>
@@ -279,94 +291,100 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
         {/* Product Category & Prepackaging */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1 flex items-center gap-1.5">
+            <label className="block text-xs font-medium text-slate-300 mb-1.5 flex items-center gap-1.5">
               <PackageCheck className="w-3.5 h-3.5 text-slate-400" />
               <span>Product Category</span>
             </label>
             <input
               type="text"
               value={productCategory}
-              onChange={(e) => setProductCategory(e.target.value)}
-              className="w-full bg-slate-900/80 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-blue-500"
-              placeholder="e.g. biscuits, tea, dairy, confectionery"
+              onChange={(e) => {
+                setActivePreset(null);
+                setProductCategory(e.target.value);
+              }}
+              className="w-full h-10 bg-slate-950 border border-slate-800 rounded-lg px-3 text-xs text-slate-100 focus:outline-none focus:border-slate-500 focus:ring-1 focus:ring-slate-500 transition-colors"
+              placeholder="e.g. biscuits, tea, dairy, spices"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">
-              Prepackaged for Retail Sale?
+            <label className="block text-xs font-medium text-slate-300 mb-1.5">
+              Packaging Format
             </label>
             <select
               value={prepackagedState}
-              onChange={(e) => setPrepackagedState(e.target.value)}
-              className="w-full bg-slate-900/80 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-blue-500 cursor-pointer"
+              onChange={(e) => {
+                setActivePreset(null);
+                setPrepackagedState(e.target.value);
+              }}
+              className="w-full h-10 bg-slate-950 border border-slate-800 rounded-lg px-3 text-xs text-slate-100 focus:outline-none focus:border-slate-500 focus:ring-1 focus:ring-slate-500 cursor-pointer"
             >
-              <option value="true">Yes (Prepackaged / Sealed Package)</option>
-              <option value="false">No (Sold in bulk / Unpackaged)</option>
+              <option value="true">Prepackaged / Sealed for Retail Sale</option>
+              <option value="false">Unpackaged / Bulk Sale Only</option>
               <option value="unknown">Unspecified (UNKNOWN)</option>
             </select>
           </div>
         </div>
 
-        {/* Market Scope & Evaluation Date */}
+        {/* Market Destination & As-At Date */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1 flex items-center gap-1.5">
+            <label className="block text-xs font-medium text-slate-300 mb-1.5 flex items-center gap-1.5">
               <Globe2 className="w-3.5 h-3.5 text-slate-400" />
-              <span>Market Destination</span>
+              <span>Market Destination Scope</span>
             </label>
             <div className="grid grid-cols-2 gap-2">
               <select
                 value={marketDomestic}
                 onChange={(e) => setMarketDomestic(e.target.value)}
-                className="bg-slate-900/80 border border-slate-700 rounded-lg px-2 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500 cursor-pointer"
+                className="h-10 bg-slate-950 border border-slate-800 rounded-lg px-2 text-xs text-slate-100 focus:outline-none focus:border-slate-500 cursor-pointer"
               >
                 <option value="true">Domestic: Yes</option>
                 <option value="false">Domestic: No</option>
-                <option value="unknown">Domestic: ?</option>
+                <option value="unknown">Domestic: Unknown</option>
               </select>
               <select
                 value={marketExport}
                 onChange={(e) => setMarketExport(e.target.value)}
-                className="bg-slate-900/80 border border-slate-700 rounded-lg px-2 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500 cursor-pointer"
+                className="h-10 bg-slate-950 border border-slate-800 rounded-lg px-2 text-xs text-slate-100 focus:outline-none focus:border-slate-500 cursor-pointer"
               >
                 <option value="false">Export: No</option>
                 <option value="true">Export: Yes</option>
-                <option value="unknown">Export: ?</option>
+                <option value="unknown">Export: Unknown</option>
               </select>
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1 flex items-center gap-1.5">
+            <label className="block text-xs font-medium text-slate-300 mb-1.5 flex items-center gap-1.5">
               <Calendar className="w-3.5 h-3.5 text-slate-400" />
-              <span>Evaluation Point-in-Time Date (As-At Date)</span>
+              <span>Evaluation Point-in-Time Date (Temporal Validity)</span>
             </label>
             <input
               type="date"
               value={asAtDate}
               onChange={(e) => setAsAtDate(e.target.value)}
-              className="w-full bg-slate-900/80 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-blue-500 cursor-pointer"
+              className="w-full h-10 bg-slate-950 border border-slate-800 rounded-lg px-3 text-xs text-slate-100 focus:outline-none focus:border-slate-500 cursor-pointer"
             />
           </div>
         </div>
 
-        {/* Submit Button */}
+        {/* Submit Action */}
         <div className="pt-2">
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold py-3 px-6 rounded-xl shadow-lg shadow-blue-500/25 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer glow-blue"
+            className="w-full h-11 flex items-center justify-center gap-2 bg-slate-100 hover:bg-white text-slate-900 font-semibold text-xs rounded-lg transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm cursor-pointer"
           >
             {isLoading ? (
               <>
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                <span>Evaluating 3-Valued Logic Engine...</span>
+                <div className="w-4 h-4 border-2 border-slate-900/30 border-t-slate-900 rounded-full animate-spin" />
+                <span>Evaluating Neuro-Symbolic Engine...</span>
               </>
             ) : (
               <>
-                <Play className="w-4 h-4 fill-white" />
-                <span>Analyze Regulatory Impact</span>
+                <Play className="w-3.5 h-3.5 fill-slate-900 text-slate-900" />
+                <span>Run Regulatory Compliance Analysis</span>
               </>
             )}
           </button>
