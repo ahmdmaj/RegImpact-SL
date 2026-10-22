@@ -6,9 +6,6 @@ import {
   Square, 
   Copy, 
   Check, 
-  ListChecks, 
-  Clock, 
-  Briefcase 
 } from "lucide-react";
 
 interface ActionItemChecklistProps {
@@ -43,8 +40,8 @@ export const ActionItemChecklist: React.FC<ActionItemChecklistProps> = ({
 
   if (actionChecklist.length === 0) {
     return (
-      <div className="p-6 rounded-xl border border-slate-800 bg-slate-900/60 text-center">
-        <p className="text-sm text-slate-400">
+      <div className="p-6 rounded-lg border border-zinc-800 bg-zinc-900 text-center">
+        <p className="text-xs text-zinc-400">
           No immediate statutory compliance action items triggered for the current profile parameters.
         </p>
       </div>
@@ -52,73 +49,73 @@ export const ActionItemChecklist: React.FC<ActionItemChecklistProps> = ({
   }
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900 shadow-sm p-6 space-y-5">
+    <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-5 space-y-4">
       {/* Header & Copy Button */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-zinc-800">
         <div>
           <div className="flex items-center gap-2">
-            <h3 className="text-sm font-semibold text-white">
+            <h3 className="text-xs font-semibold text-zinc-100">
               Compliance Action Checklist
             </h3>
-            <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-300 border border-zinc-700">
               {completedCount}/{totalCount} Completed
             </span>
           </div>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Prioritized operational, licensing, and labelling tasks derived from verified statutory rules.
+          <p className="text-[11px] text-zinc-400 mt-0.5">
+            Operational tasks derived from verified statutory rules.
           </p>
         </div>
 
         <button
           type="button"
           onClick={handleCopy}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 border border-slate-700 transition-colors self-start sm:self-auto cursor-pointer"
+          className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-750 border border-zinc-700 transition-colors self-start sm:self-auto cursor-pointer"
         >
-          {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-          <span>{copied ? "Copied" : "Copy Checklist"}</span>
+          {copied ? <Check className="w-3.5 h-3.5 text-zinc-200" /> : <Copy className="w-3.5 h-3.5 text-zinc-400" />}
+          <span>{copied ? "Copied" : "Copy List"}</span>
         </button>
       </div>
 
       {/* Progress Bar */}
-      <div className="space-y-1.5">
-        <div className="flex items-center justify-between text-xs text-slate-400">
-          <span>Action Item Completion</span>
-          <span className="font-mono text-slate-300">{progressPercent}%</span>
+      <div className="space-y-1">
+        <div className="flex items-center justify-between text-[11px] text-zinc-400">
+          <span>Completion Progress</span>
+          <span className="font-mono text-zinc-300">{progressPercent}%</span>
         </div>
-        <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+        <div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden">
           <div
-            className="h-full bg-emerald-500 transition-all duration-300 rounded-full"
+            className="h-full bg-zinc-200 transition-all duration-300 rounded-full"
             style={{ width: `${progressPercent}%` }}
           />
         </div>
       </div>
 
       {/* Checklist Items */}
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         {actionChecklist.map((action, idx) => {
           const isDone = !!checkedItems[idx];
           return (
             <div
               key={idx}
               onClick={() => toggleCheck(idx)}
-              className={`p-3.5 rounded-lg border text-xs transition-all cursor-pointer flex items-start gap-3 select-none ${
+              className={`p-2.5 rounded-md border text-xs transition-colors cursor-pointer flex items-start gap-2.5 select-none ${
                 isDone
-                  ? "bg-slate-950/60 border-slate-800/80 text-slate-500 line-through"
-                  : "bg-slate-950/40 border-slate-800 text-slate-200 hover:bg-slate-800/40"
+                  ? "bg-zinc-950/40 border-zinc-850 text-zinc-500 line-through"
+                  : "bg-zinc-950/80 border-zinc-800/80 text-zinc-200 hover:border-zinc-700"
               }`}
             >
               <button
                 type="button"
-                className="mt-0.5 text-slate-400 hover:text-white shrink-0 focus:outline-none"
+                className="mt-0.5 text-zinc-400 hover:text-zinc-200 shrink-0 focus:outline-none"
               >
                 {isDone ? (
-                  <CheckSquare className="w-4 h-4 text-emerald-400" />
+                  <CheckSquare className="w-3.5 h-3.5 text-zinc-300" />
                 ) : (
-                  <Square className="w-4 h-4 text-slate-500" />
+                  <Square className="w-3.5 h-3.5 text-zinc-600" />
                 )}
               </button>
               <div className="flex-1 leading-relaxed">
-                <span className="font-mono text-[11px] text-slate-500 mr-2">
+                <span className="font-mono text-[10px] text-zinc-500 mr-2">
                   #{idx + 1}
                 </span>
                 <span>{action}</span>
@@ -130,15 +127,15 @@ export const ActionItemChecklist: React.FC<ActionItemChecklistProps> = ({
 
       {/* Affected Activities & Documents Badges */}
       {(affectedActivities.length > 0 || affectedDocuments.length > 0) && (
-        <div className="pt-4 border-t border-slate-800 flex flex-wrap gap-4 text-xs text-slate-400">
+        <div className="pt-3 border-t border-zinc-800 flex flex-wrap gap-4 text-xs text-zinc-400">
           {affectedActivities.length > 0 && (
             <div className="flex items-center gap-1.5">
-              <span className="text-slate-500 font-medium">Affected Activities:</span>
+              <span className="text-zinc-500 font-mono text-[11px]">Activities:</span>
               <div className="flex flex-wrap gap-1">
                 {affectedActivities.map((act) => (
                   <span
                     key={act}
-                    className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-mono text-[11px] border border-slate-700/60"
+                    className="px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-300 font-mono text-[10px] border border-zinc-700"
                   >
                     {act}
                   </span>
@@ -149,12 +146,12 @@ export const ActionItemChecklist: React.FC<ActionItemChecklistProps> = ({
 
           {affectedDocuments.length > 0 && (
             <div className="flex items-center gap-1.5">
-              <span className="text-slate-500 font-medium">Required Documents:</span>
+              <span className="text-zinc-500 font-mono text-[11px]">Required Documents:</span>
               <div className="flex flex-wrap gap-1">
                 {affectedDocuments.map((doc) => (
                   <span
                     key={doc}
-                    className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-mono text-[11px] border border-slate-700/60"
+                    className="px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-300 font-mono text-[10px] border border-zinc-700"
                   >
                     {doc}
                   </span>
