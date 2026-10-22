@@ -9,36 +9,26 @@ import {
   getRegulations,
   runAnalysis,
 } from "@/services/api";
+import { Navbar } from "@/components/Navbar";
 import { ProfileForm } from "@/components/ProfileForm";
 import { ClarifyingQuestionsPanel } from "@/components/ClarifyingQuestionsPanel";
 import { ImpactReportView } from "@/components/ImpactReportView";
 import { EvidenceViewer } from "@/components/EvidenceViewer";
-import { RoleSwitcher } from "@/components/RoleSwitcher";
-import Link from "next/link";
 import {
-  Shield,
-  Activity,
-  Layers,
-  BookOpen,
-  Sparkles,
-  AlertCircle,
-  RefreshCw,
-  CheckCircle,
-  Cpu,
-  Info,
-  BarChart3,
-  Scale,
-  Compass,
   ListChecks,
   HelpCircle,
-  CheckCircle2,
   ShieldCheck,
+  AlertCircle,
+  FileCheck2,
+  BookOpen,
+  ArrowRight,
+  Sparkles,
+  Scale
 } from "lucide-react";
 
 export default function Home() {
   const [healthStatus, setHealthStatus] = useState<"checking" | "connected" | "disconnected">("checking");
   const [regulations, setRegulations] = useState<ClauseVersion[]>([]);
-  const [showCatalogModal, setShowCatalogModal] = useState(false);
   
   const [currentProfile, setCurrentProfile] = useState<BusinessProfile | null>(null);
   const [currentAsAtDate, setCurrentAsAtDate] = useState<string>("2024-08-01");
@@ -46,7 +36,6 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [activeResultTab, setActiveResultTab] = useState<"overview" | "questions" | "evidence">("overview");
-  const [showQuickGuide, setShowQuickGuide] = useState(true);
 
   // Check health and load catalog on mount
   const checkBackendHealth = useCallback(async () => {
@@ -115,150 +104,28 @@ export default function Home() {
     }
 
     setCurrentProfile(updated);
-    // Re-trigger analysis automatically with newly supplied field
     handleAnalyze(updated, currentAsAtDate);
   };
 
   return (
-    <div className="min-h-screen text-slate-100 flex flex-col selection:bg-blue-500/30 selection:text-blue-200">
-      {/* 1. Header Bar */}
-      <header className="border-b border-slate-800 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          {/* Logo & Platform Title */}
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20 text-white font-black text-lg">
-              R
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-base font-bold tracking-tight text-white">
-                  RegImpact-SL
-                </h1>
-                <span className="px-1.5 py-0.5 text-[10px] font-mono font-semibold rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                  v1.0 &bull; Sri Lanka
-                </span>
-              </div>
-              <p className="text-[11px] text-slate-400">
-                Neuro-Symbolic Regulatory Intelligence for Food Manufacturers
-              </p>
-            </div>
-          </div>
+    <div className="min-h-screen text-slate-100 flex flex-col bg-[#0b0f19]">
+      {/* 1. Global Enterprise Navigation Bar */}
+      <Navbar />
 
-          {/* Backend Health Status & Catalog Button */}
-          <div className="flex items-center gap-3">
-            <Link
-              href="/admin/reviews"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-600/20 hover:bg-amber-600/30 text-xs text-amber-300 border border-amber-500/30 transition-colors"
-            >
-              <Scale className="w-3.5 h-3.5 text-amber-400" />
-              <span>Reviewer Portal</span>
-            </Link>
-
-            <Link
-              href="/evaluation"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/30 text-xs text-indigo-300 border border-indigo-500/30 transition-colors"
-            >
-              <BarChart3 className="w-3.5 h-3.5 text-indigo-400" />
-              <span>Evaluation Dashboard</span>
-            </Link>
-
-            <button
-              type="button"
-              onClick={() => setShowCatalogModal(!showCatalogModal)}
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 border border-slate-700 transition-colors cursor-pointer"
-            >
-              <BookOpen className="w-3.5 h-3.5 text-blue-400" />
-              <span>Statutory Catalog ({regulations.length})</span>
-            </button>
-
-            <RoleSwitcher />
-
-            {/* Health Status Pill */}
-            <div
-              className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium border ${
-                healthStatus === "connected"
-                  ? "bg-emerald-950/60 text-emerald-300 border-emerald-700/50"
-                  : healthStatus === "checking"
-                  ? "bg-slate-800 text-slate-400 border-slate-700"
-                  : "bg-rose-950/60 text-rose-300 border-rose-700/50"
-              }`}
-            >
-              <span
-                className={`w-2 h-2 rounded-full ${
-                  healthStatus === "connected"
-                    ? "bg-emerald-400 animate-pulse"
-                    : healthStatus === "checking"
-                    ? "bg-amber-400 animate-ping"
-                    : "bg-rose-500"
-                }`}
-              />
-              <span className="capitalize">
-                {healthStatus === "connected" ? "Engine Active (Port 8000)" : healthStatus === "checking" ? "Checking Engine..." : "Engine Offline"}
-              </span>
-              {healthStatus === "disconnected" && (
-                <button
-                  type="button"
-                  onClick={checkBackendHealth}
-                  className="hover:text-white transition-colors cursor-pointer"
-                  title="Retry connection"
-                >
-                  <RefreshCw className="w-3 h-3" />
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* 2. Main Workspace Layout */}
+      {/* 2. Main Content Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Quick Tour / How it Works Guide */}
-        {showQuickGuide && (
-          <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-blue-950/60 via-slate-900 to-indigo-950/60 border border-blue-500/30 text-xs text-slate-200 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="flex items-start md:items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-blue-500/20 text-blue-400 border border-blue-500/30 shrink-0">
-                <Compass className="w-5 h-5" />
-              </div>
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <span className="font-bold text-white text-sm">How to Use RegImpact-SL</span>
-                  <span className="px-2 py-0.2 rounded-full text-[10px] font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/30">
-                    3 Simple Steps
-                  </span>
-                </div>
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-slate-300 text-xs">
-                  <span><strong>Step 1:</strong> Select a <strong>Preset</strong> on the left (e.g. <em>Large Manufacturer</em>).</span>
-                  <span>&rarr;</span>
-                  <span><strong>Step 2:</strong> Click <strong>Analyze</strong> to see your mandatory obligations & action plan.</span>
-                  <span>&rarr;</span>
-                  <span><strong>Step 3:</strong> Click <strong>Download Compliance Dossier</strong> to get an official printable legal report.</span>
-                </div>
-              </div>
-            </div>
-            <button
-              onClick={() => setShowQuickGuide(false)}
-              className="text-slate-400 hover:text-white px-2.5 py-1 rounded-lg text-xs bg-slate-800/80 hover:bg-slate-700 transition-colors shrink-0 cursor-pointer self-end md:self-auto"
-            >
-              Got it, close
-            </button>
-          </div>
-        )}
-
-        {/* Offline Warning Notice if Backend is not running */}
+        {/* Backend Offline Warning */}
         {healthStatus === "disconnected" && (
-          <div className="mb-6 p-4 rounded-xl bg-rose-950/40 border border-rose-500/40 text-rose-200 text-xs flex items-center justify-between">
+          <div className="mb-6 p-4 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <AlertCircle className="w-5 h-5 text-rose-400 shrink-0" />
-              <div>
-                <span className="font-semibold">FastAPI Engine Offline:</span> Cannot connect to{" "}
-                <code className="bg-rose-900/40 px-1 py-0.5 rounded font-mono">http://localhost:8000</code>.
-                Make sure the backend is running with{" "}
-                <code className="bg-rose-900/40 px-1 py-0.5 rounded font-mono">uvicorn backend.src.main:app --reload</code>.
-              </div>
+              <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+              <span>
+                Backend API offline (<code className="font-mono">http://localhost:8000</code>). Ensure FastAPI service is running.
+              </span>
             </div>
             <button
               onClick={checkBackendHealth}
-              className="px-3 py-1 rounded bg-rose-800 hover:bg-rose-700 text-white font-medium text-xs cursor-pointer"
+              className="px-2.5 py-1 rounded bg-rose-900/50 hover:bg-rose-800 text-white font-medium text-xs transition-colors"
             >
               Retry
             </button>
@@ -267,21 +134,21 @@ export default function Home() {
 
         {/* Global Error Banner */}
         {errorMessage && (
-          <div className="mb-6 p-4 rounded-xl bg-rose-950/40 border border-rose-500/40 text-rose-200 text-xs flex items-center justify-between">
+          <div className="mb-6 p-4 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs flex items-center justify-between">
             <div className="flex items-center gap-2">
               <AlertCircle className="w-4 h-4 text-rose-400" />
               <span>{errorMessage}</span>
             </div>
             <button
               onClick={() => setErrorMessage(null)}
-              className="text-rose-400 hover:text-white font-bold text-sm"
+              className="text-rose-400 hover:text-white font-bold text-sm px-1"
             >
               &times;
             </button>
           </div>
         )}
 
-        {/* Main Grid: Form on Left, Output & Evidence on Right */}
+        {/* Workspace 2-Column Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left Column: SME Profile Configurator */}
           <div className="lg:col-span-5 space-y-6">
@@ -291,56 +158,56 @@ export default function Home() {
               initialAsAtDate={currentAsAtDate}
             />
 
-            {/* In-Memory Statutory Rules Catalog Card */}
-            <div className="glass-panel rounded-2xl p-5 border border-slate-700/60 shadow-lg space-y-3">
+            {/* Standard Statutory Regulations In-Corpus Card */}
+            <div className="rounded-xl border border-slate-800 bg-slate-900 shadow-sm p-5 space-y-3">
               <div className="flex items-center justify-between text-xs font-semibold text-slate-300 pb-2 border-b border-slate-800">
                 <div className="flex items-center gap-2">
-                  <BookOpen className="w-4 h-4 text-blue-400" />
-                  <span>Configured Statutory Regulations</span>
+                  <BookOpen className="w-4 h-4 text-slate-400" />
+                  <span>Statutory Regulatory Corpus</span>
                 </div>
                 <span className="text-[11px] font-mono text-slate-400">
-                  {regulations.length > 0 ? `${regulations.length} Clauses` : "2 Standard Seed Clauses"}
+                  {regulations.length > 0 ? `${regulations.length} Indexed Clauses` : "Authoritative Corpus"}
                 </span>
               </div>
 
               <div className="space-y-2 text-xs">
-                <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800">
+                <div className="p-3 rounded-lg bg-slate-950 border border-slate-800">
                   <div className="flex items-center justify-between font-medium text-slate-200">
                     <span>FCAU Regulation 4 (Labelling & Packaging)</span>
-                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400">Gazette 2024/01</span>
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">Gazette 2024/01</span>
                   </div>
                   <p className="text-[11px] text-slate-400 mt-1">
-                    Threshold: Capacity &ge; 50 kg/day, Prepackaged food. Requires trilingual nutritional panel.
+                    Threshold: Capacity &ge; 50 kg/day, Prepackaged food. Requires trilingual nutritional panel declarations.
                   </p>
                 </div>
 
-                <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800">
+                <div className="p-3 rounded-lg bg-slate-950 border border-slate-800">
                   <div className="flex items-center justify-between font-medium text-slate-200">
                     <span>CEA EPL Schedule 1 Part B Item 12</span>
-                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400">Gazette 1533/16</span>
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">Gazette 1533/16</span>
                   </div>
                   <p className="text-[11px] text-slate-400 mt-1">
-                    Threshold: Employees &ge; 20 persons in food manufacturing. Requires Environmental Protection Licence.
+                    Threshold: Workforce &ge; 20 persons in food manufacturing. Requires Environmental Protection Licence.
                   </p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Right Column: Dynamic Analysis Dashboard, Clarifying Questions, and Evidence */}
+          {/* Right Column: Output Results */}
           <div className="lg:col-span-7 space-y-6">
             {report ? (
               <div className="space-y-5">
                 {/* Result Tabs Navigation */}
-                <div className="flex items-center justify-between flex-wrap gap-3 pb-1 border-b border-slate-800">
-                  <div className="flex items-center gap-2 flex-wrap">
+                <div className="flex items-center justify-between flex-wrap gap-2 pb-2 border-b border-slate-800">
+                  <div className="flex items-center gap-1.5 flex-wrap">
                     <button
                       type="button"
                       onClick={() => setActiveResultTab("overview")}
-                      className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                      className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                         activeResultTab === "overview"
-                          ? "bg-indigo-600 text-white shadow-md shadow-indigo-950/50"
-                          : "bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800"
+                          ? "bg-slate-800 text-white border border-slate-700 shadow-sm"
+                          : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
                       }`}
                     >
                       <ListChecks className="w-4 h-4" />
@@ -351,24 +218,24 @@ export default function Home() {
                       <button
                         type="button"
                         onClick={() => setActiveResultTab("questions")}
-                        className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                        className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                           activeResultTab === "questions"
-                            ? "bg-amber-600 text-white shadow-md shadow-amber-950/50"
-                            : "bg-slate-900 text-amber-400 hover:text-amber-300 border border-amber-500/30"
+                            ? "bg-amber-500/20 text-amber-300 border border-amber-500/30 shadow-sm"
+                            : "text-amber-400/80 hover:text-amber-300 hover:bg-amber-500/10"
                         }`}
                       >
                         <HelpCircle className="w-4 h-4" />
-                        <span>Optional Clarifications ({report.clarifying_questions.length})</span>
+                        <span>Clarifications ({report.clarifying_questions.length})</span>
                       </button>
                     )}
 
                     <button
                       type="button"
                       onClick={() => setActiveResultTab("evidence")}
-                      className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                      className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                         activeResultTab === "evidence"
-                          ? "bg-indigo-600 text-white shadow-md shadow-indigo-950/50"
-                          : "bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800"
+                          ? "bg-slate-800 text-white border border-slate-700 shadow-sm"
+                          : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
                       }`}
                     >
                       <ShieldCheck className="w-4 h-4" />
@@ -376,13 +243,12 @@ export default function Home() {
                     </button>
                   </div>
 
-                  {/* Quick Indicator */}
-                  <span className="text-[11px] text-slate-400 font-mono hidden sm:inline-block">
-                    Evaluated as-at: {currentAsAtDate}
+                  <span className="text-[11px] text-slate-500 font-mono hidden sm:inline-block">
+                    As-At: {currentAsAtDate}
                   </span>
                 </div>
 
-                {/* Tab 1: Overview, Summary & Actions */}
+                {/* Tab 1: Overview & Actions */}
                 {activeResultTab === "overview" && (
                   <ImpactReportView report={report} />
                 )}
@@ -405,48 +271,48 @@ export default function Home() {
                 )}
               </div>
             ) : (
-              /* Empty / Welcome State */
-              <div className="glass-panel rounded-2xl p-10 border border-slate-700/60 shadow-xl text-center space-y-6">
-                <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-blue-500/20 to-indigo-500/20 border border-blue-500/30 flex items-center justify-center text-blue-400 shadow-inner">
-                  <Cpu className="w-8 h-8 text-blue-400" />
+              /* Ready / Empty State */
+              <div className="rounded-xl border border-slate-800 bg-slate-900 shadow-sm p-10 text-center space-y-6">
+                <div className="w-12 h-12 mx-auto rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300">
+                  <FileCheck2 className="w-6 h-6 text-slate-400" />
                 </div>
 
                 <div className="max-w-md mx-auto space-y-2">
-                  <h3 className="text-lg font-bold text-white">
-                    Deterministic Regulatory Impact Engine Ready
+                  <h3 className="text-sm font-semibold text-white">
+                    Compliance Assessor Ready
                   </h3>
                   <p className="text-xs text-slate-400 leading-relaxed">
-                    Select one of the scenario presets on the left or customize your business profile parameters.
-                    Click <strong className="text-blue-400 font-semibold">Analyze Regulatory Impact</strong> to run the full neuro-symbolic pipeline.
+                    Select a benchmark scenario preset on the left or customize your business profile parameters.
+                    Click <strong className="text-slate-200">Run Regulatory Compliance Analysis</strong> to execute the neuro-symbolic engine.
                   </p>
                 </div>
 
-                {/* Key Architecture Features */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 text-left">
-                  <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
-                    <span className="text-[11px] font-semibold text-blue-400 uppercase tracking-wider block">
+                {/* System Pillars */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-left">
+                  <div className="p-3.5 rounded-lg bg-slate-950 border border-slate-800">
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 block font-semibold">
                       3-Valued Kleene Logic
                     </span>
-                    <p className="text-xs text-slate-400 mt-1">
-                      Distinguishes true exemptions from missing data. Refuses to guess or hallucinate.
+                    <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                      Rigorous separation of exemptions from missing data. Eliminates hallucination.
                     </p>
                   </div>
 
-                  <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
-                    <span className="text-[11px] font-semibold text-emerald-400 uppercase tracking-wider block">
-                      Evidence Grounded
+                  <div className="p-3.5 rounded-lg bg-slate-950 border border-slate-800">
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 block font-semibold">
+                      Statutory Grounding
                     </span>
-                    <p className="text-xs text-slate-400 mt-1">
-                      Every statement in executive summaries is audited against exact gazette quote spans.
+                    <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                      Verbatim citations traceable to exact Gazette page numbers and character offsets.
                     </p>
                   </div>
 
-                  <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
-                    <span className="text-[11px] font-semibold text-purple-400 uppercase tracking-wider block">
-                      Counterfactual Reasoning
+                  <div className="p-3.5 rounded-lg bg-slate-950 border border-slate-800">
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 block font-semibold">
+                      Sensitivity Bounds
                     </span>
-                    <p className="text-xs text-slate-400 mt-1">
-                      Calculates minimal capacity or staffing changes that flip compliance obligations.
+                    <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                      Automated boundary reasoning for worker headcount and production capacities.
                     </p>
                   </div>
                 </div>
@@ -456,16 +322,16 @@ export default function Home() {
         </div>
       </main>
 
-      {/* 3. Footer */}
-      <footer className="mt-auto border-t border-slate-800 bg-slate-950/60 py-6 text-center text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+      {/* 3. Global Minimal Footer */}
+      <footer className="mt-auto border-t border-slate-800 bg-[#0d131f] py-4 text-xs text-slate-500">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <span className="font-semibold text-slate-400">RegImpact-SL</span>
             <span>&bull;</span>
-            <span>Section 8.7 Reference Implementation</span>
+            <span>Sri Lanka Food Regulatory Compliance Platform</span>
           </div>
-          <div>
-            Built with Next.js 16, TypeScript, Tailwind CSS, & FastAPI
+          <div className="font-mono text-[11px] text-slate-500">
+            Neuro-Symbolic Legal Intelligence Engine
           </div>
         </div>
       </footer>
