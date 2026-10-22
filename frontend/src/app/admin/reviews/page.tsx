@@ -274,7 +274,7 @@ export default function AdminReviewsPage() {
                             Rule: {rule.rule_id}
                           </span>
                           <span className="text-xs text-slate-400">
-                            &bull; {rule.document_title || rule.document_id || "Statutory Gazette"}
+                            &bull; {formatGazetteTitle(null, rule.document_id)}
                           </span>
                         </div>
                         <span className="text-[11px] font-mono text-slate-500">
