@@ -9,28 +9,21 @@ import {
   rejectReview,
   uploadDocument,
 } from "@/services/api";
-import { RoleSwitcher } from "@/components/RoleSwitcher";
+import { Navbar } from "@/components/Navbar";
 import {
   ShieldCheck,
-  FileCheck,
   CheckCircle2,
   XCircle,
   Clock,
   UploadCloud,
   FileText,
-  AlertTriangle,
   RefreshCw,
-  ArrowLeft,
   Scale,
-  Sparkles,
-  BookOpen,
   Code2,
-  ExternalLink,
   ChevronDown,
   ChevronUp,
-  BarChart3,
-  Check,
   AlertCircle,
+  FolderOpen
 } from "lucide-react";
 
 export default function AdminReviewsPage() {
@@ -40,9 +33,10 @@ export default function AdminReviewsPage() {
   const [reviewerId, setReviewerId] = useState("legal_officer_sl");
   const [rationales, setRationales] = useState<Record<string, string>>({});
   const [activeTab, setActiveTab] = useState<"queue" | "upload">("queue");
+  const [expandedRawJson, setExpandedRawJson] = useState<Record<string, boolean>>({});
   const [toastMessage, setToastMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
-  // Upload modal / state
+  // Upload state
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploadTitle, setUploadTitle] = useState("");
   const [uploadAuthority, setUploadAuthority] = useState("Food Control Administration Unit (FCAU)");
@@ -82,7 +76,7 @@ export default function AdminReviewsPage() {
         reviewer_id: reviewerId,
         rationale: rationale,
       });
-      showToast(`Rule ${res.rule_id} successfully APPROVED. Audit record created.`);
+      showToast(`Rule ${res.rule_id} successfully approved. Immutable audit record created.`);
       setReviews((prev) => prev.filter((r) => r.rule_id !== ruleId));
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Failed to approve rule.";
@@ -100,7 +94,7 @@ export default function AdminReviewsPage() {
         reviewer_id: reviewerId,
         rationale: rationale,
       });
-      showToast(`Rule ${res.rule_id} marked as REJECTED. Recorded in audit trail.`);
+      showToast(`Rule ${res.rule_id} marked REJECTED.`);
       setReviews((prev) => prev.filter((r) => r.rule_id !== ruleId));
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Failed to reject rule.";
@@ -110,12 +104,13 @@ export default function AdminReviewsPage() {
     }
   };
 
-  const handleUploadSubmit = async (e: React.FormEvent) => {
+  const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!uploadFile) {
-      showToast("Please select a PDF gazette file to upload.", "error");
+      showToast("Please choose a PDF file to upload.", "error");
       return;
     }
+
     setUploading(true);
     setUploadResult(null);
 
@@ -144,363 +139,300 @@ export default function AdminReviewsPage() {
     }
   };
 
+  const toggleRawJson = (ruleId: string) => {
+    setExpandedRawJson((prev) => ({ ...prev, [ruleId]: !prev[ruleId] }));
+  };
+
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
-      {/* Top Banner Toast */}
+    <div className="min-h-screen bg-[#0b0f19] text-slate-100 flex flex-col font-sans">
+      {/* Toast Alert */}
       {toastMessage && (
         <div
-          className={`fixed top-4 right-4 z-50 flex items-center gap-2 px-4 py-3 rounded-xl border shadow-2xl backdrop-blur-md transition-all duration-300 ${
+          className={`fixed top-20 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-lg border shadow-lg text-xs font-medium transition-all ${
             toastMessage.type === "success"
-              ? "bg-emerald-950/90 border-emerald-500/40 text-emerald-200"
-              : "bg-rose-950/90 border-rose-500/40 text-rose-200"
+              ? "bg-emerald-950 border-emerald-800 text-emerald-200"
+              : "bg-rose-950 border-rose-800 text-rose-200"
           }`}
         >
           {toastMessage.type === "success" ? (
-            <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
           ) : (
-            <AlertCircle className="w-5 h-5 text-rose-400 shrink-0" />
+            <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
           )}
-          <span className="text-xs font-medium">{toastMessage.text}</span>
+          <span>{toastMessage.text}</span>
           <button
             onClick={() => setToastMessage(null)}
-            className="ml-2 text-slate-400 hover:text-white transition-colors"
+            className="ml-2 text-slate-400 hover:text-white"
           >
-            ×
+            &times;
           </button>
         </div>
       )}
 
-      {/* Navigation Header */}
-      <header className="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-md sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link
-              href="/"
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-xs text-slate-300 border border-slate-700/60 transition-colors"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Impact Engine</span>
-            </Link>
+      {/* 1. Global Enterprise Navigation Bar */}
+      <Navbar />
 
-            <div className="h-5 w-px bg-slate-800" />
-
-            <div className="flex items-center gap-2">
-              <div className="p-2 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                <Scale className="w-5 h-5" />
-              </div>
-              <div>
-                <h1 className="text-sm font-bold text-white flex items-center gap-2">
-                  <span>Legal Reviewer & Ingestion Portal</span>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                    Phase 2 & 3 HITL
-                  </span>
-                </h1>
-                <p className="text-[11px] text-slate-400">
-                  Dual-Pass LLM Extraction Verification & Statutory Corpus Management
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Link
-              href="/evaluation"
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/30 text-xs text-indigo-300 border border-indigo-500/30 transition-colors"
-            >
-              <BarChart3 className="w-3.5 h-3.5 text-indigo-400" />
-              <span>Evaluation Dashboard</span>
-            </Link>
-
-            <RoleSwitcher />
-
-            <button
-              onClick={fetchQueue}
-              disabled={loading}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 border border-slate-700 transition-colors cursor-pointer"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
-              <span>Refresh Queue</span>
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Container */}
+      {/* 2. Main Workspace */}
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-6">
-        {/* Reviewer Context and Tab Navigation */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-2xl bg-gradient-to-r from-slate-900/90 via-slate-900/60 to-slate-900/90 border border-slate-800">
+        {/* Top Control Bar: Active Reviewer & Tab Toggle */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl border border-slate-800 bg-slate-900 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
-              <ShieldCheck className="w-6 h-6" />
+            <div className="p-2 rounded-lg bg-slate-800 text-slate-200 border border-slate-700">
+              <Scale className="w-5 h-5 text-slate-300" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold text-slate-300">Active Legal Officer:</span>
+                <h1 className="text-sm font-semibold text-white">
+                  Legal Reviewer & Adjudication Portal
+                </h1>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                  Human-In-The-Loop Audit
+                </span>
+              </div>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-xs text-slate-400">Reviewer ID:</span>
                 <input
                   type="text"
                   value={reviewerId}
                   onChange={(e) => setReviewerId(e.target.value)}
-                  className="px-2.5 py-1 bg-slate-950 border border-slate-700 rounded-lg text-xs font-mono text-emerald-400 focus:outline-none focus:border-indigo-500"
+                  className="px-2 py-0.5 bg-slate-950 border border-slate-800 rounded text-xs font-mono text-emerald-400 focus:outline-none focus:border-slate-500"
                   placeholder="Reviewer ID"
                 />
               </div>
-              <p className="text-[11px] text-slate-500 mt-0.5">
-                All decisions create an immutable cryptographic entry in the <span className="font-mono text-slate-400">human_review_audit</span> table.
-              </p>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
             <button
               onClick={() => setActiveTab("queue")}
-              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-medium transition-all ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                 activeTab === "queue"
-                  ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
-                  : "bg-slate-800/60 text-slate-400 hover:text-slate-200 border border-transparent"
+                  ? "bg-slate-800 text-white border border-slate-700 shadow-sm"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
               }`}
             >
-              <FileCheck className="w-4 h-4" />
-              <span>Pending Queue ({reviews.length})</span>
+              Review Queue ({reviews.length})
             </button>
-
             <button
               onClick={() => setActiveTab("upload")}
-              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-medium transition-all ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                 activeTab === "upload"
-                  ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 shadow-sm"
-                  : "bg-slate-800/60 text-slate-400 hover:text-slate-200 border border-transparent"
+                  ? "bg-slate-800 text-white border border-slate-700 shadow-sm"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
               }`}
             >
-              <UploadCloud className="w-4 h-4" />
-              <span>Upload Gazette PDF</span>
+              Ingest Document (PDF)
+            </button>
+            <button
+              onClick={fetchQueue}
+              disabled={loading}
+              className="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white border border-slate-700 transition-colors ml-1"
+              title="Refresh queue"
+            >
+              <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
             </button>
           </div>
         </div>
 
         {/* TAB 1: REVIEW QUEUE */}
         {activeTab === "queue" && (
-          <div className="space-y-6">
+          <div className="space-y-4">
             {loading ? (
-              <div className="p-16 text-center rounded-2xl bg-slate-900/40 border border-slate-800/80">
-                <RefreshCw className="w-8 h-8 text-amber-400 animate-spin mx-auto mb-3" />
-                <p className="text-sm text-slate-400">Fetching pending candidate rules from database...</p>
+              <div className="p-12 text-center text-xs text-slate-400 rounded-xl border border-slate-800 bg-slate-900 space-y-2">
+                <div className="w-5 h-5 border-2 border-slate-700 border-t-slate-300 rounded-full animate-spin mx-auto" />
+                <p>Loading candidate statutory rules from PostgreSQL...</p>
               </div>
             ) : reviews.length === 0 ? (
-              <div className="p-16 text-center rounded-2xl bg-slate-900/40 border border-slate-800/80 space-y-4">
-                <div className="w-12 h-12 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center mx-auto">
-                  <Check className="w-6 h-6" />
+              <div className="rounded-xl border border-slate-800 bg-slate-900 p-12 text-center space-y-3">
+                <div className="w-10 h-10 mx-auto rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                  <CheckCircle2 className="w-5 h-5" />
                 </div>
-                <div>
-                  <h3 className="text-base font-semibold text-white">Review Queue is Clear</h3>
-                  <p className="text-xs text-slate-400 max-w-md mx-auto mt-1">
-                    All candidate rules compiled from Sri Lankan gazettes have been verified and signed off.
-                    Upload a new gazette PDF to trigger automated clause segmentation and LLM rule compilation.
-                  </p>
-                </div>
-                <button
-                  onClick={() => setActiveTab("upload")}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-medium text-white transition-colors cursor-pointer"
-                >
-                  <UploadCloud className="w-4 h-4" />
-                  <span>Upload Gazette PDF</span>
-                </button>
+                <h3 className="text-sm font-semibold text-white">Review Queue Empty</h3>
+                <p className="text-xs text-slate-400 max-w-md mx-auto">
+                  All candidate statutory clauses have been verified and certified. Upload new Gazette PDFs or trigger seeder to populate.
+                </p>
               </div>
             ) : (
-              <div className="space-y-6">
-                <div className="text-xs text-slate-400 flex items-center justify-between">
-                  <span>Displaying <strong>{reviews.length}</strong> candidate rules requiring legal sign-off</span>
-                  <span className="text-[11px] text-amber-400/80 flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5" /> Awaiting adjudication
-                  </span>
-                </div>
-
+              <div className="space-y-4">
                 {reviews.map((rule) => {
-                  const currentRationale = rationales[rule.rule_id] ?? "";
                   const isProcessing = actionInProgress === rule.rule_id;
+                  const currentRationale = rationales[rule.rule_id] || "";
+                  const isRawExpanded = !!expandedRawJson[rule.rule_id];
 
                   return (
                     <div
                       key={rule.rule_id}
-                      className="rounded-2xl bg-slate-900/70 border border-slate-800 overflow-hidden shadow-xl hover:border-slate-700/80 transition-all"
+                      className="rounded-xl border border-slate-800 bg-slate-900 shadow-sm overflow-hidden"
                     >
-                      {/* Rule Header Bar */}
-                      <div className="p-4 sm:p-5 bg-slate-850/60 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3">
-                        <div className="flex items-center gap-3">
-                          <span className="px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                            {rule.rule_id}
+                      {/* Card Header */}
+                      <div className="p-4 bg-slate-950/60 border-b border-slate-800 flex items-center justify-between gap-3 flex-wrap">
+                        <div className="flex items-center gap-2.5">
+                          <span className="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                            PENDING VERIFICATION
                           </span>
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <h3 className="text-sm font-semibold text-white">
-                                {rule.clause_number || rule.clause_id}
-                              </h3>
-                              <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30 uppercase">
-                                {rule.review_status}
-                              </span>
-                              <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-slate-800 text-slate-300 border border-slate-700">
-                                {rule.outcome_type}
-                              </span>
-                            </div>
-                            <p className="text-[11px] text-slate-400 mt-0.5">
-                              Document: <span className="font-medium text-slate-300">{rule.document_id || "Sri Lanka Gazette"}</span>
-                            </p>
-                          </div>
+                          <span className="text-xs font-semibold text-white">
+                            Rule: {rule.rule_id}
+                          </span>
+                          <span className="text-xs text-slate-400">
+                            &bull; {rule.document_title || rule.document_id || "Statutory Gazette"}
+                          </span>
                         </div>
-
-                        <div className="flex items-center gap-2">
-                          <span className="text-[11px] text-slate-400 font-mono">Clause: {rule.clause_id}</span>
-                        </div>
+                        <span className="text-[11px] font-mono text-slate-500">
+                          Clause: {rule.clause_number || rule.clause_id}
+                        </span>
                       </div>
 
                       {/* Side-by-Side Verification Grid */}
                       <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-slate-800">
-                        {/* LEFT COLUMN: Extracted JSON Logic */}
-                        <div className="p-5 space-y-4">
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs font-semibold uppercase tracking-wider text-indigo-400 flex items-center gap-1.5">
-                              <Code2 className="w-4 h-4" />
-                              <span>Extracted Neuro-Symbolic Logic</span>
+                        {/* LEFT COLUMN: Extracted Neuro-Symbolic Logic */}
+                        <div className="p-5 space-y-3 bg-[#0d121c]/40">
+                          <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+                            <span className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+                              <Code2 className="w-3.5 h-3.5 text-slate-400" />
+                              <span>Compiled Rule Logic</span>
                             </span>
-                            <span className="text-[10px] text-slate-500">Dual-Pass Cross-Agreement</span>
+                            <button
+                              type="button"
+                              onClick={() => toggleRawJson(rule.rule_id)}
+                              className="text-[11px] text-slate-400 hover:text-slate-200 transition-colors flex items-center gap-1 cursor-pointer"
+                            >
+                              <span>{isRawExpanded ? "Hide JSON" : "Inspect Raw JSON"}</span>
+                              {isRawExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                            </button>
                           </div>
 
-                          <div className="space-y-3">
-                            {/* Applicability Condition */}
-                            <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800">
-                              <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 block mb-1">
-                                Applicability Condition (applies_if)
+                          {/* Structured Key Values */}
+                          <div className="space-y-2 text-xs">
+                            <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800">
+                              <span className="text-[10px] font-mono uppercase text-slate-400 block mb-1">
+                                Applicability Condition (applies_if):
                               </span>
-                              <pre className="text-xs font-mono text-emerald-300 overflow-x-auto whitespace-pre-wrap">
+                              <pre className="font-mono text-emerald-300 text-[11px] overflow-x-auto whitespace-pre-wrap">
                                 {JSON.stringify(rule.applies_if, null, 2)}
                               </pre>
                             </div>
 
-                            {/* Obligation */}
-                            <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800">
-                              <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 block mb-1">
-                                Obligation
+                            <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800">
+                              <span className="text-[10px] font-mono uppercase text-slate-400 block mb-1">
+                                Statutory Obligation:
                               </span>
-                              <pre className="text-xs font-mono text-sky-300 overflow-x-auto whitespace-pre-wrap">
+                              <pre className="font-mono text-sky-300 text-[11px] overflow-x-auto whitespace-pre-wrap">
                                 {JSON.stringify(rule.obligation, null, 2)}
                               </pre>
                             </div>
 
-                            {/* Validity & Temporal Window */}
-                            <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800">
-                              <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 block mb-1">
-                                Validity & Temporal Enforcement
-                              </span>
-                              <pre className="text-xs font-mono text-amber-300 overflow-x-auto whitespace-pre-wrap">
-                                {JSON.stringify(rule.validity, null, 2)}
-                              </pre>
-                            </div>
-
-                            {/* Exceptions */}
-                            {rule.exceptions && rule.exceptions.length > 0 && (
-                              <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800">
-                                <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 block mb-1">
-                                  Exceptions ({rule.exceptions.length})
+                            {rule.validity && (
+                              <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800">
+                                <span className="text-[10px] font-mono uppercase text-slate-400 block mb-1">
+                                  Temporal Enforcement Window:
                                 </span>
-                                <pre className="text-xs font-mono text-rose-300 overflow-x-auto whitespace-pre-wrap">
-                                  {JSON.stringify(rule.exceptions, null, 2)}
+                                <pre className="font-mono text-amber-300 text-[11px] overflow-x-auto whitespace-pre-wrap">
+                                  {JSON.stringify(rule.validity, null, 2)}
+                                </pre>
+                              </div>
+                            )}
+
+                            {/* Raw JSON Accordion */}
+                            {isRawExpanded && (
+                              <div className="p-2.5 rounded-lg bg-[#060a12] border border-slate-800">
+                                <span className="text-[10px] font-mono uppercase text-slate-400 block mb-1">
+                                  Full Compiler Payload:
+                                </span>
+                                <pre className="font-mono text-slate-300 text-[10px] overflow-x-auto max-h-48 whitespace-pre">
+                                  {JSON.stringify(rule, null, 2)}
                                 </pre>
                               </div>
                             )}
                           </div>
                         </div>
 
-                        {/* RIGHT COLUMN: Verbatim Quote Span & Source Evidence */}
-                        <div className="p-5 space-y-4">
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs font-semibold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
-                              <FileText className="w-4 h-4" />
-                              <span>Verbatim Statutory Evidence</span>
+                        {/* RIGHT COLUMN: Verbatim Grounding Quote Span & Evidence */}
+                        <div className="p-5 space-y-3 bg-[#0d121c]/40">
+                          <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+                            <span className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+                              <FileText className="w-3.5 h-3.5 text-slate-400" />
+                              <span>Verbatim Statutory Grounding</span>
                             </span>
-                            <span className="text-[10px] text-slate-500">Official Sri Lankan Gazette</span>
+                            <span className="text-[10px] font-mono text-slate-500">Official Gazette</span>
                           </div>
 
-                          {/* Verbatim quote span */}
-                          <div className="space-y-2">
+                          {/* Quote Span in Serif */}
+                          <div className="space-y-1">
                             <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 block">
-                              Verbatim Grounding Quote Span
+                              Gazette Excerpt (Grounding Target)
                             </span>
-                            <div className="p-4 rounded-xl bg-amber-950/20 border border-amber-500/30 text-xs text-amber-200/90 leading-relaxed italic relative">
-                              <span className="text-amber-500/40 text-3xl font-serif absolute top-1 left-2 select-none">&ldquo;</span>
-                              <p className="pl-4">
-                                {rule.quote_span ||
-                                  (typeof rule.source === "object" && rule.source?.quote_span
-                                    ? String(rule.source.quote_span)
-                                    : "No direct quote span provided.")}
-                              </p>
+                            <div className="p-3.5 rounded-lg bg-[#080d16] border-l-2 border-amber-600/60 border-r border-t border-b border-slate-800 text-xs text-slate-200 legal-quote-text italic leading-relaxed">
+                              &ldquo;
+                              {rule.quote_span ||
+                                (typeof rule.source === "object" && rule.source?.quote_span
+                                  ? String(rule.source.quote_span)
+                                  : "No direct quote span provided.")}
+                              &rdquo;
                             </div>
                           </div>
 
-                          {/* Full Clause Context */}
+                          {/* Full Context If Available */}
                           {rule.clause_text && (
-                            <div className="space-y-2">
+                            <div className="space-y-1">
                               <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 block">
-                                Complete Segmented Clause Context
+                                Complete Clause Text
                               </span>
-                              <div className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800 text-xs text-slate-300 font-serif leading-relaxed max-h-56 overflow-y-auto whitespace-pre-wrap">
+                              <div className="p-3 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-300 legal-quote-text leading-relaxed max-h-40 overflow-y-auto whitespace-pre-wrap">
                                 {rule.clause_text}
                               </div>
                             </div>
                           )}
 
                           {/* Provenance Metadata Table */}
-                          <div className="p-3 rounded-xl bg-slate-950/50 border border-slate-800/80 text-[11px] space-y-1.5">
+                          <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800/80 text-[11px] space-y-1">
                             <div className="flex justify-between text-slate-400">
-                              <span>Source Instrument:</span>
+                              <span>Statutory Authority:</span>
                               <span className="text-slate-200 font-medium">
+                                {typeof rule.source === "object" && rule.source?.authority
+                                  ? String(rule.source.authority)
+                                  : "Statutory Authority"}
+                              </span>
+                            </div>
+                            <div className="flex justify-between text-slate-400">
+                              <span>Instrument:</span>
+                              <span className="text-slate-200 font-mono">
                                 {typeof rule.source === "object" && rule.source?.instrument
                                   ? String(rule.source.instrument)
                                   : rule.document_id || "Gazette"}
                               </span>
                             </div>
-                            <div className="flex justify-between text-slate-400">
-                              <span>Statutory Clause:</span>
-                              <span className="text-slate-200 font-mono">
-                                {rule.clause_number || rule.clause_id}
-                              </span>
-                            </div>
-                            <div className="flex justify-between text-slate-400">
-                              <span>Extraction Engine:</span>
-                              <span className="text-indigo-400 font-mono">Dual-Pass Self-Consistency (GPT-4o / Claude 3.5 Sonnet)</span>
-                            </div>
                           </div>
                         </div>
                       </div>
 
-                      {/* Action & Adjudication Controls Bar */}
-                      <div className="p-4 sm:p-5 bg-slate-900 border-t border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-                        <div className="flex-1">
-                          <input
-                            type="text"
-                            placeholder="Add optional reviewer rationale or amendments notes..."
-                            value={currentRationale}
-                            onChange={(e) =>
-                              setRationales((prev) => ({ ...prev, [rule.rule_id]: e.target.value }))
-                            }
-                            className="w-full px-3 py-2 bg-slate-950 border border-slate-700/80 rounded-xl text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500"
-                          />
-                        </div>
+                      {/* Action Bar */}
+                      <div className="p-4 bg-slate-950 border-t border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                        <input
+                          type="text"
+                          placeholder="Optional legal reviewer rationale / notes..."
+                          value={currentRationale}
+                          onChange={(e) =>
+                            setRationales((prev) => ({ ...prev, [rule.rule_id]: e.target.value }))
+                          }
+                          className="flex-1 h-9 px-3 bg-slate-900 border border-slate-800 rounded-lg text-xs text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-slate-500"
+                        />
 
                         <div className="flex items-center gap-2 justify-end">
                           <button
+                            type="button"
                             onClick={() => handleReject(rule.rule_id)}
                             disabled={isProcessing}
-                            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-rose-950/50 hover:bg-rose-900/60 text-rose-300 border border-rose-700/60 text-xs font-semibold transition-colors disabled:opacity-50 cursor-pointer"
+                            className="px-3.5 py-2 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/20 text-xs font-semibold transition-colors disabled:opacity-50 cursor-pointer"
                           >
-                            <XCircle className="w-4 h-4 text-rose-400" />
-                            <span>{isProcessing ? "Processing..." : "Reject Rule"}</span>
+                            <span>{isProcessing ? "Processing..." : "Reject"}</span>
                           </button>
 
                           <button
+                            type="button"
                             onClick={() => handleApprove(rule.rule_id)}
                             disabled={isProcessing}
-                            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-lg shadow-emerald-950/50 transition-all disabled:opacity-50 cursor-pointer"
+                            className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-sm transition-all disabled:opacity-50 cursor-pointer"
                           >
-                            <CheckCircle2 className="w-4 h-4 text-white" />
                             <span>{isProcessing ? "Processing..." : "Approve & Certify"}</span>
                           </button>
                         </div>
@@ -515,155 +447,125 @@ export default function AdminReviewsPage() {
 
         {/* TAB 2: DOCUMENT UPLOAD */}
         {activeTab === "upload" && (
-          <div className="max-w-2xl mx-auto rounded-2xl bg-slate-900/80 border border-slate-800 p-6 sm:p-8 space-y-6">
+          <div className="max-w-2xl mx-auto rounded-xl border border-slate-800 bg-slate-900 shadow-sm p-6 sm:p-8 space-y-6">
             <div>
-              <h2 className="text-base font-bold text-white flex items-center gap-2">
-                <UploadCloud className="w-5 h-5 text-indigo-400" />
-                <span>Ingest Official Sri Lankan Regulatory Document</span>
+              <h2 className="text-sm font-semibold text-white flex items-center gap-2">
+                <UploadCloud className="w-4 h-4 text-slate-300" />
+                <span>Upload Statutory Gazette Document (PDF)</span>
               </h2>
               <p className="text-xs text-slate-400 mt-1">
-                Upload a newly published Gazette Extraordinary or Ministerial Direction PDF.
-                The system will automatically store the file, extract text, segment clauses, compute embeddings,
-                and compile candidate rules using the live LLM client.
+                Upload official Sri Lankan Extraordinary Gazettes or Act amendments. The document ingestion service will extract pages, segment clauses, and run LLM compilation.
               </p>
             </div>
 
-            {uploadResult && (
-              <div className="p-4 rounded-xl bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 text-xs flex items-start gap-2.5">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                <span>{uploadResult}</span>
-              </div>
-            )}
-
-            <form onSubmit={handleUploadSubmit} className="space-y-4">
-              {/* File Picker */}
+            <form onSubmit={handleUpload} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                  Official Gazette PDF File *
-                </label>
-                <div className="border-2 border-dashed border-slate-700 hover:border-indigo-500/80 rounded-xl p-6 text-center transition-colors bg-slate-950/50">
-                  <input
-                    type="file"
-                    accept=".pdf,application/pdf"
-                    onChange={(e) => {
-                      if (e.target.files && e.target.files[0]) {
-                        setUploadFile(e.target.files[0]);
-                      }
-                    }}
-                    className="hidden"
-                    id="gazette-file-input"
-                  />
-                  <label htmlFor="gazette-file-input" className="cursor-pointer block">
-                    <FileText className="w-8 h-8 text-slate-400 mx-auto mb-2" />
-                    {uploadFile ? (
-                      <div className="text-xs">
-                        <span className="font-semibold text-indigo-300">{uploadFile.name}</span>
-                        <span className="text-slate-500 block mt-0.5">
-                          {(uploadFile.size / 1024 / 1024).toFixed(2)} MB
-                        </span>
-                      </div>
-                    ) : (
-                      <div className="text-xs text-slate-400">
-                        <span className="font-semibold text-indigo-400">Click to browse</span> or drag and drop PDF
-                        <p className="text-[11px] text-slate-500 mt-1">Sri Lanka Gazette Extraordinary (Sinhala, Tamil, English PDF)</p>
-                      </div>
-                    )}
-                  </label>
-                </div>
-              </div>
-
-              {/* Title */}
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Document / Regulation Title
+                <label className="block text-xs font-medium text-slate-300 mb-1.5">
+                  PDF Gazette File
                 </label>
                 <input
-                  type="text"
-                  placeholder="e.g. Food (Labelling and Advertising) Regulations 2024"
-                  value={uploadTitle}
-                  onChange={(e) => setUploadTitle(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                  type="file"
+                  accept="application/pdf"
+                  onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
+                  className="w-full text-xs text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700 cursor-pointer"
                 />
               </div>
 
-              {/* Authority & Instrument Type */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Regulatory Authority
+                  <label className="block text-xs font-medium text-slate-300 mb-1.5">
+                    Official Document Title
+                  </label>
+                  <input
+                    type="text"
+                    value={uploadTitle}
+                    onChange={(e) => setUploadTitle(e.target.value)}
+                    placeholder="e.g. Food (Labelling) Regulations 2024"
+                    className="w-full h-10 px-3 bg-slate-950 border border-slate-800 rounded-lg text-xs text-slate-200 focus:outline-none focus:border-slate-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-slate-300 mb-1.5">
+                    Gazette Number
+                  </label>
+                  <input
+                    type="text"
+                    value={uploadGazetteNo}
+                    onChange={(e) => setUploadGazetteNo(e.target.value)}
+                    placeholder="e.g. 2443/27"
+                    className="w-full h-10 px-3 bg-slate-950 border border-slate-800 rounded-lg text-xs text-slate-200 focus:outline-none focus:border-slate-500"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-slate-300 mb-1.5">
+                    Statutory Authority
                   </label>
                   <select
                     value={uploadAuthority}
                     onChange={(e) => setUploadAuthority(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
+                    className="w-full h-10 px-3 bg-slate-950 border border-slate-800 rounded-lg text-xs text-slate-200 focus:outline-none focus:border-slate-500 cursor-pointer"
                   >
                     <option value="Food Control Administration Unit (FCAU)">Food Control Administration Unit (FCAU)</option>
                     <option value="Central Environmental Authority (CEA)">Central Environmental Authority (CEA)</option>
                     <option value="Consumer Affairs Authority (CAA)">Consumer Affairs Authority (CAA)</option>
                     <option value="Sri Lanka Standards Institution (SLSI)">Sri Lanka Standards Institution (SLSI)</option>
-                    <option value="Government of Sri Lanka">Government of Sri Lanka (Gazette)</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Instrument Type
-                  </label>
-                  <select
-                    value={uploadInstrument}
-                    onChange={(e) => setUploadInstrument(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
-                  >
-                    <option value="regulation">Regulation</option>
-                    <option value="act">Act / Statute</option>
-                    <option value="direction">Ministerial Direction</option>
-                    <option value="gazette">Gazette Extraordinary</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Gazette No & Date */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Gazette Number (Optional)
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Gazette Extraordinary No. 2380/14"
-                    value={uploadGazetteNo}
-                    onChange={(e) => setUploadGazetteNo(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Publication Date (Optional)
+                  <label className="block text-xs font-medium text-slate-300 mb-1.5">
+                    Publication / Gazette Date
                   </label>
                   <input
                     type="date"
                     value={uploadPubDate}
                     onChange={(e) => setUploadPubDate(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
+                    className="w-full h-10 px-3 bg-slate-950 border border-slate-800 rounded-lg text-xs text-slate-200 focus:outline-none focus:border-slate-500 cursor-pointer"
                   />
                 </div>
               </div>
+
+              {uploadResult && (
+                <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-300">
+                  {uploadResult}
+                </div>
+              )}
 
               <div className="pt-2">
                 <button
                   type="submit"
                   disabled={uploading || !uploadFile}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white shadow-lg shadow-indigo-950/50 transition-all disabled:opacity-50 cursor-pointer"
+                  className="w-full h-10 flex items-center justify-center gap-2 bg-slate-100 hover:bg-white text-slate-900 font-semibold text-xs rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm cursor-pointer"
                 >
-                  <UploadCloud className={`w-4 h-4 ${uploading ? "animate-bounce" : ""}`} />
-                  <span>{uploading ? "Ingesting & Compiling Rules..." : "Ingest Document & Compile Rules"}</span>
+                  {uploading ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-slate-900/30 border-t-slate-900 rounded-full animate-spin" />
+                      <span>Ingesting PDF & Compiling Rules...</span>
+                    </>
+                  ) : (
+                    <>
+                      <UploadCloud className="w-4 h-4 text-slate-900" />
+                      <span>Upload & Ingest Into Corpus</span>
+                    </>
+                  )}
                 </button>
               </div>
             </form>
           </div>
         )}
       </main>
+
+      {/* Footer */}
+      <footer className="mt-auto border-t border-slate-800 bg-[#0d131f] py-4 text-xs text-slate-500">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2">
+          <span>RegImpact-SL Legal Reviewer Portal</span>
+          <span className="font-mono text-[11px] text-slate-500">Human-In-The-Loop Provenance Audit</span>
+        </div>
+      </footer>
     </div>
   );
 }
