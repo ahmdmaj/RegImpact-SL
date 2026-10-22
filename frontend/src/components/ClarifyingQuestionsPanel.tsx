@@ -52,24 +52,24 @@ export const ClarifyingQuestionsPanel: React.FC<ClarifyingQuestionsPanelProps> =
   };
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900 shadow-sm p-6 space-y-5">
+    <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-5 space-y-4">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
-        <div className="flex items-start sm:items-center gap-3">
-          <div className="p-2 rounded-lg bg-slate-800 text-slate-200 border border-slate-700 shrink-0">
-            <HelpCircle className="w-4 h-4 text-slate-300" />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-zinc-800">
+        <div className="flex items-start sm:items-center gap-2.5">
+          <div className="p-1.5 rounded-md bg-zinc-800 text-zinc-300 border border-zinc-700 shrink-0">
+            <HelpCircle className="w-4 h-4 text-zinc-400" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-semibold text-white">
-                Secondary Clarifications & Missing Attributes
+              <h3 className="text-xs font-semibold text-zinc-100">
+                Optional Regulatory Clarifications
               </h3>
-              <span className="px-2 py-0.5 text-[10px] font-mono font-medium rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">
+              <span className="px-1.5 py-0.2 text-[10px] font-mono rounded bg-zinc-800 text-zinc-300 border border-zinc-700">
                 {questions.length} Pending
               </span>
             </div>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Primary food safety rules are evaluated. Answer these optional parameters to resolve secondary environmental and additive rules.
+            <p className="text-[11px] text-zinc-400 mt-0.5">
+              Primary food safety rules are evaluated. Provide these details to resolve secondary environmental conditions.
             </p>
           </div>
         </div>
@@ -78,7 +78,7 @@ export const ClarifyingQuestionsPanel: React.FC<ClarifyingQuestionsPanelProps> =
           <button
             type="button"
             onClick={onReevaluate}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-white text-slate-900 text-xs font-semibold shadow-sm transition-all cursor-pointer shrink-0 self-start sm:self-center"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white hover:bg-zinc-200 text-zinc-950 text-xs font-medium transition-colors cursor-pointer shrink-0 self-start sm:self-center"
           >
             <span>Update Evaluation</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -87,7 +87,7 @@ export const ClarifyingQuestionsPanel: React.FC<ClarifyingQuestionsPanelProps> =
       </div>
 
       {/* Questions List */}
-      <div className="space-y-3">
+      <div className="space-y-2.5">
         {questions.map((question, index) => {
           const field = missingFields[index] || `field_${index}`;
           const isSubmitted = submittedFields.has(field);
@@ -96,61 +96,61 @@ export const ClarifyingQuestionsPanel: React.FC<ClarifyingQuestionsPanelProps> =
           return (
             <div
               key={index}
-              className={`p-4 rounded-lg border transition-all ${
+              className={`p-3 rounded-md border transition-colors ${
                 isSubmitted
-                  ? "bg-slate-950/60 border-emerald-900/40"
-                  : "bg-slate-950/40 border-slate-800 hover:border-slate-750"
+                  ? "bg-zinc-950 border-zinc-700"
+                  : "bg-zinc-950/60 border-zinc-800 hover:border-zinc-750"
               }`}
             >
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-                <div className="space-y-1 flex-1">
+                <div className="space-y-0.5 flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-[11px] font-mono font-medium uppercase text-slate-400">
+                    <span className="text-[10px] font-mono uppercase text-zinc-400">
                       {getFriendlyFieldLabel(field)}
                     </span>
                     {isSubmitted && (
-                      <span className="inline-flex items-center gap-1 text-[10px] text-emerald-400 bg-emerald-950/50 border border-emerald-800/40 px-1.5 py-0.2 rounded font-mono">
-                        <CheckCircle2 className="w-3 h-3" />
+                      <span className="inline-flex items-center gap-1 text-[10px] text-zinc-300 bg-zinc-800 border border-zinc-700 px-1.5 py-0.2 rounded font-mono">
+                        <CheckCircle2 className="w-3 h-3 text-emerald-400" />
                         Provided: {String(currentVal)}
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-slate-200 leading-relaxed">{question}</p>
+                  <p className="text-xs text-zinc-200 leading-relaxed">{question}</p>
                 </div>
 
                 {/* Controls */}
                 <div className="flex items-center gap-2 flex-wrap shrink-0">
                   {field === "uses_synthetic_colorings" ? (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5">
                       <button
                         type="button"
                         onClick={() => handleApplyValue(field, false)}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors cursor-pointer ${
+                        className={`px-2.5 py-1 rounded-md text-xs font-medium border transition-colors cursor-pointer ${
                           currentVal === false
-                            ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
-                            : "bg-slate-900 text-slate-300 border-slate-800 hover:bg-slate-800"
+                            ? "bg-zinc-800 text-white border-zinc-600"
+                            : "bg-zinc-900 text-zinc-300 border-zinc-800 hover:bg-zinc-800"
                         }`}
                       >
-                        No (None Used)
+                        No (None)
                       </button>
                       <button
                         type="button"
                         onClick={() => handleApplyValue(field, true)}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors cursor-pointer ${
+                        className={`px-2.5 py-1 rounded-md text-xs font-medium border transition-colors cursor-pointer ${
                           currentVal === true
-                            ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
-                            : "bg-slate-900 text-slate-300 border-slate-800 hover:bg-slate-800"
+                            ? "bg-zinc-800 text-white border-zinc-600"
+                            : "bg-zinc-900 text-zinc-300 border-zinc-800 hover:bg-zinc-800"
                         }`}
                       >
-                        Yes (Synthetic Colors)
+                        Yes (Synthetic)
                       </button>
                     </div>
                   ) : field === "hazardous_chemicals_storage_liters" ? (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5">
                       <button
                         type="button"
                         onClick={() => handleApplyValue(field, 0)}
-                        className="px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs border border-slate-800 cursor-pointer"
+                        className="px-2 py-1 rounded-md bg-zinc-900 hover:bg-zinc-800 text-zinc-300 text-xs border border-zinc-800 cursor-pointer"
                       >
                         0 Liters
                       </button>
@@ -159,22 +159,22 @@ export const ClarifyingQuestionsPanel: React.FC<ClarifyingQuestionsPanelProps> =
                         placeholder="Liters"
                         value={currentVal !== undefined && currentVal !== 0 ? currentVal : ""}
                         onChange={(e) => setAnswers((prev) => ({ ...prev, [field]: e.target.value }))}
-                        className="w-24 h-8 px-2.5 bg-slate-900 border border-slate-800 rounded-lg text-xs text-white focus:outline-none focus:border-slate-500"
+                        className="w-20 h-7 px-2 bg-zinc-900 border border-zinc-800 rounded-md text-xs text-white focus:outline-none focus:border-zinc-500"
                       />
                       <button
                         type="button"
                         onClick={() => handleApplyValue(field, Number(answers[field] || 0))}
-                        className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-750 text-slate-200 text-xs font-medium border border-slate-700 cursor-pointer"
+                        className="px-2 py-1 rounded-md bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium border border-zinc-700 cursor-pointer"
                       >
                         Apply
                       </button>
                     </div>
                   ) : field === "wastewater_discharge_m3_per_day" ? (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5">
                       <button
                         type="button"
                         onClick={() => handleApplyValue(field, 0)}
-                        className="px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs border border-slate-800 cursor-pointer"
+                        className="px-2 py-1 rounded-md bg-zinc-900 hover:bg-zinc-800 text-zinc-300 text-xs border border-zinc-800 cursor-pointer"
                       >
                         0 m³
                       </button>
@@ -183,29 +183,29 @@ export const ClarifyingQuestionsPanel: React.FC<ClarifyingQuestionsPanelProps> =
                         placeholder="m³/day"
                         value={currentVal !== undefined && currentVal !== 0 ? currentVal : ""}
                         onChange={(e) => setAnswers((prev) => ({ ...prev, [field]: e.target.value }))}
-                        className="w-24 h-8 px-2.5 bg-slate-900 border border-slate-800 rounded-lg text-xs text-white focus:outline-none focus:border-slate-500"
+                        className="w-20 h-7 px-2 bg-zinc-900 border border-zinc-800 rounded-md text-xs text-white focus:outline-none focus:border-zinc-500"
                       />
                       <button
                         type="button"
                         onClick={() => handleApplyValue(field, Number(answers[field] || 0))}
-                        className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-750 text-slate-200 text-xs font-medium border border-slate-700 cursor-pointer"
+                        className="px-2 py-1 rounded-md bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium border border-zinc-700 cursor-pointer"
                       >
                         Apply
                       </button>
                     </div>
                   ) : (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5">
                       <input
                         type="text"
                         placeholder="Enter value..."
                         value={currentVal !== undefined ? currentVal : ""}
                         onChange={(e) => setAnswers((prev) => ({ ...prev, [field]: e.target.value }))}
-                        className="w-32 h-8 px-2.5 bg-slate-900 border border-slate-800 rounded-lg text-xs text-white focus:outline-none focus:border-slate-500"
+                        className="w-28 h-7 px-2 bg-zinc-900 border border-zinc-800 rounded-md text-xs text-white focus:outline-none focus:border-zinc-500"
                       />
                       <button
                         type="button"
                         onClick={() => handleApplyValue(field, answers[field])}
-                        className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-750 text-slate-200 text-xs font-medium border border-slate-700 cursor-pointer"
+                        className="px-2 py-1 rounded-md bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium border border-zinc-700 cursor-pointer"
                       >
                         Apply
                       </button>
