@@ -536,8 +536,11 @@ class SegmentedClause:
 # Common Sri Lankan gazette clause patterns
 _CLAUSE_PATTERNS = [
     re.compile(
-        r"((?:Regulation|Section|Article|Schedule|Rule|Clause|Item|Part)\s+\d+(?:\.\d+)*(?:\s+Part\s+[A-Z]\s+Item\s+\d+)?)",
+        r"^\s*((?:Regulation|Section|Article|Schedule|Rule|Clause|Item|Part)\s+\d+(?:\.\d+)*(?:\s+Part\s+[A-Z]\s+Item\s+\d+)?)",
         re.IGNORECASE,
+    ),
+    re.compile(
+        r"^\s*(\d+\.(?:\s*\(\d+\))?)\s+[A-Z]",
     ),
 ]
 
@@ -574,7 +577,12 @@ def segment_clauses_from_page(
         for pattern in _CLAUSE_PATTERNS:
             match = pattern.search(line)
             if match:
-                header_positions.append((cumulative_offset, match.group(1).strip(), line_idx))
+                raw_num = match.group(1).strip()
+                if raw_num.endswith(".") and raw_num[:-1].strip().isdigit():
+                    norm_num = f"Regulation {raw_num[:-1].strip()}"
+                else:
+                    norm_num = raw_num
+                header_positions.append((cumulative_offset, norm_num, line_idx))
                 break
         cumulative_offset += len(line) + 1  # +1 for the \n
 
