@@ -40,17 +40,17 @@ export const ComplianceDossierModal: React.FC<ComplianceDossierModalProps> = ({
   });
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 md:p-6 no-print">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 md:p-6 no-print">
       {/* Modal Dialog Card */}
-      <div className="bg-slate-900 border border-slate-700/80 rounded-2xl w-full max-w-4xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden">
+      <div className="bg-zinc-900 border border-zinc-800 rounded-xl w-full max-w-4xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden">
         {/* Modal Action Header (Excluded from Print) */}
-        <div className="p-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between no-print">
-          <div className="flex items-center gap-2">
-            <FileCheck2 className="w-5 h-5 text-indigo-400" />
-            <span className="text-sm font-semibold text-white">
+        <div className="p-4 bg-zinc-900 border-b border-zinc-800 flex items-center justify-between no-print">
+          <div className="flex items-center gap-2.5">
+            <FileCheck2 className="w-5 h-5 text-zinc-300" />
+            <span className="text-sm font-semibold text-zinc-100">
               Official Regulatory Compliance Dossier
             </span>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700">
               Print / PDF Ready
             </span>
           </div>
@@ -59,7 +59,7 @@ export const ComplianceDossierModal: React.FC<ComplianceDossierModalProps> = ({
             <button
               onClick={handlePrint}
               type="button"
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white shadow-md shadow-indigo-950/50 transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-zinc-200 text-xs font-medium text-zinc-950 transition-colors cursor-pointer"
             >
               <Printer className="w-4 h-4" />
               <span>Print / Save as PDF</span>
@@ -67,7 +67,7 @@ export const ComplianceDossierModal: React.FC<ComplianceDossierModalProps> = ({
             <button
               onClick={onClose}
               type="button"
-              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+              className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
