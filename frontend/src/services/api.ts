@@ -11,6 +11,7 @@ export type OutcomeStatus =
   | "APPLICABLE"
   | "NOT_APPLICABLE"
   | "CONDITIONAL_MISSING_DATA"
+  | "CONDITIONAL_RULE"
   | "UNSUPPORTED";
 
 export interface ProductItem {
@@ -116,6 +117,8 @@ export interface StructuredImpactReport {
   conditional_rules_count: intOrNumber;
   not_applicable_rules_count: intOrNumber;
   unsupported_rules_count: intOrNumber;
+  conditional_missing_data_count?: intOrNumber;
+  conditional_rule_count?: intOrNumber;
   missing_fields: string[];
   clarifying_questions: string[];
   action_checklist: string[];
