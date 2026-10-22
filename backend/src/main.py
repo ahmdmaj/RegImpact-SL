@@ -216,6 +216,8 @@ class StructuredImpactReport(BaseModel):
     conditional_rules_count: int
     not_applicable_rules_count: int
     unsupported_rules_count: int
+    conditional_missing_data_count: int = 0
+    conditional_rule_count: int = 0
     missing_fields: List[str] = []
     clarifying_questions: List[str] = []
     action_checklist: List[str] = []
@@ -335,7 +337,8 @@ def run_analysis(
     all_documents: List[str] = []
 
     applicable_count = 0
-    conditional_count = 0
+    conditional_missing_count = 0
+    conditional_rule_count = 0
     not_applicable_count = 0
     unsupported_count = 0
 
@@ -396,10 +399,13 @@ def run_analysis(
                             all_documents.append(d)
 
             elif eval_result.status == OutcomeStatus.CONDITIONAL_MISSING_DATA:
-                conditional_count += 1
+                conditional_missing_count += 1
                 for mf in eval_result.missing_fields:
                     if mf not in all_missing_fields:
                         all_missing_fields.append(mf)
+
+            elif eval_result.status == OutcomeStatus.CONDITIONAL_RULE:
+                conditional_rule_count += 1
 
             elif eval_result.status == OutcomeStatus.NOT_APPLICABLE:
                 not_applicable_count += 1
@@ -482,10 +488,13 @@ def run_analysis(
                                     all_documents.append(d)
 
                     elif eval_result.status == OutcomeStatus.CONDITIONAL_MISSING_DATA:
-                        conditional_count += 1
+                        conditional_missing_count += 1
                         for mf in eval_result.missing_fields:
                             if mf not in all_missing_fields:
                                 all_missing_fields.append(mf)
+
+                    elif eval_result.status == OutcomeStatus.CONDITIONAL_RULE:
+                        conditional_rule_count += 1
 
                     elif eval_result.status == OutcomeStatus.NOT_APPLICABLE:
                         not_applicable_count += 1
@@ -578,10 +587,13 @@ def run_analysis(
                             all_documents.append(d)
 
             elif eval_result.status == OutcomeStatus.CONDITIONAL_MISSING_DATA:
-                conditional_count += 1
+                conditional_missing_count += 1
                 for mf in eval_result.missing_fields:
                     if mf not in all_missing_fields:
                         all_missing_fields.append(mf)
+
+            elif eval_result.status == OutcomeStatus.CONDITIONAL_RULE:
+                conditional_rule_count += 1
 
             elif eval_result.status == OutcomeStatus.NOT_APPLICABLE:
                 not_applicable_count += 1
@@ -622,7 +634,9 @@ def run_analysis(
         as_at_date=eval_date,
         total_rules_evaluated=len(evaluations),
         applicable_rules_count=applicable_count,
-        conditional_rules_count=conditional_count,
+        conditional_rules_count=conditional_missing_count + conditional_rule_count,
+        conditional_missing_data_count=conditional_missing_count,
+        conditional_rule_count=conditional_rule_count,
         not_applicable_rules_count=not_applicable_count,
         unsupported_rules_count=unsupported_count,
         missing_fields=all_missing_fields,

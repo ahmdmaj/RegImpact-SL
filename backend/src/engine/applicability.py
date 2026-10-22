@@ -317,12 +317,23 @@ def evaluate_rule(
         applies_if = rule.applies_if
         exceptions = rule.exceptions or []
 
+    # Determine outcome_type (STANDARD vs CONDITIONAL_RULE per v4 §8.3)
+    outcome_type = "STANDARD"
+    if isinstance(rule, dict):
+        outcome_type = str(rule.get("outcome_type", "")).upper()
+    elif hasattr(rule, "outcome_type"):
+        outcome_type = str(getattr(rule, "outcome_type", "")).upper()
+
     # Check for UNSUPPORTED / NON_COMPILABLE status
     v_status = ""
     if isinstance(verification, dict):
         v_status = str(verification.get("status", "")).upper()
     elif hasattr(verification, "status"):
         v_status = str(verification.status).upper()
+
+    if not outcome_type or outcome_type == "STANDARD":
+        if v_status == "CONDITIONAL_RULE":
+            outcome_type = "CONDITIONAL_RULE"
 
     if v_status in ("NON_COMPILABLE", "UNSUPPORTED"):
         return EvaluationResult(
@@ -525,16 +536,27 @@ def evaluate_rule(
             counterfactuals=[],
         )
     else:  # conditions_state == TriState.TRUE and not exception_triggered and not exception_unknown
-        cfs = generate_counterfactuals(evaluation_trace, OutcomeStatus.APPLICABLE)
-        return EvaluationResult(
-            status=OutcomeStatus.APPLICABLE,
-            rule_id=rule_id,
-            missing_fields=[],
-            evaluation_trace=evaluation_trace,
-            temporal_status=temporal_status,
-            reason="All applicability conditions satisfied and rule is currently in force.",
-            counterfactuals=cfs,
-        )
+        if outcome_type == "CONDITIONAL_RULE":
+            return EvaluationResult(
+                status=OutcomeStatus.CONDITIONAL_RULE,
+                rule_id=rule_id,
+                missing_fields=[],
+                evaluation_trace=evaluation_trace,
+                temporal_status=temporal_status,
+                reason="Statutory conditions met, but rule imposes external administrative/conditional compliance requirements.",
+                counterfactuals=[],
+            )
+        else:
+            cfs = generate_counterfactuals(evaluation_trace, OutcomeStatus.APPLICABLE)
+            return EvaluationResult(
+                status=OutcomeStatus.APPLICABLE,
+                rule_id=rule_id,
+                missing_fields=[],
+                evaluation_trace=evaluation_trace,
+                temporal_status=temporal_status,
+                reason="All applicability conditions satisfied and rule is currently in force.",
+                counterfactuals=cfs,
+            )
 
 
 def format_field_metadata(field: str) -> Tuple[str, str]:
