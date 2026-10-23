@@ -568,11 +568,20 @@ def test_deterministic_evaluation_missing_data_prepackaged(gazette_rules):
         packaged_in_presence_of_purchaser=False,
         market={"b2b_only": False},
     )
+    # Retail rule: prepackaged=None is decisive -> CONDITIONAL_MISSING_DATA
     res_retail = evaluate_rule(rule=retail_rule, profile=profile, as_at_date="2026-07-15")
     assert res_retail.status == OutcomeStatus.CONDITIONAL_MISSING_DATA
     assert "products.prepackaged" in res_retail.missing_fields
 
-    res_b2b = evaluate_rule(rule=b2b_rule, profile=profile, as_at_date="2026-07-15")
+    # B2B rule: when market is b2b_only=True, prepackaged=None is decisive -> CONDITIONAL_MISSING_DATA
+    profile_b2b = BusinessProfile(
+        business_id="BIZ-GAZETTE-004-B2B",
+        activity="food_manufacturing",
+        products=[Product(category="bakery", prepackaged=None)],
+        packaged_in_presence_of_purchaser=False,
+        market={"b2b_only": True},
+    )
+    res_b2b = evaluate_rule(rule=b2b_rule, profile=profile_b2b, as_at_date="2026-07-15")
     assert res_b2b.status == OutcomeStatus.CONDITIONAL_MISSING_DATA
     assert "products.prepackaged" in res_b2b.missing_fields
 
