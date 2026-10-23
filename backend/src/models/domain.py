@@ -85,6 +85,7 @@ class Obligation(BaseModel):
     type: str
     text: str
     impact_categories: List[str]
+    disclosures: Optional[List[str]] = None
 
 class Verification(BaseModel):
     model_config = ConfigDict(extra="allow")
