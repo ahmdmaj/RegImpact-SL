@@ -80,6 +80,9 @@ def normalize_text(text: Optional[str]) -> str:
     # Normalize unicode quotes, dashes, ellipses
     t = text.replace("“", '"').replace("”", '"').replace("‘", "'").replace("’", "'")
     t = t.replace("–", "-").replace("—", "-").replace("…", "...")
+    # Normalize typography and Sri Lankan Government Gazette PUA font ligatures
+    t = t.replace("\ue055", "ff").replace("\ue056", "ffi").replace("\ue04f", "fi").replace("\ue050", "fl")
+    t = t.replace("\ufb00", "ff").replace("\ufb01", "fi").replace("\ufb02", "fl").replace("\ufb03", "ffi").replace("\ufb04", "ffl")
     # Normalize all whitespace (including newlines, tabs, non-breaking spaces) to single space
     t = re.sub(r"[\s\u00a0]+", " ", t)
     return t.strip()
