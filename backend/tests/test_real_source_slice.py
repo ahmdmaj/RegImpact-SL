@@ -234,7 +234,7 @@ def test_gazette_clause_grounding_and_ligature_normalization():
         ),
         verification=Verification(status="PENDING_REVIEW", extraction_model="test", agreement=True),
     )
-    v_report_b2b = verifier.verify(rule_b2b, source_text=p2_text)
+    v_report_b2b = verifier.verify(rule_b2b, source_text=f"{p1_text}\n{p2_text}")
     assert v_report_b2b.is_valid is True
     assert v_report_b2b.status == "verified"
 
