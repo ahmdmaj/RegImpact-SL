@@ -114,6 +114,11 @@ _engine: Engine | None = None
 _SessionLocal: sessionmaker | None = None
 
 
+import logging
+
+logger = logging.getLogger(__name__)
+
+
 def init_db(url: str | None = None) -> Engine:
     """Initialise the global engine and session factory; create tables.
 
@@ -122,6 +127,19 @@ def init_db(url: str | None = None) -> Engine:
     """
     global _engine, _SessionLocal
     resolved_url = url or get_database_url()
+
+    if "postgresql" in resolved_url.lower():
+        try:
+            check_engine = create_engine_from_url(resolved_url, connect_args={"connect_timeout": 1})
+            with check_engine.connect() as conn:
+                conn.execute(text("SELECT 1"))
+        except Exception as exc:
+            logger.warning(
+                "PostgreSQL daemon unreachable at %s (%s); falling back to SQLite storage.",
+                resolved_url,
+                exc,
+            )
+            resolved_url = _DEFAULT_SQLITE_URL
 
     if _engine is None or str(_engine.url) != resolved_url:
         _engine = create_engine_from_url(resolved_url)
