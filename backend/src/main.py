@@ -274,7 +274,7 @@ async def lifespan(app: FastAPI):
 
     # Initialize live LLM client on application startup
     try:
-        app.state.llm_client = get_llm_client(allow_mock_fallback=True)
+        app.state.llm_client = get_llm_client(allow_mock_fallback=False)
         app.state.explanation_generator = ExplanationGenerator(llm_client=app.state.llm_client)
         logger.info(
             "Initialized live LLM client on FastAPI app state: %s",
@@ -915,7 +915,12 @@ async def upload_document(
         .all()
     )
 
-    emb_client = getattr(app.state, "embedding_client", None) or get_embedding_client(allow_mock_fallback=True)
+    emb_client = getattr(app.state, "embedding_client", None)
+    if emb_client is None:
+        try:
+            emb_client = get_embedding_client(allow_mock_fallback=False)
+        except Exception:
+            emb_client = None
     clauses_created = 0
     created_clause_objects: List[ClauseORM] = []
 
@@ -925,7 +930,7 @@ async def upload_document(
             clause_pk = f"CLAUSE-{doc_id.upper()}-{seg.clause_number.replace(' ', '-').upper()}"
             existing = db.query(ClauseORM).filter_by(clause_id=clause_pk).first()
             if not existing:
-                emb = emb_client.embed_text(seg.text)
+                emb = emb_client.embed_text(seg.text) if emb_client else None
                 clause_orm = ClauseORM(
                     clause_id=clause_pk,
                     version_number=1,
@@ -946,17 +951,23 @@ async def upload_document(
             else:
                 created_clause_objects.append(existing)
 
-    llm_client = getattr(app.state, "llm_client", None) or get_llm_client(allow_mock_fallback=True)
-    compiler = RuleCompiler(llm_client=llm_client)
+    llm_client = getattr(app.state, "llm_client", None)
+    if llm_client is None:
+        try:
+            llm_client = get_llm_client(allow_mock_fallback=False)
+        except Exception:
+            llm_client = None
+    compiler = RuleCompiler(llm_client=llm_client) if llm_client else None
 
     rules_compiled = 0
     pending_count = 0
     approved_count = 0
 
-    for clause in created_clause_objects:
-        existing_rule = db.query(RuleORM).filter_by(clause_id=clause.clause_id).first()
-        if existing_rule:
-            continue
+    if compiler:
+        for clause in created_clause_objects:
+            existing_rule = db.query(RuleORM).filter_by(clause_id=clause.clause_id).first()
+            if existing_rule:
+                continue
 
         try:
             comp_res = compiler.compile_clause_with_agreement(
