@@ -216,6 +216,10 @@ def rule_orm_to_domain(orm: "RuleORM") -> Rule:
     )
     if hasattr(orm, "outcome_type") and orm.outcome_type:
         setattr(rule, "outcome_type", orm.outcome_type)
+    if hasattr(orm, "is_gold_rule"):
+        setattr(rule, "is_gold_rule", bool(orm.is_gold_rule))
+    if hasattr(orm, "review_status") and orm.review_status:
+        setattr(rule, "review_status", orm.review_status)
     return rule
 
 
