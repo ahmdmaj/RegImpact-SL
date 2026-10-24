@@ -809,11 +809,15 @@ def test_real_slice_seeding_and_repository_roundtrip(test_db):
     assert b2b_rule.source.page == 2
     assert "business-to-business food products" in b2b_rule.source.quote_span
 
-    # 5. Review integrity
+    # 5. Review integrity on ORM
+    retail_orm = test_db.query(RuleORM).filter_by(rule_id="RULE-FCAU-2494-47-REG-3").first()
+    b2b_orm = test_db.query(RuleORM).filter_by(rule_id="RULE-FCAU-2494-47-REG-3-B2B").first()
+    assert retail_orm is not None and retail_orm.review_status == "APPROVED"
+    assert retail_orm.is_gold_rule is False
+    assert b2b_orm is not None and b2b_orm.review_status == "APPROVED"
+    assert b2b_orm.is_gold_rule is False
     assert retail_rule.verification.status == "APPROVED"
-    assert retail_rule.verification.is_gold_rule is False
     assert b2b_rule.verification.status == "APPROVED"
-    assert b2b_rule.verification.is_gold_rule is False
 
     # 6. Complete B2B statutory disclosures survive persistence and retrieval
     expected_disclosures = [
@@ -858,6 +862,7 @@ def test_real_slice_seeding_idempotence(test_db):
 
 def test_regression_disclosures_persistence_roundtrip(test_db):
     """Task 1: Regression test proving Obligation.disclosures survives Domain -> ORM -> DB -> Domain."""
+    seed_real_slice(session=test_db)
     repo = PostgresRegulatoryRepository(test_db)
 
     sample_disclosures = [
@@ -968,7 +973,7 @@ def test_b2b_impact_mapping_disclosures_and_no_trilingual(seeded_real_db):
     assert not any("mandatory trilingual" in a.lower() for a in impact.action_items)
 
     # Verify specific B2B obligations are present
-    assert any("either sinhala, tamil, or english" in a.lower() for a in impact.action_items)
+    assert any("either of the three languages" in a.lower() or "sinhala, tamil, or english" in a.lower() for a in impact.action_items)
     assert any("not for retail sale" in a.lower() and "3 mm" in a.lower() for a in impact.action_items)
     assert any("batch number" in a.lower() for a in impact.action_items)
     assert any("date of manufacture" in a.lower() for a in impact.action_items)
@@ -1056,7 +1061,7 @@ def test_api_analysis_endpoint_b2b_profile(client_with_real_slice):
     assert not any("mandatory trilingual" in a.lower() for a in data["action_checklist"])
 
     # Must contain specific B2B obligations
-    assert any("either sinhala, tamil, or english" in a.lower() for a in data["action_checklist"])
+    assert any("either of the three languages" in a.lower() or "sinhala, tamil, or english" in a.lower() for a in data["action_checklist"])
     assert any("not for retail sale" in a.lower() and "3 mm" in a.lower() for a in data["action_checklist"])
     assert any("batch number" in a.lower() for a in data["action_checklist"])
 

@@ -152,7 +152,7 @@ def get_supported_obligation_types() -> List[str]:
 
 def compute_timeline_note(
     rule: Union[Rule, Dict[str, Any]],
-    evaluation_result: EvaluationResult,
+    evaluation_result: Optional[EvaluationResult] = None,
 ) -> Optional[str]:
     """Compute timeline and compliance note based on temporal validity."""
     if isinstance(rule, dict):
@@ -163,7 +163,7 @@ def compute_timeline_note(
         commences = rule.validity.commences
         transition_until = rule.validity.transition_until
 
-    if evaluation_result.temporal_status == "IN_TRANSITION" and transition_until:
+    if evaluation_result and evaluation_result.temporal_status == "IN_TRANSITION" and transition_until:
         return f"Transition period active: Mandatory compliance deadline is {transition_until}."
     elif transition_until:
         return f"Transition period granted until {transition_until}."
