@@ -584,6 +584,7 @@ def seed_regulatory_corpus(
 
     # Register synthetic test fixtures ONLY when explicitly requested (isolated from normal seeding)
     if include_synthetic_fixtures:
+        fixture_emb_client = active_embedding or MockEmbeddingClient(dimension=embedding_dimension)
         for fixture in DOCUMENT_FIXTURES:
             doc_id = fixture["doc_id"]
             # Ensure parent SourceDocumentORM exists with is_synthetic=True
@@ -782,7 +783,7 @@ def seed_regulatory_corpus(
                     char_start=0,
                     char_end=len(leg["quote"]),
                     is_compilable=True,
-                    embedding=embedding_client.embed_text(leg["quote"]),
+                    embedding=fixture_emb_client.embed_text(leg["quote"]),
                     is_synthetic=True,
                 )
                 db.add(c_orm)
