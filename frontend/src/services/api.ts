@@ -36,6 +36,7 @@ export interface Market {
   domestic?: boolean | null;
   export_flag?: boolean | null;
   import_flag?: boolean | null;
+  b2b_only?: boolean | null;
 }
 
 export interface BusinessProfile {
@@ -49,6 +50,7 @@ export interface BusinessProfile {
   market?: Market | null;
   existing_licences?: string[];
   as_at_date?: string | null;
+  packaged_in_presence_of_purchaser?: boolean | null;
 }
 
 export interface PatchOperation {

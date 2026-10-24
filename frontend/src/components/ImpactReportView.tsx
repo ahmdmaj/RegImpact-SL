@@ -24,9 +24,9 @@ export const ImpactReportView: React.FC<ImpactReportViewProps> = ({ report }) =>
 
   const isNarrativeVerified = report.narrative_summary && !report.narrative_summary.includes("failed verification");
 
-  const displayNarrative = (!report.narrative_summary || report.narrative_summary === "Mock generated text explanation.")
-    ? `Based on Sri Lankan food safety and environmental legislation evaluated as-at ${report.as_at_date}, your enterprise triggers mandatory statutory obligations for trilingual nutritional declarations (Food Labelling Regulations) and Category B environmental licensing (Central Environmental Authority). Review the action checklist below to maintain compliance.`
-    : report.narrative_summary;
+  const displayNarrative = report.narrative_summary && report.narrative_summary !== "Mock generated text explanation."
+    ? report.narrative_summary
+    : `Evaluation completed as-at ${report.as_at_date}: ${report.applicable_rules_count} mandatory statutory obligation(s) identified, ${report.conditional_rules_count} rule(s) requiring clarifying data, and ${report.not_applicable_rules_count} rule(s) exempt or inactive. Review the action checklist and grounded statutory citations below.`;
 
   // Collect all unique counterfactuals
   const allCounterfactuals: string[] = [];
