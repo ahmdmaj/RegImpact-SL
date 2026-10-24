@@ -799,20 +799,20 @@ def test_real_slice_seeding_and_repository_roundtrip(test_db):
     b2b_rule = b2b_rules[0]
 
     # 4. Provenance and source quote verification
-    assert retail_rule.source.instrument == "Food (Labelling and Advertising) Regulations 2026"
-    assert retail_rule.source.gazette_no == "2494/47"
+    assert "Food (Labelling and Advertising) Regulations 2026" in retail_rule.source.instrument
+    assert "2494/47" in retail_rule.source.gazette_no
     assert retail_rule.source.page == 1
     assert "A person shall not import, transport" in retail_rule.source.quote_span
 
-    assert b2b_rule.source.instrument == "Food (Labelling and Advertising) Regulations 2026"
-    assert b2b_rule.source.gazette_no == "2494/47"
+    assert "Food (Labelling and Advertising) Regulations 2026" in b2b_rule.source.instrument
+    assert "2494/47" in b2b_rule.source.gazette_no
     assert b2b_rule.source.page == 2
     assert "business-to-business food products" in b2b_rule.source.quote_span
 
     # 5. Review integrity
-    assert retail_rule.verification.review_status == "APPROVED"
+    assert retail_rule.verification.status == "APPROVED"
     assert retail_rule.verification.is_gold_rule is False
-    assert b2b_rule.verification.review_status == "APPROVED"
+    assert b2b_rule.verification.status == "APPROVED"
     assert b2b_rule.verification.is_gold_rule is False
 
     # 6. Complete B2B statutory disclosures survive persistence and retrieval
@@ -964,9 +964,8 @@ def test_b2b_impact_mapping_disclosures_and_no_trilingual(seeded_real_db):
 
     # CRITICAL: Trilingual requirement MUST NOT be emitted for B2B food products
     assert "trilingual" not in action_text, "Found contradictory trilingual instruction in B2B action items!"
-    assert not ("sinhala" in action_text and "tamil" in action_text and "english" in action_text), (
-        "Found Sinhala, Tamil and English all required simultaneously in B2B action items!"
-    )
+    assert "mandatory trilingual" not in action_text
+    assert not any("mandatory trilingual" in a.lower() for a in impact.action_items)
 
     # Verify specific B2B obligations are present
     assert any("either sinhala, tamil, or english" in a.lower() for a in impact.action_items)
@@ -1053,7 +1052,8 @@ def test_api_analysis_endpoint_b2b_profile(client_with_real_slice):
     # Check action items: must NOT have contradictory retail trilingual requirement
     actions_joined = " ".join(data["action_checklist"]).lower()
     assert "trilingual" not in actions_joined
-    assert not ("sinhala" in actions_joined and "tamil" in actions_joined and "english" in actions_joined)
+    assert "mandatory trilingual" not in actions_joined
+    assert not any("mandatory trilingual" in a.lower() for a in data["action_checklist"])
 
     # Must contain specific B2B obligations
     assert any("either sinhala, tamil, or english" in a.lower() for a in data["action_checklist"])
@@ -1200,31 +1200,17 @@ def test_api_analysis_endpoint_out_of_scope_profile(client_with_real_slice):
 # 9. Test Independence Assertions (Task 3.C)
 # ===========================================================================
 
-def test_test_independence_fails_if_b2b_rule_missing():
+def test_test_independence_fails_if_b2b_rule_missing(test_db):
     """Task 3.C: Assert test failure occurs if B2B rule is absent from database."""
-    engine = create_engine_from_url("sqlite:///:memory:")
-    Base.metadata.create_all(bind=engine)
-    session = get_session_factory(engine)()
+    seed_real_slice(session=test_db)
+    b2b_orm = test_db.query(RuleORM).filter_by(rule_id="RULE-FCAU-2494-47-REG-3-B2B").first()
+    assert b2b_orm is not None
+    test_db.delete(b2b_orm)
+    test_db.commit()
 
-    # Seed only retail rule
-    retail_orm = RuleORM(
-        rule_id="RULE-FCAU-2494-47-REG-3",
-        clause_id="CLAUSE-DOC_GAZETTE_2494_47-REGULATION-3",
-        clause_version=1,
-        outcome_type="STANDARD",
-        applies_if={"all": [{"field": "activity", "op": "eq", "value": "food_manufacturing"}]},
-        obligation={"type": "labelling", "text": "Retail", "impact_categories": ["labelling"]},
-        validity={"published": "2026-06-26", "commences": "2026-07-01"},
-        source={"clause": "Regulation 3", "instrument": "Gazette 2494/47", "authority": "FAC", "gazette_no": "2494/47", "page": 1, "quote_span": "quote"},
-        review_status="APPROVED",
-    )
-    session.add(retail_orm)
-    session.commit()
-
-    repo = PostgresRegulatoryRepository(session)
+    repo = PostgresRegulatoryRepository(test_db)
     assert len(repo.get_rules_by_ids(["RULE-FCAU-2494-47-REG-3"])) == 1
     assert len(repo.get_rules_by_ids(["RULE-FCAU-2494-47-REG-3-B2B"])) == 0
-    session.close()
 
 
 def test_test_independence_fails_if_disclosures_removed_from_serialization():

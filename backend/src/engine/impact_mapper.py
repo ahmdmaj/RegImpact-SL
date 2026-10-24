@@ -197,15 +197,15 @@ B2B_STATUTORY_DISCLOSURE_DESCRIPTIONS: Dict[str, str] = {
 
 def map_impact(
     rule: Union[Rule, Dict[str, Any]],
-    evaluation_result: EvaluationResult,
+    evaluation_result: Optional[EvaluationResult] = None,
 ) -> Optional[BusinessImpact]:
     """Deterministically map an applicable rule to affected activities, documents, and action items.
     
-    Returns BusinessImpact ONLY when evaluation_result.status == OutcomeStatus.APPLICABLE.
+    Returns BusinessImpact ONLY when evaluation_result is None or evaluation_result.status == OutcomeStatus.APPLICABLE.
     Returns None for NOT_APPLICABLE, CONDITIONAL_MISSING_DATA, or UNSUPPORTED.
     """
     # 1. Guard against non-applicable outcomes (prevent false positives)
-    if evaluation_result.status != OutcomeStatus.APPLICABLE:
+    if evaluation_result is not None and evaluation_result.status != OutcomeStatus.APPLICABLE:
         return None
 
     # 2. Extract rule metadata

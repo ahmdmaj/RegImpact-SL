@@ -219,8 +219,15 @@ def rule_orm_to_domain(orm: "RuleORM") -> Rule:
     return rule
 
 
-def rule_domain_to_orm_dict(rule: Rule, clause_id: str, clause_version: int) -> Dict[str, Any]:
+def rule_domain_to_orm_dict(
+    rule: Rule,
+    clause_id: Optional[str] = None,
+    clause_version: Optional[int] = None,
+) -> Dict[str, Any]:
     """Serialise a Pydantic Rule into a dict suitable for constructing RuleORM."""
+    effective_clause_id = clause_id or getattr(rule, "clause_id", None) or (rule.source.clause if rule.source else "")
+    effective_clause_version = clause_version if clause_version is not None else getattr(rule, "clause_version", 1)
+
     applies_if_dict: Dict[str, Any] = {}
     if rule.applies_if.all:
         applies_if_dict["all"] = [
@@ -235,8 +242,8 @@ def rule_domain_to_orm_dict(rule: Rule, clause_id: str, clause_version: int) -> 
 
     return {
         "rule_id": rule.rule_id,
-        "clause_id": clause_id,
-        "clause_version": clause_version,
+        "clause_id": effective_clause_id,
+        "clause_version": effective_clause_version,
         "applies_if": applies_if_dict,
         "exceptions": [
             e if isinstance(e, dict) else e.model_dump()
