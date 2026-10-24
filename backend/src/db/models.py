@@ -96,12 +96,13 @@ def is_synthetic_clause(clause: Any = None, clause_id: str | None = None, docume
     return False
 
 
-def is_synthetic_rule(rule: Any = None, rule_id: str | None = None, clause_id: str | None = None) -> bool:
+def is_synthetic_rule(rule: Any = None, rule_id: str | None = None, clause_id: str | None = None, rule_orm: Any = None, **kwargs) -> bool:
     """Return True if rule belongs to a synthetic test fixture."""
-    if rule is not None and getattr(rule, "is_synthetic", False):
+    actual_rule = rule if rule is not None else rule_orm
+    if actual_rule is not None and getattr(actual_rule, "is_synthetic", False):
         return True
-    rid = rule_id or (getattr(rule, "rule_id", None) if rule else None)
-    cid = clause_id or (getattr(rule, "clause_id", None) if rule else None)
+    rid = rule_id or (getattr(actual_rule, "rule_id", None) if actual_rule else None)
+    cid = clause_id or (getattr(actual_rule, "clause_id", None) if actual_rule else None)
     if rid and rid.upper() in {r.upper() for r in SYNTHETIC_RULE_IDS}:
         return True
     if cid and is_synthetic_clause(clause_id=cid):
