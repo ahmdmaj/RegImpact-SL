@@ -343,3 +343,157 @@ def test_bench_db_11_repository_backed_execution_sqlite(populated_real_slice_db:
     b2b_rule = next(r for r in rules if r.rule_id == "RULE-FCAU-2494-47-REG-3-B2B")
     assert "not_for_retail_sale_statement" in b2b_rule.obligation.disclosures
     assert len(b2b_rule.obligation.disclosures) == 11
+
+
+# ---------------------------------------------------------------------------
+# Phase B / Phase C Audit Regression Tests
+# ---------------------------------------------------------------------------
+
+def test_bench_pair_negative_01_malformed_cardinality(benchmark_scenarios: List[BenchmarkScenario]):
+    """AUDIT-PAIR-01: Pairs with != 2 members must strictly fail validation."""
+    scens = [s.model_copy(deep=True) for s in benchmark_scenarios]
+    # Remove one member of minimal pair
+    scens = [s for s in scens if s.scenario_id != "SCEN-REG3-PAIR-09B"]
+    rep = validate_benchmark_slice(scens)
+    assert rep.is_valid is False
+    assert any("must have exactly 2 scenarios, got 1" in err for err in rep.errors)
+
+
+def test_bench_pair_negative_02_minimal_pair_second_unintended_change(benchmark_scenarios: List[BenchmarkScenario]):
+    """AUDIT-PAIR-02: Minimal pair with an unintended second feature change must fail validation."""
+    scens = [s.model_copy(deep=True) for s in benchmark_scenarios]
+    scen_9b = next(s for s in scens if s.scenario_id == "SCEN-REG3-PAIR-09B")
+    # Mutate a second legally relevant field: activity changed from food_manufacturing to retail_trade
+    scen_9b.business_profile.activity = "retail_trade"
+
+    rep = validate_benchmark_slice(scens)
+    assert rep.is_valid is False
+    assert any("input differences" in err or "uncontrolled feature differences" in err for err in rep.errors)
+
+
+def test_bench_pair_negative_03_invariance_pair_mutates_operative_condition(benchmark_scenarios: List[BenchmarkScenario]):
+    """AUDIT-PAIR-03: Invariance pair that mutates a legally operative condition must fail validation."""
+    scens = [s.model_copy(deep=True) for s in benchmark_scenarios]
+    scen_10b = next(s for s in scens if s.scenario_id == "SCEN-REG3-INV-10B")
+    # Inadvertently mutate an operative field: prepackaged flag changed from True to False
+    scen_10b.business_profile.products[0].prepackaged = False
+
+    rep = validate_benchmark_slice(scens)
+    assert rep.is_valid is False
+    assert any("mutates legally relevant field" in err for err in rep.errors)
+
+
+def test_bench_temp_boundary_04_before_on_after_commencement(populated_real_slice_db: Session):
+    """AUDIT-TEMP-04: Commencement boundary at 2026-07-01 behaves correctly before, on, and after."""
+    from backend.src.engine.applicability import evaluate_rule
+
+    repo = PostgresRegulatoryRepository(populated_real_slice_db)
+    retail_rule = repo.get_rules_by_ids(["RULE-FCAU-2494-47-REG-3"])[0]
+
+    profile = benchmark_scenarios = BenchmarkScenario(
+        scenario_id="TEMP-TEST",
+        clause_id="Regulation 3",
+        scenario_type="temporal",
+        business_profile={
+            "activity": "food_manufacturing",
+            "products": [{"prepackaged": True}],
+            "market": {"b2b_only": False},
+            "packaged_in_presence_of_purchaser": False,
+        },
+        as_at_date="2026-06-30",
+        gold_outcome=OutcomeStatus.NOT_APPLICABLE,
+        gold_temporal_status="NOT_YET_IN_FORCE",
+    ).business_profile
+
+    # 1. Day before commencement (2026-06-30)
+    res_before = evaluate_rule(retail_rule, profile, as_at_date="2026-06-30")
+    assert res_before.status == OutcomeStatus.NOT_APPLICABLE
+    assert res_before.temporal_status == "NOT_YET_IN_FORCE"
+    assert "Rule not yet in force" in (res_before.reason or "")
+
+    # 2. Commencement day (2026-07-01)
+    res_on = evaluate_rule(retail_rule, profile, as_at_date="2026-07-01")
+    assert res_on.status == OutcomeStatus.APPLICABLE
+    assert res_on.temporal_status == "IN_FORCE"
+
+    # 3. Day after commencement (2026-07-02)
+    res_after = evaluate_rule(retail_rule, profile, as_at_date="2026-07-02")
+    assert res_after.status == OutcomeStatus.APPLICABLE
+    assert res_after.temporal_status == "IN_FORCE"
+
+
+def test_bench_b2b_coexistence_05_retail_vs_b2b_rule(
+    benchmark_scenarios: List[BenchmarkScenario],
+    populated_real_slice_db: Session,
+):
+    """AUDIT-B2B-05: SCEN-REG3-PAIR-09B is NOT_APPLICABLE for retail, but APPLICABLE for B2B affirmative rule."""
+    from backend.src.engine.applicability import evaluate_rule
+
+    repo = PostgresRegulatoryRepository(populated_real_slice_db)
+    rules = {r.rule_id: r for r in repo.get_rules_by_ids(["RULE-FCAU-2494-47-REG-3", "RULE-FCAU-2494-47-REG-3-B2B"])}
+
+    scen_9b = next(s for s in benchmark_scenarios if s.scenario_id == "SCEN-REG3-PAIR-09B")
+
+    # Evaluate against General Retail Rule: NOT_APPLICABLE (due to Proviso (b) B2B exemption)
+    res_retail = evaluate_rule(rules["RULE-FCAU-2494-47-REG-3"], scen_9b.business_profile, as_at_date=scen_9b.as_at_date)
+    assert res_retail.status == OutcomeStatus.NOT_APPLICABLE
+    assert res_retail.reason == "Rule exception condition met."
+
+    # Evaluate against Affirmative B2B Rule: APPLICABLE (mandating disclosures + 3 mm label)
+    res_b2b = evaluate_rule(rules["RULE-FCAU-2494-47-REG-3-B2B"], scen_9b.business_profile, as_at_date=scen_9b.as_at_date)
+    assert res_b2b.status == OutcomeStatus.APPLICABLE
+    assert "common_name" in (rules["RULE-FCAU-2494-47-REG-3-B2B"].obligation.disclosures or [])
+    assert "not_for_retail_sale_statement" in (rules["RULE-FCAU-2494-47-REG-3-B2B"].obligation.disclosures or [])
+
+
+def test_bench_split_negative_06_naive_random_split_causes_leakage(benchmark_scenarios: List[BenchmarkScenario]):
+    """AUDIT-SPLIT-06: Naive random record-level partitioning leaks Regulation 3 across train and test."""
+    import random
+
+    rng = random.Random(42)
+    shuffled = list(benchmark_scenarios)
+    rng.shuffle(shuffled)
+
+    # Naive record-level split: 70% train, 30% test
+    split_idx = int(len(shuffled) * 0.7)
+    naive_train = shuffled[:split_idx]
+    naive_test = shuffled[split_idx:]
+
+    naive_train_cids = {s.clause_id for s in naive_train}
+    naive_test_cids = {s.clause_id for s in naive_test}
+    leakage = naive_train_cids.intersection(naive_test_cids)
+
+    # In a naive random split, Regulation 3 is leaked into both partitions!
+    assert "Regulation 3" in leakage, "Expected naive split to leak Regulation 3."
+
+    # In contrast, split_scenarios_by_clause prevents leakage
+    safe_train, safe_test = split_scenarios_by_clause(benchmark_scenarios, test_ratio=0.3)
+    safe_train_cids = {s.clause_id for s in safe_train}
+    safe_test_cids = {s.clause_id for s in safe_test}
+    assert len(safe_train_cids.intersection(safe_test_cids)) == 0
+
+
+def test_bench_rec_07_dataset_hash_recorded(
+    benchmark_scenarios: List[BenchmarkScenario],
+    populated_real_slice_db: Session,
+):
+    """AUDIT-REC-07: BenchmarkRunner records tamper-evident SHA-256 hash of scenario file."""
+    import hashlib
+
+    repo = PostgresRegulatoryRepository(populated_real_slice_db)
+    r1 = repo.get_rules_by_ids(["RULE-FCAU-2494-47-REG-3"])[0]
+
+    system_p = SystemP(rules={r1.rule_id: r1})
+    runner = BenchmarkRunner()
+
+    report = runner.run(
+        system=system_p,
+        scenarios=benchmark_scenarios,
+        dataset_version="v1.0-provisional-reg3",
+        dataset_path=str(SLICE_PATH),
+    )
+
+    expected_hash = hashlib.sha256(SLICE_PATH.read_bytes()).hexdigest()
+    assert report.dataset_hash == expected_hash
+    assert len(report.dataset_hash) == 64
+
