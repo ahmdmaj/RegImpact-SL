@@ -375,19 +375,14 @@ class DenseRetrievalEngine(BaseRetrievalEngine):
             is_postgres = False
 
         if is_postgres:
-            return self._search_native_pgvector(
-                query_vec, top_k=top_k, filters=filters, allow_unverified=allow_unverified
-            )
-        return self._search_in_memory_fallback(
-            query_vec, top_k=top_k, filters=filters, allow_unverified=allow_unverified
-        )
+            return self._search_native_pgvector(query_vec, top_k=top_k, filters=filters)
+        return self._search_in_memory_fallback(query_vec, top_k=top_k, filters=filters)
 
     def _search_native_pgvector(
         self,
         query_vec: List[float],
         top_k: int = 10,
         filters: Optional[Dict[str, Any]] = None,
-        allow_unverified: bool = False,
     ) -> List[RetrievalResult]:
         """Perform native PostgreSQL vector search using the <=> cosine distance operator."""
         distance_expr = ClauseORM.embedding.cosine_distance(query_vec)
@@ -398,6 +393,7 @@ class DenseRetrievalEngine(BaseRetrievalEngine):
             .filter(ClauseORM.embedding.isnot(None))
         )
 
+        allow_unverified = bool(filters.get("allow_unverified", False)) if filters else self.allow_unverified
         if not allow_unverified:
             query_builder = query_builder.filter(ClauseORM.embedding_verified.is_(True))
 
@@ -454,7 +450,6 @@ class DenseRetrievalEngine(BaseRetrievalEngine):
         query_vec: List[float],
         top_k: int = 10,
         filters: Optional[Dict[str, Any]] = None,
-        allow_unverified: bool = False,
     ) -> List[RetrievalResult]:
         """In-memory cosine similarity search fallback for SQLite and offline test doubles."""
         query_builder = (
@@ -463,6 +458,7 @@ class DenseRetrievalEngine(BaseRetrievalEngine):
             .filter(ClauseORM.embedding.isnot(None))
         )
 
+        allow_unverified = bool(filters.get("allow_unverified", False)) if filters else self.allow_unverified
         if not allow_unverified:
             query_builder = query_builder.filter(ClauseORM.embedding_verified.is_(True))
 
