@@ -107,12 +107,19 @@ def require_role(allowed_roles: Set[str]):
 
 
 def ensure_database_seeded(session: Session) -> None:
-    """Ensure that the persistent database has been seeded with Dataset A regulatory corpus."""
+    """Ensure that the persistent database has been seeded with Dataset A regulatory corpus and authoritative slice."""
     has_docs = session.query(SourceDocumentORM).first() is not None
     has_rules = session.query(RuleORM).first() is not None
     if not has_docs or not has_rules:
         logger.info("Database appears unseeded. Seeding authoritative regulatory corpus...")
         seed_regulatory_corpus(db=session)
+        from backend.data.seed_real_slice import seed_real_slice
+        seed_real_slice(session=session)
+    else:
+        has_real_rule = session.query(RuleORM).filter_by(rule_id="RULE-FCAU-2494-47-REG-3").first() is not None
+        if not has_real_rule:
+            from backend.data.seed_real_slice import seed_real_slice
+            seed_real_slice(session=session)
 
 
 def _resolve_provenance(db: Session, rule_id: str, clause_id: Optional[str] = None) -> Dict[str, Any]:

@@ -172,6 +172,29 @@ def compute_timeline_note(
     return None
 
 
+# Statutory descriptions for B2B mandatory disclosures under Gazette No. 2494/47 Regulation 3 Proviso (b)
+B2B_STATUTORY_DISCLOSURE_DESCRIPTIONS: Dict[str, str] = {
+    "common_name": "Common name (in either of the three languages)",
+    "common_name_in_either_of_three_languages": "Common name (in either of the three languages)",
+    "trade_name": "Trade name (if applicable)",
+    "trade_name_if_applicable": "Trade name (if applicable)",
+    "net_contents": "Net contents",
+    "date_of_manufacture": "Date of manufacture",
+    "date_of_expiry": "Date of expiry",
+    "batch_number": "Batch number",
+    "manufacturer_details": "Manufacturer's name and address",
+    "manufacturer_name_and_address": "Manufacturer's name and address",
+    "distributor_details": "Distributor's name and address",
+    "distributor_name_and_address": "Distributor's name and address",
+    "country_of_origin": "Country of origin in the case of imported foods",
+    "country_of_origin_if_imported": "Country of origin in the case of imported foods",
+    "ingredients_list": "A complete list of ingredients",
+    "complete_list_of_ingredients": "A complete list of ingredients",
+    "not_for_retail_sale_statement": "Conspicuous bold 'Not for retail sale' statement in a font size of not less than 3 mm",
+    "statement_not_for_retail_sale_conspicuous_bold_gte_3mm": "Conspicuous bold 'Not for retail sale' statement in a font size of not less than 3 mm",
+}
+
+
 def map_impact(
     rule: Union[Rule, Dict[str, Any]],
     evaluation_result: EvaluationResult,
@@ -195,6 +218,8 @@ def map_impact(
         authority = source.get("authority", "Regulatory Authority")
         instrument = source.get("instrument", "Applicable Regulation")
         clause = source.get("clause", "Stipulated Clause")
+        rule_id = str(rule.get("rule_id", ""))
+        disclosures = obligation.get("disclosures")
     else:
         ob_type_raw = str(rule.obligation.type).strip().lower()
         ob_text = rule.obligation.text
@@ -202,8 +227,87 @@ def map_impact(
         authority = rule.source.authority
         instrument = rule.source.instrument
         clause = rule.source.clause
+        rule_id = str(rule.rule_id)
+        disclosures = rule.obligation.disclosures
 
-    # 3. Resolve obligation category from bounded vocabulary
+    # 3. Detect B2B labelling obligation vs generic retail labelling
+    is_b2b = (
+        bool(disclosures)
+        or "b2b_compliance" in impact_cats
+        or "b2b" in rule_id.lower()
+        or "proviso (b)" in clause.lower()
+    )
+
+    if is_b2b and "labelling" in ob_type_raw:
+        # B2B specific mapping (Regulation 3 Proviso (b))
+        norm_type = "labelling"
+        affected_activities = [
+            "B2B product packaging design and bulk container specification",
+            "Packaging line printing, batch coding, and supplementary label application",
+            "B2B finished goods regulatory compliance verification and dispatch inspection",
+        ]
+        affected_documents = [
+            "Business-to-business product packaging specifications and label artwork",
+            "Batch coding, manufacturing date, and expiry date records",
+            "Manufacturer and distributor identification and address records",
+            "Ingredient declaration and country of origin documentation (imported foods)",
+            "Supplementary label specifications for 'Not for retail sale' marking (font size >= 3 mm)",
+        ]
+
+        action_items: List[str] = []
+        if ob_text:
+            action_items.append(f"Fulfill specific requirement: {ob_text}")
+
+        # Core statutory B2B exemption condition notice
+        action_items.append(
+            f"Ensure packaging complies with B2B exemption under {instrument} ({clause}): "
+            "product is exempt from general retail labelling requirements but must satisfy mandatory B2B disclosures and marking."
+        )
+
+        # Mandatory marking item
+        action_items.append(
+            f"Print on label or affix through supplementary label the statement 'Not for retail sale' "
+            f"clearly and conspicuously in bold type and font size of not less than 3 mm ({clause})."
+        )
+
+        # Single-language common name (explicitly NOT trilingual)
+        action_items.append(
+            f"Ensure packaging displays common name in either of the three languages (Sinhala, Tamil, or English) per {clause}."
+        )
+
+        # Surface specific mandatory disclosures with verified statutory wording
+        if disclosures:
+            for d in disclosures:
+                if d in ("not_for_retail_sale_statement", "statement_not_for_retail_sale_conspicuous_bold_gte_3mm"):
+                    continue
+                desc = B2B_STATUTORY_DISCLOSURE_DESCRIPTIONS.get(d, d.replace("_", " ").title())
+                action_items.append(f"Mandatory B2B disclosure: {desc}.")
+
+        action_items.append(
+            f"Verify batch coding, net contents, manufacturer name and address, and expiry date format on production line ({authority})."
+        )
+        action_items.append(
+            "Audit current B2B packaging inventory and plan transition to compliant labels before deadline."
+        )
+
+        # Incorporate extra impact categories if specified in rule
+        for cat in impact_cats:
+            cat_clean = cat.strip().replace("_", " ").title()
+            extra_act = f"{cat_clean} management and review"
+            if extra_act not in affected_activities:
+                affected_activities.append(extra_act)
+
+        timeline_note = compute_timeline_note(rule, evaluation_result)
+
+        return BusinessImpact(
+            obligation_type=norm_type,
+            affected_activities=affected_activities,
+            affected_documents=affected_documents,
+            action_items=action_items,
+            timeline_note=timeline_note,
+        )
+
+    # 4. Standard mapping for general obligation types
     norm_type = "process"
     for supported in SUPPORTED_OBLIGATION_TYPES:
         if supported in ob_type_raw:
@@ -212,7 +316,7 @@ def map_impact(
 
     mapping_entry = OBLIGATION_MAPPINGS.get(norm_type, OBLIGATION_MAPPINGS["process"])
 
-    # 4. Compile affected activities & documents
+    # 5. Compile affected activities & documents
     affected_activities = list(mapping_entry["affected_activities"])
     affected_documents = list(mapping_entry["affected_documents"])
 
@@ -223,7 +327,7 @@ def map_impact(
         if extra_act not in affected_activities:
             affected_activities.append(extra_act)
 
-    # 5. Parameterize action item templates
+    # 6. Parameterize action item templates
     action_items: List[str] = []
     for template in mapping_entry["action_templates"]:
         formatted = template.format(
@@ -240,7 +344,7 @@ def map_impact(
         if direct_action not in action_items:
             action_items.insert(0, direct_action)
 
-    # 6. Compute timeline note
+    # 7. Compute timeline note
     timeline_note = compute_timeline_note(rule, evaluation_result)
 
     return BusinessImpact(

@@ -59,195 +59,243 @@ DRAFT_PDF_PATH = Path("backend/data/raw_sources/Labelling_Regulations_Final_-_11
 DRAFT_SHA256 = "c70b5668131b76ff206897ef391cb3402bb4bf6be39a76ad1400d24c07330142"
 
 
-def seed_real_slice():
-    with session_scope() as session:
-        # 1. Promulgated Source Document
-        doc = session.get(SourceDocumentORM, GAZETTE_DOC_ID)
-        if not doc:
-            doc = SourceDocumentORM(
-                id=GAZETTE_DOC_ID,
-                title=GAZETTE_DOC_TITLE,
-                authority=GAZETTE_AUTHORITY,
-                instrument_type="gazette_regulation",
-                gazette_no=GAZETTE_NO,
-                source_url=GAZETTE_OFFICIAL_URL,
-                file_path=str(GAZETTE_PDF_PATH),
-                file_size_bytes=len(GAZETTE_PDF_PATH.read_bytes()) if GAZETTE_PDF_PATH.exists() else 424172,
-                sha256_hash=EXPECTED_GAZETTE_SHA256,
-                page_count=25,
-                extraction_status="SUCCESS",
-                extraction_tool="pymupdf",
-                publication_date=datetime.date(2026, 6, 26),
-            )
-            session.add(doc)
-            session.flush()
-            print("Created SourceDocumentORM for Gazette 2494/47")
-        else:
-            doc.title = GAZETTE_DOC_TITLE
-            doc.source_url = GAZETTE_OFFICIAL_URL
-            doc.publication_date = datetime.date(2026, 6, 26)
-            doc.gazette_no = GAZETTE_NO
-            session.flush()
-            print("Updated SourceDocumentORM for Gazette 2494/47")
+from typing import Optional
+from sqlalchemy.orm import Session
 
-        # Clarify earlier draft document metadata: no false gazette number
-        draft_doc = session.get(SourceDocumentORM, DRAFT_DOC_ID)
-        if draft_doc:
-            draft_doc.title = "Food (Labelling and Advertising) Regulations (FAC Draft Final 11.02.2026)"
-            draft_doc.gazette_no = None  # Draft is not officially gazetted
-            session.flush()
 
-        # 2. Promulgated Clause: Regulation 3 (Spans Page 1 and Page 2)
-        clause = session.get(ClauseORM, (CLAUSE_ID, 1))
-        if not clause:
-            clause = ClauseORM(
-                clause_id=CLAUSE_ID,
-                version_number=1,
-                document_id=GAZETTE_DOC_ID,
-                clause_number=CLAUSE_NUMBER,
-                text=f"{VERBATIM_RETAIL_QUOTE_SPAN}\n\n{VERBATIM_B2B_QUOTE_SPAN}",
-                start_page=CLAUSE_START_PAGE,
-                end_page=CLAUSE_END_PAGE,
-                char_start=CLAUSE_CHAR_START,
-                char_end=CLAUSE_CHAR_END,
-                valid_from=datetime.date(2026, 7, 1),
-                is_compilable=True,
-            )
-            session.add(clause)
-            session.flush()
-            print("Created ClauseORM for Regulation 3")
-        else:
-            clause.char_start = CLAUSE_CHAR_START
-            clause.char_end = CLAUSE_CHAR_END
-            session.flush()
+def _populate_real_slice(session: Session) -> None:
+    # 1. Promulgated Source Document
+    doc = session.get(SourceDocumentORM, GAZETTE_DOC_ID)
+    if not doc:
+        doc = SourceDocumentORM(
+            id=GAZETTE_DOC_ID,
+            title=GAZETTE_DOC_TITLE,
+            authority=GAZETTE_AUTHORITY,
+            instrument_type="gazette_regulation",
+            gazette_no=GAZETTE_NO,
+            source_url=GAZETTE_OFFICIAL_URL,
+            file_path=str(GAZETTE_PDF_PATH),
+            file_size_bytes=len(GAZETTE_PDF_PATH.read_bytes()) if GAZETTE_PDF_PATH.exists() else 424172,
+            sha256_hash=EXPECTED_GAZETTE_SHA256,
+            page_count=25,
+            extraction_status="SUCCESS",
+            extraction_tool="pymupdf",
+            publication_date=datetime.date(2026, 6, 26),
+        )
+        session.add(doc)
+        session.flush()
+        print("Created SourceDocumentORM for Gazette 2494/47")
+    else:
+        doc.title = GAZETTE_DOC_TITLE
+        doc.source_url = GAZETTE_OFFICIAL_URL
+        doc.publication_date = datetime.date(2026, 6, 26)
+        doc.gazette_no = GAZETTE_NO
+        session.flush()
+        print("Updated SourceDocumentORM for Gazette 2494/47")
 
-        # 3. Rule 1: General Mandatory Retail Labelling
-        retail_rule_id = "RULE-FCAU-2494-47-REG-3"
-        rule_retail = session.get(RuleORM, retail_rule_id)
-        if not rule_retail:
-            rule_retail = RuleORM(
-                rule_id=retail_rule_id,
-                clause_id=CLAUSE_ID,
-                clause_version=1,
-                outcome_type="STANDARD",
-                applies_if={
-                    "all": [
-                        {"field": "activity", "op": "in", "value": ["food_manufacturing", "catering", "retail_trade", "distribution", "import", "storage"]},
-                        {"field": "products.prepackaged", "op": "eq", "value": True},
-                    ]
-                },
-                exceptions=[
-                    {"field": "packaged_in_presence_of_purchaser", "op": "eq", "value": True},
-                    {"field": "market.b2b_only", "op": "eq", "value": True},
-                ],
-                obligation={
-                    "type": "labelling",
-                    "text": "Food contained in a package or container must be labelled in accordance with the Food (Labelling and Advertising) Regulations 2026.",
-                    "impact_categories": ["labelling", "packaging", "retail_distribution"],
-                },
-                validity={"published": PUBLICATION_DATE, "commences": COMMENCEMENT_DATE},
-                source={
-                    "clause": CLAUSE_NUMBER,
-                    "instrument": GAZETTE_DOC_TITLE,
-                    "authority": GAZETTE_AUTHORITY,
-                    "gazette_no": GAZETTE_NO,
-                    "page": 1,
-                    "quote_span": VERBATIM_RETAIL_QUOTE_SPAN,
-                },
-                review_status="APPROVED",
-                is_gold_rule=False,  # Primary researcher review; independent expert legal adjudication pending
-            )
-            session.add(rule_retail)
-            session.flush()
+    # Clarify earlier draft document metadata: no false gazette number
+    draft_doc = session.get(SourceDocumentORM, DRAFT_DOC_ID)
+    if draft_doc:
+        draft_doc.title = "Food (Labelling and Advertising) Regulations (FAC Draft Final 11.02.2026)"
+        draft_doc.gazette_no = None  # Draft is not officially gazetted
+        session.flush()
 
-            audit_retail = HumanReviewAuditORM(
-                rule_id=retail_rule_id,
-                reviewer_id="researcher_engineer_01",
-                reviewer_role=ROLE_PRIMARY_ANNOTATOR,
-                decision=DECISION_APPROVED,
-                rationale=(
-                    "Verified against Pages 1-2 of official Sri Lanka Gazette Extraordinary No. 2494/47. "
-                    "Regulation 3 general retail packaged food mandate captured with purchaser-presence and B2B exceptions. "
-                    "Note: Independent legal expert adjudication is pending."
-                ),
-            )
-            session.add(audit_retail)
-            session.flush()
-            print("Created RuleORM for Regulation 3 Retail Rule")
+    # 2. Promulgated Clause: Regulation 3 (Spans Page 1 and Page 2)
+    clause = session.get(ClauseORM, (CLAUSE_ID, 1))
+    if not clause:
+        clause = ClauseORM(
+            clause_id=CLAUSE_ID,
+            version_number=1,
+            document_id=GAZETTE_DOC_ID,
+            clause_number=CLAUSE_NUMBER,
+            text=f"{VERBATIM_RETAIL_QUOTE_SPAN}\n\n{VERBATIM_B2B_QUOTE_SPAN}",
+            start_page=CLAUSE_START_PAGE,
+            end_page=CLAUSE_END_PAGE,
+            char_start=CLAUSE_CHAR_START,
+            char_end=CLAUSE_CHAR_END,
+            valid_from=datetime.date(2026, 7, 1),
+            is_compilable=True,
+        )
+        session.add(clause)
+        session.flush()
+        print("Created ClauseORM for Regulation 3")
+    else:
+        clause.char_start = CLAUSE_CHAR_START
+        clause.char_end = CLAUSE_CHAR_END
+        clause.text = f"{VERBATIM_RETAIL_QUOTE_SPAN}\n\n{VERBATIM_B2B_QUOTE_SPAN}"
+        session.flush()
 
-        # 4. Rule 2: B2B Affirmative Labelling & Marking (Regulation 3 Proviso (b))
-        b2b_rule_id = "RULE-FCAU-2494-47-REG-3-B2B"
-        rule_b2b = session.get(RuleORM, b2b_rule_id)
-        if not rule_b2b:
-            rule_b2b = RuleORM(
-                rule_id=b2b_rule_id,
-                clause_id=CLAUSE_ID,
-                clause_version=1,
-                outcome_type="STANDARD",
-                applies_if={
-                    "all": [
-                        {"field": "activity", "op": "in", "value": ["food_manufacturing", "distribution", "import", "storage"]},
-                        {"field": "products.prepackaged", "op": "eq", "value": True},
-                        {"field": "market.b2b_only", "op": "eq", "value": True},
-                    ]
-                },
-                exceptions=[],
-                obligation={
-                    "type": "labelling",
-                    "text": (
-                        "Business-to-business food products must display 10 mandatory disclosures "
-                        "(common name, trade name, net contents, manufacture date, expiry date, batch number, "
-                        "manufacturer details, distributor details, country of origin if imported, ingredients list) "
-                        "and must display 'Not for retail sale' printed on label or affixed through supplementary label "
-                        "in bold type with font size not less than 3 mm."
-                    ),
-                    "disclosures": [
-                        "common_name",
-                        "trade_name",
-                        "net_contents",
-                        "date_of_manufacture",
-                        "date_of_expiry",
-                        "batch_number",
-                        "manufacturer_details",
-                        "distributor_details",
-                        "country_of_origin",
-                        "ingredients_list",
-                        "not_for_retail_sale_statement",
-                    ],
-                    "impact_categories": ["labelling", "packaging", "b2b_compliance"],
-                },
-                validity={"published": PUBLICATION_DATE, "commences": COMMENCEMENT_DATE},
-                source={
-                    "clause": "Regulation 3 Proviso (b)",
-                    "instrument": GAZETTE_DOC_TITLE,
-                    "authority": GAZETTE_AUTHORITY,
-                    "gazette_no": GAZETTE_NO,
-                    "page": 2,
-                    "quote_span": VERBATIM_B2B_QUOTE_SPAN,
-                },
-                review_status="APPROVED",
-                is_gold_rule=False,  # Primary researcher review; independent expert legal adjudication pending
-            )
-            session.add(rule_b2b)
-            session.flush()
+    # 3. Rule 1: General Mandatory Retail Labelling
+    retail_rule_id = "RULE-FCAU-2494-47-REG-3"
+    retail_applies = {
+        "all": [
+            {"field": "activity", "op": "in", "value": ["food_manufacturing", "catering", "retail_trade", "distribution", "import", "storage"]},
+            {"field": "products.prepackaged", "op": "eq", "value": True},
+        ]
+    }
+    retail_exceptions = [
+        {"field": "packaged_in_presence_of_purchaser", "op": "eq", "value": True},
+        {"field": "market.b2b_only", "op": "eq", "value": True},
+    ]
+    retail_obligation = {
+        "type": "labelling",
+        "text": "Food contained in a package or container must be labelled in accordance with the Food (Labelling and Advertising) Regulations 2026.",
+        "impact_categories": ["labelling", "packaging", "retail_distribution"],
+    }
+    retail_source = {
+        "clause": CLAUSE_NUMBER,
+        "instrument": GAZETTE_DOC_TITLE,
+        "authority": GAZETTE_AUTHORITY,
+        "gazette_no": GAZETTE_NO,
+        "page": 1,
+        "quote_span": VERBATIM_RETAIL_QUOTE_SPAN,
+    }
+    rule_retail = session.get(RuleORM, retail_rule_id)
+    if not rule_retail:
+        rule_retail = RuleORM(
+            rule_id=retail_rule_id,
+            clause_id=CLAUSE_ID,
+            clause_version=1,
+            outcome_type="STANDARD",
+            applies_if=retail_applies,
+            exceptions=retail_exceptions,
+            obligation=retail_obligation,
+            validity={"published": PUBLICATION_DATE, "commences": COMMENCEMENT_DATE},
+            source=retail_source,
+            review_status="APPROVED",
+            is_gold_rule=False,  # Primary researcher review; independent expert legal adjudication pending
+        )
+        session.add(rule_retail)
+        session.flush()
+        print("Created RuleORM for Regulation 3 Retail Rule")
+    else:
+        rule_retail.applies_if = retail_applies
+        rule_retail.exceptions = retail_exceptions
+        rule_retail.obligation = retail_obligation
+        rule_retail.source = retail_source
+        rule_retail.review_status = "APPROVED"
+        rule_retail.is_gold_rule = False
+        session.flush()
 
-            audit_b2b = HumanReviewAuditORM(
-                rule_id=b2b_rule_id,
-                reviewer_id="researcher_engineer_01",
-                reviewer_role=ROLE_PRIMARY_ANNOTATOR,
-                decision=DECISION_APPROVED,
-                rationale=(
-                    "Verified against Page 2 of official Sri Lanka Gazette Extraordinary No. 2494/47. "
-                    "Regulation 3 Proviso (b) 10 mandatory disclosures and 'Not for retail sale' marking requirement captured. "
-                    "Note: Independent legal expert adjudication is pending."
-                ),
-            )
-            session.add(audit_b2b)
-            session.flush()
-            print("Created RuleORM for Regulation 3 B2B Rule")
+    audit_retail = (
+        session.query(HumanReviewAuditORM)
+        .filter_by(rule_id=retail_rule_id, reviewer_id="researcher_engineer_01")
+        .first()
+    )
+    if not audit_retail:
+        audit_retail = HumanReviewAuditORM(
+            rule_id=retail_rule_id,
+            reviewer_id="researcher_engineer_01",
+            reviewer_role=ROLE_PRIMARY_ANNOTATOR,
+            decision=DECISION_APPROVED,
+            rationale=(
+                "Verified against Pages 1-2 of official Sri Lanka Gazette Extraordinary No. 2494/47. "
+                "Regulation 3 general retail packaged food mandate captured with purchaser-presence and B2B exceptions. "
+                "Note: Independent legal expert adjudication is pending."
+            ),
+        )
+        session.add(audit_retail)
+        session.flush()
 
-        session.commit()
-        print("Authoritative real-source slice successfully seeded!")
+    # 4. Rule 2: B2B Affirmative Labelling & Marking (Regulation 3 Proviso (b))
+    b2b_rule_id = "RULE-FCAU-2494-47-REG-3-B2B"
+    b2b_applies = {
+        "all": [
+            {"field": "activity", "op": "in", "value": ["food_manufacturing", "distribution", "import", "storage"]},
+            {"field": "products.prepackaged", "op": "eq", "value": True},
+            {"field": "market.b2b_only", "op": "eq", "value": True},
+        ]
+    }
+    b2b_exceptions = []
+    b2b_obligation = {
+        "type": "labelling",
+        "text": (
+            "Business-to-business food products must display 10 mandatory disclosures "
+            "(common name in either of the three languages, trade name if applicable, net contents, "
+            "date of manufacture, date of expiry, batch number, manufacturer's name and address, "
+            "distributor's name and address, country of origin in case of imported foods, "
+            "complete list of ingredients) and must display 'Not for retail sale' printed on label "
+            "or affixed through supplementary label in bold type with font size not less than 3 mm."
+        ),
+        "disclosures": [
+            "common_name",
+            "trade_name",
+            "net_contents",
+            "date_of_manufacture",
+            "date_of_expiry",
+            "batch_number",
+            "manufacturer_details",
+            "distributor_details",
+            "country_of_origin",
+            "ingredients_list",
+            "not_for_retail_sale_statement",
+        ],
+        "impact_categories": ["labelling", "packaging", "b2b_compliance"],
+    }
+    b2b_source = {
+        "clause": "Regulation 3 Proviso (b)",
+        "instrument": GAZETTE_DOC_TITLE,
+        "authority": GAZETTE_AUTHORITY,
+        "gazette_no": GAZETTE_NO,
+        "page": 2,
+        "quote_span": VERBATIM_B2B_QUOTE_SPAN,
+    }
+    rule_b2b = session.get(RuleORM, b2b_rule_id)
+    if not rule_b2b:
+        rule_b2b = RuleORM(
+            rule_id=b2b_rule_id,
+            clause_id=CLAUSE_ID,
+            clause_version=1,
+            outcome_type="STANDARD",
+            applies_if=b2b_applies,
+            exceptions=b2b_exceptions,
+            obligation=b2b_obligation,
+            validity={"published": PUBLICATION_DATE, "commences": COMMENCEMENT_DATE},
+            source=b2b_source,
+            review_status="APPROVED",
+            is_gold_rule=False,  # Primary researcher review; independent expert legal adjudication pending
+        )
+        session.add(rule_b2b)
+        session.flush()
+        print("Created RuleORM for Regulation 3 B2B Rule")
+    else:
+        rule_b2b.applies_if = b2b_applies
+        rule_b2b.exceptions = b2b_exceptions
+        rule_b2b.obligation = b2b_obligation
+        rule_b2b.source = b2b_source
+        rule_b2b.review_status = "APPROVED"
+        rule_b2b.is_gold_rule = False
+        session.flush()
+
+    audit_b2b = (
+        session.query(HumanReviewAuditORM)
+        .filter_by(rule_id=b2b_rule_id, reviewer_id="researcher_engineer_01")
+        .first()
+    )
+    if not audit_b2b:
+        audit_b2b = HumanReviewAuditORM(
+            rule_id=b2b_rule_id,
+            reviewer_id="researcher_engineer_01",
+            reviewer_role=ROLE_PRIMARY_ANNOTATOR,
+            decision=DECISION_APPROVED,
+            rationale=(
+                "Verified against Page 2 of official Sri Lanka Gazette Extraordinary No. 2494/47. "
+                "Regulation 3 Proviso (b) 10 mandatory disclosures and 'Not for retail sale' marking requirement captured. "
+                "Note: Independent legal expert adjudication is pending."
+            ),
+        )
+        session.add(audit_b2b)
+        session.flush()
+
+
+def seed_real_slice(session: Optional[Session] = None) -> None:
+    if session is not None:
+        _populate_real_slice(session)
+    else:
+        with session_scope() as sess:
+            _populate_real_slice(sess)
+            sess.commit()
+    print("Authoritative real-source slice successfully seeded!")
 
 
 if __name__ == "__main__":
