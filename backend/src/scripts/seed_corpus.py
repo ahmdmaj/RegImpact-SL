@@ -370,6 +370,7 @@ def seed_regulatory_corpus(
     force: bool = False,
     embedding_dimension: int = 768,
     llm_client: Optional[Any] = None,
+    embedding_client: Optional[Any] = None,
     include_synthetic_fixtures: Optional[bool] = None,
     source_allowlist: Optional[Dict[str, str]] = None,
 ) -> Dict[str, Any]:
@@ -384,7 +385,7 @@ def seed_regulatory_corpus(
     """
     from backend.src.extraction.compiler import RuleCompiler
     from backend.src.extraction.llm_client import get_llm_client
-    from backend.src.extraction.embedding_client import MockEmbeddingClient
+    from backend.src.extraction.embedding_client import MockEmbeddingClient, get_embedding_client
 
     if include_synthetic_fixtures is None:
         # Exclude synthetic fixtures during normal seeding (raw_dir is None).
