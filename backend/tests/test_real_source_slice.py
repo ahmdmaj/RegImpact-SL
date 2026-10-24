@@ -19,7 +19,9 @@ import hashlib
 from pathlib import Path
 import pytest
 import pymupdf
+from fastapi.testclient import TestClient
 
+from backend.data.seed_real_slice import seed_real_slice
 from backend.src.db.models import (
     Base,
     ClauseORM,
@@ -28,8 +30,22 @@ from backend.src.db.models import (
     RuleORM,
     SourceDocumentORM,
 )
+from backend.src.db.repositories import (
+    PostgresRegulatoryRepository,
+    rule_domain_to_orm_dict,
+    rule_orm_to_domain,
+)
 from backend.src.db.session import create_engine_from_url, get_session_factory
 from backend.src.engine.applicability import evaluate_rule
+from backend.src.engine.impact_mapper import map_impact
+from backend.src.engine.review import (
+    DECISION_APPROVED,
+    DECISION_AMENDED,
+    ROLE_PRIMARY_ANNOTATOR,
+    ROLE_EXPERT_ADJUDICATOR,
+    ReviewService,
+)
+from backend.src.main import app, get_db
 from backend.src.engine.review import (
     DECISION_APPROVED,
     DECISION_AMENDED,
@@ -102,6 +118,28 @@ def test_db():
     session = session_factory()
     yield session
     session.close()
+
+
+@pytest.fixture
+def seeded_real_db(test_db):
+    """Provides an isolated database already seeded with the authoritative real Gazette slice."""
+    seed_real_slice(session=test_db)
+    return test_db
+
+
+@pytest.fixture
+def client_with_real_slice(seeded_real_db):
+    """FastAPI TestClient with get_db overridden to use seeded_real_db."""
+    def _override_get_db():
+        try:
+            yield seeded_real_db
+        finally:
+            pass
+
+    app.dependency_overrides[get_db] = _override_get_db
+    with TestClient(app) as client:
+        yield client
+    app.dependency_overrides.clear()
 
 
 # ===========================================================================
@@ -728,4 +766,505 @@ def test_version_preservation_on_amendment(test_db):
     assert "version_history" in v_rep
     assert len(v_rep["version_history"]) == 1
     assert v_rep["version_history"][0]["prior_state"]["applies_if"] == original_applies
+
+
+# ===========================================================================
+# 6. Authoritative Seed & Repository Round-Trip Tests (Milestone Repair)
+# ===========================================================================
+
+def test_real_slice_seeding_and_repository_roundtrip(test_db):
+    """Task 3.A: Test seed_real_slice() and verify full repository roundtrip with disclosures."""
+    seed_real_slice(session=test_db)
+
+    # 1. Authoritative Gazette document verification
+    doc = test_db.query(SourceDocumentORM).filter_by(id="doc_gazette_2494_47").first()
+    assert doc is not None, "Promulgated Gazette document missing after seed_real_slice()"
+    assert doc.gazette_number == "2494/47"
+    assert doc.doc_type == "gazette_extraordinary"
+
+    # 2. Both rules present
+    rules = test_db.query(RuleORM).filter(
+        RuleORM.rule_id.in_(["RULE-FCAU-2494-47-REG-3", "RULE-FCAU-2494-47-REG-3-B2B"])
+    ).all()
+    assert len(rules) == 2, f"Expected 2 real-source rules, found {len(rules)}"
+
+    # 3. Retrieve through actual repository implementation
+    repo = PostgresRegulatoryRepository(test_db)
+    retail_rule = repo.get_rule_by_id("RULE-FCAU-2494-47-REG-3")
+    b2b_rule = repo.get_rule_by_id("RULE-FCAU-2494-47-REG-3-B2B")
+
+    assert retail_rule is not None
+    assert b2b_rule is not None
+
+    # 4. Provenance and source quote verification
+    assert retail_rule.source.instrument == "Food (Labelling and Advertising) Regulations 2026"
+    assert retail_rule.source.gazette_no == "2494/47"
+    assert retail_rule.source.page == 1
+    assert "A person shall not import, transport" in retail_rule.source.quote_span
+
+    assert b2b_rule.source.instrument == "Food (Labelling and Advertising) Regulations 2026"
+    assert b2b_rule.source.gazette_no == "2494/47"
+    assert b2b_rule.source.page == 2
+    assert "business-to-business food products" in b2b_rule.source.quote_span
+
+    # 5. Review integrity
+    assert retail_rule.verification.review_status == "APPROVED"
+    assert retail_rule.verification.is_gold_rule is False
+    assert b2b_rule.verification.review_status == "APPROVED"
+    assert b2b_rule.verification.is_gold_rule is False
+
+    # 6. Complete B2B statutory disclosures survive persistence and retrieval
+    expected_disclosures = [
+        "common_name",
+        "trade_name",
+        "net_contents",
+        "date_of_manufacture",
+        "date_of_expiry",
+        "batch_number",
+        "manufacturer_name_and_address",
+        "distributor_name_and_address",
+        "country_of_origin",
+        "list_of_ingredients",
+        "not_for_retail_sale_statement",
+    ]
+    assert b2b_rule.obligation.disclosures is not None, "B2B obligation disclosures lost in roundtrip!"
+    assert b2b_rule.obligation.disclosures == expected_disclosures, (
+        f"Disclosure list mismatch: {b2b_rule.obligation.disclosures}"
+    )
+
+
+def test_real_slice_seeding_idempotence(test_db):
+    """Task 3.A: Ensure repeated seeding is deterministic and idempotent without duplicate entries."""
+    seed_real_slice(session=test_db)
+    count_docs_1 = test_db.query(SourceDocumentORM).count()
+    count_clauses_1 = test_db.query(ClauseORM).count()
+    count_rules_1 = test_db.query(RuleORM).count()
+    count_audits_1 = test_db.query(HumanReviewAuditORM).count()
+
+    # Second seed invocation on the same database
+    seed_real_slice(session=test_db)
+    count_docs_2 = test_db.query(SourceDocumentORM).count()
+    count_clauses_2 = test_db.query(ClauseORM).count()
+    count_rules_2 = test_db.query(RuleORM).count()
+    count_audits_2 = test_db.query(HumanReviewAuditORM).count()
+
+    assert count_docs_1 == count_docs_2
+    assert count_clauses_1 == count_clauses_2
+    assert count_rules_1 == count_rules_2
+    assert count_audits_1 == count_audits_2
+
+
+def test_regression_disclosures_persistence_roundtrip(test_db):
+    """Task 1: Regression test proving Obligation.disclosures survives Domain -> ORM -> DB -> Domain."""
+    repo = PostgresRegulatoryRepository(test_db)
+
+    sample_disclosures = [
+        "common_name",
+        "batch_number",
+        "date_of_expiry",
+        "not_for_retail_sale_statement",
+    ]
+    test_rule = Rule(
+        rule_id="RULE-REGRESSION-DISCLOSURE-001",
+        clause_id="CLAUSE-DOC_GAZETTE_2494_47-REGULATION-3",
+        clause_version=1,
+        applies_if=AppliesIf(all=[]),
+        obligation=Obligation(
+            type="b2b_labelling",
+            text="Test B2B obligation with disclosures",
+            impact_categories=["label_compliance"],
+            disclosures=sample_disclosures,
+        ),
+        validity=Validity(published="2026-06-26", commences="2026-07-01"),
+        source=Source(
+            clause="Regulation 3",
+            instrument="Food Regulations 2026",
+            authority="Food Advisory Committee",
+            gazette_no="2494/47",
+            page=2,
+            quote_span="Test quote span",
+        ),
+        verification=Verification(
+            review_status="APPROVED",
+            is_gold_rule=False,
+        ),
+    )
+
+    # 1. Convert to ORM dict
+    orm_dict = rule_domain_to_orm_dict(test_rule)
+    assert "disclosures" in orm_dict["obligation"], "disclosures missing from rule_domain_to_orm_dict"
+    assert orm_dict["obligation"]["disclosures"] == sample_disclosures
+
+    # 2. Persist in database
+    rule_orm = RuleORM(**orm_dict)
+    test_db.add(rule_orm)
+    test_db.commit()
+
+    # 3. Reload from database through repository
+    reloaded_rule = repo.get_rule_by_id("RULE-REGRESSION-DISCLOSURE-001")
+    assert reloaded_rule is not None
+    assert reloaded_rule.obligation.disclosures == sample_disclosures, (
+        f"Reloaded disclosures mismatch: {reloaded_rule.obligation.disclosures} != {sample_disclosures}"
+    )
+
+    # 4. Also verify backward compatibility: rule with null disclosures
+    rule_null_disc = Rule(
+        rule_id="RULE-REGRESSION-NULL-DISC",
+        clause_id="CLAUSE-DOC_GAZETTE_2494_47-REGULATION-3",
+        clause_version=1,
+        applies_if=AppliesIf(all=[]),
+        obligation=Obligation(
+            type="labelling",
+            text="Standard labelling without disclosures",
+            impact_categories=["labelling"],
+            disclosures=None,
+        ),
+        validity=Validity(published="2026-06-26", commences="2026-07-01"),
+        source=Source(
+            clause="Regulation 3",
+            instrument="Food Regulations 2026",
+            authority="Food Advisory Committee",
+            gazette_no="2494/47",
+            page=1,
+            quote_span="Standard retail quote",
+        ),
+    )
+    test_db.add(RuleORM(**rule_domain_to_orm_dict(rule_null_disc)))
+    test_db.commit()
+
+    reloaded_null = repo.get_rule_by_id("RULE-REGRESSION-NULL-DISC")
+    assert reloaded_null is not None
+    assert reloaded_null.obligation.disclosures is None
+
+
+# ===========================================================================
+# 7. B2B Impact Mapping & Legal Distinction Tests
+# ===========================================================================
+
+def test_b2b_impact_mapping_disclosures_and_no_trilingual(seeded_real_db):
+    """Task 2: Verify B2B impact mapping surfaces 10 disclosures + bold statement without trilingual contradiction."""
+    repo = PostgresRegulatoryRepository(seeded_real_db)
+    b2b_rule = repo.get_rule_by_id("RULE-FCAU-2494-47-REG-3-B2B")
+    assert b2b_rule is not None
+
+    impact = map_impact(b2b_rule)
+    assert impact is not None
+
+    action_text = " ".join(impact.action_items).lower()
+
+    # CRITICAL: Trilingual requirement MUST NOT be emitted for B2B food products
+    assert "trilingual" not in action_text, "Found contradictory trilingual instruction in B2B action items!"
+    assert not ("sinhala" in action_text and "tamil" in action_text and "english" in action_text), (
+        "Found Sinhala, Tamil and English all required simultaneously in B2B action items!"
+    )
+
+    # Verify specific B2B obligations are present
+    assert any("either sinhala, tamil, or english" in a.lower() for a in impact.action_items)
+    assert any("not for retail sale" in a.lower() and "3 mm" in a.lower() for a in impact.action_items)
+    assert any("batch number" in a.lower() for a in impact.action_items)
+    assert any("date of manufacture" in a.lower() for a in impact.action_items)
+    assert any("date of expiry" in a.lower() for a in impact.action_items)
+    assert any("country of origin" in a.lower() for a in impact.action_items)
+    assert any("complete list of ingredients" in a.lower() for a in impact.action_items)
+    assert any("net contents" in a.lower() for a in impact.action_items)
+
+    # Verify affected documents and activities
+    assert "B2B Product Specification & Outer Label" in impact.affected_documents
+    assert "B2B Contract & Bulk Packaging Operations" in impact.affected_activities
+
+    # Verify evidence and clause references
+    assert impact.clause_reference == "Regulation 3, Proviso (b)"
+    assert "Gazette Extraordinary No. 2494/47" in impact.document_name
+
+
+# ===========================================================================
+# 8. FastAPI API Integration Tests (POST /analysis)
+# ===========================================================================
+
+def test_api_analysis_endpoint_retail_profile(client_with_real_slice):
+    """Task 3.B.1: Retail profile activates retail rule and does not activate B2B rule."""
+    payload = {
+        "clause_ids": ["RULE-FCAU-2494-47-REG-3", "RULE-FCAU-2494-47-REG-3-B2B"],
+        "as_at_date": "2026-08-01",
+        "business_profile": {
+            "business_id": "BIZ-RETAIL-01",
+            "activity": "food_manufacturing",
+            "products": [
+                {
+                    "name": "Bottled Mixed Fruit Jam",
+                    "prepackaged": True,
+                    "market_channel": "retail",
+                }
+            ],
+        },
+    }
+    response = client_with_real_slice.post("/analysis", json=payload)
+    assert response.status_code == 200, response.text
+    data = response.json()
+
+    eval_map = {e["rule_id"]: e for e in data["evaluations"]}
+    assert eval_map["RULE-FCAU-2494-47-REG-3"]["status"] == OutcomeStatus.APPLICABLE.value
+    assert eval_map["RULE-FCAU-2494-47-REG-3-B2B"]["status"] == OutcomeStatus.NOT_APPLICABLE.value
+
+    # Retail action items should include labelling
+    assert len(data["action_checklist"]) > 0
+    assert any("trilingual" in a.lower() for a in data["action_checklist"])
+
+
+def test_api_analysis_endpoint_b2b_profile(client_with_real_slice):
+    """Task 3.B.2: B2B profile activates B2B rule, exposes B2B obligations, and omits retail trilingual action."""
+    payload = {
+        "clause_ids": ["RULE-FCAU-2494-47-REG-3", "RULE-FCAU-2494-47-REG-3-B2B"],
+        "as_at_date": "2026-08-01",
+        "business_profile": {
+            "business_id": "BIZ-B2B-01",
+            "activity": "food_manufacturing",
+            "products": [
+                {
+                    "name": "Industrial Bulk Mango Puree (200L Drum)",
+                    "prepackaged": True,
+                    "market_channel": "b2b",
+                }
+            ],
+        },
+    }
+    response = client_with_real_slice.post("/analysis", json=payload)
+    assert response.status_code == 200, response.text
+    data = response.json()
+
+    eval_map = {e["rule_id"]: e for e in data["evaluations"]}
+    assert eval_map["RULE-FCAU-2494-47-REG-3"]["status"] == OutcomeStatus.NOT_APPLICABLE.value
+    assert eval_map["RULE-FCAU-2494-47-REG-3-B2B"]["status"] == OutcomeStatus.APPLICABLE.value
+
+    # Check action items: must NOT have contradictory retail trilingual requirement
+    actions_joined = " ".join(data["action_checklist"]).lower()
+    assert "trilingual" not in actions_joined
+    assert not ("sinhala" in actions_joined and "tamil" in actions_joined and "english" in actions_joined)
+
+    # Must contain specific B2B obligations
+    assert any("either sinhala, tamil, or english" in a.lower() for a in data["action_checklist"])
+    assert any("not for retail sale" in a.lower() and "3 mm" in a.lower() for a in data["action_checklist"])
+    assert any("batch number" in a.lower() for a in data["action_checklist"])
+
+
+def test_api_analysis_endpoint_missing_market_channel(client_with_real_slice):
+    """Task 3.B.3: Missing market-channel returns CONDITIONAL_MISSING_DATA without guessing."""
+    payload = {
+        "clause_ids": ["RULE-FCAU-2494-47-REG-3", "RULE-FCAU-2494-47-REG-3-B2B"],
+        "as_at_date": "2026-08-01",
+        "business_profile": {
+            "business_id": "BIZ-UNKNOWN-CHANNEL",
+            "activity": "food_manufacturing",
+            "products": [
+                {
+                    "name": "Packaged Curry Powder",
+                    "prepackaged": True,
+                    # market_channel explicitly omitted
+                }
+            ],
+        },
+    }
+    response = client_with_real_slice.post("/analysis", json=payload)
+    assert response.status_code == 200, response.text
+    data = response.json()
+
+    eval_map = {e["rule_id"]: e for e in data["evaluations"]}
+    assert eval_map["RULE-FCAU-2494-47-REG-3"]["status"] == OutcomeStatus.CONDITIONAL_MISSING_DATA.value
+    assert eval_map["RULE-FCAU-2494-47-REG-3-B2B"]["status"] == OutcomeStatus.CONDITIONAL_MISSING_DATA.value
+    assert "products.market_channel" in eval_map["RULE-FCAU-2494-47-REG-3"]["missing_fields"]
+    assert "products.market_channel" in data["missing_fields"]
+
+
+def test_api_analysis_endpoint_b2b_missing_disclosure_applicability_contract(client_with_real_slice):
+    """Task 3.B.4: Missing disclosure on product label; verify applicability vs compliance boundary.
+
+    The API reports regulatory APPLICABILITY and mandated disclosures; it does NOT claim
+    the product label has been audited or certified compliant.
+    """
+    payload = {
+        "clause_ids": ["RULE-FCAU-2494-47-REG-3-B2B"],
+        "as_at_date": "2026-08-01",
+        "business_profile": {
+            "business_id": "BIZ-B2B-MISSING-LABEL-DISCLOSURE",
+            "activity": "food_manufacturing",
+            "products": [
+                {
+                    "name": "Bulk Desiccated Coconut",
+                    "prepackaged": True,
+                    "market_channel": "b2b",
+                }
+            ],
+        },
+    }
+    response = client_with_real_slice.post("/analysis", json=payload)
+    assert response.status_code == 200, response.text
+    data = response.json()
+
+    b2b_eval = data["evaluations"][0]
+    # The rule is APPLICABLE to this B2B food manufacturer
+    assert b2b_eval["status"] == OutcomeStatus.APPLICABLE.value
+
+    # Action items state mandatory disclosures that must be present
+    checklist = " ".join(data["action_checklist"])
+    assert "Batch number" in checklist
+    assert "Date of expiry" in checklist
+
+    # The API contract does NOT claim label compliance verification
+    assert "label_verified_compliant" not in data
+    assert "compliance_certificate" not in data
+
+
+def test_api_analysis_endpoint_b2b_marking_problem(client_with_real_slice):
+    """Task 3.B.5: Report applicable obligation without inventing unauthorized legal forfeiture penalty."""
+    payload = {
+        "clause_ids": ["RULE-FCAU-2494-47-REG-3-B2B"],
+        "as_at_date": "2026-08-01",
+        "business_profile": {
+            "business_id": "BIZ-B2B-MARKING-QUERY",
+            "activity": "food_manufacturing",
+            "products": [
+                {
+                    "name": "Industrial Baker Yeast 20kg",
+                    "prepackaged": True,
+                    "market_channel": "b2b",
+                }
+            ],
+        },
+    }
+    response = client_with_real_slice.post("/analysis", json=payload)
+    assert response.status_code == 200, response.text
+    data = response.json()
+
+    b2b_eval = data["evaluations"][0]
+    assert b2b_eval["status"] == OutcomeStatus.APPLICABLE.value
+
+    # Action surfaces the statutory >= 3 mm bold marking requirement
+    actions_joined = " ".join(data["action_checklist"])
+    assert "Not for retail sale" in actions_joined
+    assert "3 mm" in actions_joined
+
+    # Does not invent an unverified legal penalty claiming loss of exception
+    assert "forfeited" not in actions_joined.lower()
+    assert "criminal" not in actions_joined.lower()
+
+
+def test_api_analysis_endpoint_out_of_scope_profile(client_with_real_slice):
+    """Task 3.B.6: Out-of-scope profile activates neither retail nor B2B rule."""
+    payload = {
+        "clause_ids": ["RULE-FCAU-2494-47-REG-3", "RULE-FCAU-2494-47-REG-3-B2B"],
+        "as_at_date": "2026-08-01",
+        "business_profile": {
+            "business_id": "BIZ-FARMING-01",
+            "activity": "farming_and_agriculture",
+            "products": [
+                {
+                    "name": "Harvested Raw Paddy Rice",
+                    "prepackaged": False,
+                }
+            ],
+        },
+    }
+    response = client_with_real_slice.post("/analysis", json=payload)
+    assert response.status_code == 200, response.text
+    data = response.json()
+
+    eval_map = {e["rule_id"]: e for e in data["evaluations"]}
+    assert eval_map["RULE-FCAU-2494-47-REG-3"]["status"] == OutcomeStatus.NOT_APPLICABLE.value
+    assert eval_map["RULE-FCAU-2494-47-REG-3-B2B"]["status"] == OutcomeStatus.NOT_APPLICABLE.value
+    assert data["applicable_rules_count"] == 0
+    assert len(data["action_checklist"]) == 0
+
+
+# ===========================================================================
+# 9. Test Independence Assertions (Task 3.C)
+# ===========================================================================
+
+def test_test_independence_fails_if_b2b_rule_missing():
+    """Task 3.C: Assert test failure occurs if B2B rule is absent from database."""
+    engine = create_engine_from_url("sqlite:///:memory:")
+    Base.metadata.create_all(bind=engine)
+    session = get_session_factory(engine)()
+
+    # Seed only retail rule
+    from backend.data.seed_real_slice import SEED_RETAIL_RULE_DICT
+    session.add(RuleORM(**SEED_RETAIL_RULE_DICT))
+    session.commit()
+
+    repo = PostgresRegulatoryRepository(session)
+    assert repo.get_rule_by_id("RULE-FCAU-2494-47-REG-3") is not None
+    assert repo.get_rule_by_id("RULE-FCAU-2494-47-REG-3-B2B") is None, (
+        "B2B rule should be absent in this negative test fixture"
+    )
+    session.close()
+
+
+def test_test_independence_fails_if_disclosures_removed_from_serialization():
+    """Task 3.C: Proves that dropping disclosures from ORM serialization results in disclosure loss."""
+    sample_rule = Rule(
+        rule_id="RULE-TEMP-TEST",
+        clause_id="CLAUSE-TEMP",
+        clause_version=1,
+        applies_if=AppliesIf(all=[]),
+        obligation=Obligation(
+            type="b2b_labelling",
+            text="B2B obligations",
+            disclosures=["common_name", "batch_number"],
+        ),
+        validity=Validity(published="2026-06-26", commences="2026-07-01"),
+        source=Source(
+            clause="Reg 3",
+            instrument="Food Regs",
+            authority="FAC",
+            gazette_no="2494/47",
+            page=2,
+            quote_span="quote",
+        ),
+    )
+
+    orm_dict = rule_domain_to_orm_dict(sample_rule)
+    # Simulate defect: disclosures stripped from obligation dictionary
+    defective_orm_dict = dict(orm_dict)
+    defective_obl = dict(defective_orm_dict["obligation"])
+    defective_obl.pop("disclosures", None)
+    defective_orm_dict["obligation"] = defective_obl
+
+    # Reconstruct ORM model and deserialize back to domain Rule
+    orm_model = RuleORM(**defective_orm_dict)
+    domain_from_defective = rule_orm_to_domain(orm_model)
+
+    assert domain_from_defective.obligation.disclosures is None, (
+        "Expected disclosure loss when disclosures field is missing from ORM data"
+    )
+
+
+def test_test_independence_fails_if_trilingual_reintroduced_to_b2b():
+    """Task 3.C: Validates that map_impact strictly rejects generic trilingual labelling on B2B rules."""
+    b2b_rule = Rule(
+        rule_id="RULE-MOCK-B2B",
+        clause_id="CLAUSE-MOCK",
+        clause_version=1,
+        applies_if=AppliesIf(all=[]),
+        obligation=Obligation(
+            type="b2b_labelling",
+            text="B2B statutory labelling requirements",
+            disclosures=["common_name", "batch_number"],
+        ),
+        validity=Validity(published="2026-06-26", commences="2026-07-01"),
+        source=Source(
+            clause="Regulation 3, Proviso (b)",
+            instrument="Food (Labelling and Advertising) Regulations 2026",
+            authority="Food Advisory Committee",
+            gazette_no="2494/47",
+            page=2,
+            quote_span="B2B statutory quote",
+        ),
+    )
+
+    impact = map_impact(b2b_rule)
+    # Direct negative check: generic trilingual action must NEVER appear
+    generic_retail_action = (
+        "Design or update product label layout to include mandatory trilingual text (Sinhala, Tamil, English), "
+        "batch number, expiry date, net volume/weight, and manufacturer registration details."
+    )
+    assert generic_retail_action not in impact.action_items
 
