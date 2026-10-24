@@ -32,8 +32,8 @@ def test_section_6_first_end_to_end_acceptance_scenario(client: TestClient):
     # Stage 1: Seeded Persistent Document
     # -------------------------------------------------------------------------
     with session_scope() as session:
-        from backend.src.main import ensure_database_seeded
-        ensure_database_seeded(session)
+        from backend.src.scripts.seed_corpus import seed_regulatory_corpus
+        seed_regulatory_corpus(db=session, include_synthetic_fixtures=True)
         doc = session.query(SourceDocumentORM).filter_by(id="doc_fcau_labelling_2024").first()
         assert doc is not None, "Stage 1 Failed: Seeded source document not found in persistent store."
         assert "Food (Labelling and Advertising) Regulations" in doc.title

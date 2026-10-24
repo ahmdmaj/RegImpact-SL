@@ -4,6 +4,7 @@ from unittest.mock import MagicMock
 import pytest
 from fastapi.testclient import TestClient
 
+from backend.src.db.session import session_scope
 from backend.src.engine.evidence import EvidenceChecker, EvidenceCheckResult
 from backend.src.extraction.compiler import LLMClient
 from backend.src.extraction.explanation import (
@@ -182,6 +183,10 @@ def test_explanation_generator_fallback(sample_impact_report: StructuredImpactRe
 
 # 6. Test API integration with EvidenceChecker verification (clean summary)
 def test_api_analysis_with_verified_narrative():
+    with session_scope() as session:
+        from backend.src.scripts.seed_corpus import seed_regulatory_corpus
+        seed_regulatory_corpus(db=session, include_synthetic_fixtures=True)
+
     client = TestClient(app)
 
     # Inject mock generator that produces grounded summary
