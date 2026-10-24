@@ -84,6 +84,7 @@ def test_benchmark_runner_fails_clearly_without_live_dependencies(db_session):
         business_profile={"activity": "food_manufacturing"},
         gold_outcome=OutcomeStatus.APPLICABLE,
         description="Integrity test scenario",
+        as_at_date="2026-08-01",
     )
 
     # Calling without live credentials and without allow_mock must raise RuntimeError
@@ -190,10 +191,42 @@ def test_missing_live_providers_produce_explicit_errors(monkeypatch):
 # 5. BM25 Operational Without Dense Retrieval or LLM
 # ---------------------------------------------------------------------------
 
-def test_bm25_retrieval_operational_without_dense_or_llm(populated_db):
+def test_bm25_retrieval_operational_without_dense_or_llm(db_session):
     """BM25 search and Hybrid RRF fallback must work normally when dense retrieval is unavailable."""
+    doc = SourceDocumentORM(
+        id="doc_food_act_test",
+        sha256_hash="f" * 64,
+        title="Food Labelling Regulations Test",
+        authority="FCAU",
+        file_path="backend/data/raw_sources/food_test.pdf",
+        file_size_bytes=1000,
+        page_count=2,
+        extraction_status="SUCCESS",
+        extraction_tool="PyMuPDF",
+    )
+    db_session.add(doc)
+    db_session.flush()
+
+    c1 = ClauseORM(
+        clause_id="CLAUSE-FOOD-004",
+        version_number=1,
+        document_id="doc_food_act_test",
+        clause_number="Regulation 4",
+        text=(
+            "Regulation 4. Every food manufacturing enterprise having a production capacity "
+            "of 50 kg per day or more shall ensure that each retail package carries a nutrition information panel."
+        ),
+        start_page=1,
+        end_page=1,
+        char_start=0,
+        char_end=170,
+        is_compilable=True,
+    )
+    db_session.add(c1)
+    db_session.flush()
+
     # Hybrid engine initialized with default normal operation (dense engine has no live client)
-    hybrid_engine = HybridRetrievalEngine(db=populated_db, allow_unverified=False)
+    hybrid_engine = HybridRetrievalEngine(db=db_session, allow_unverified=False)
     assert hybrid_engine.dense_engine.embedding_client is None
 
     results = hybrid_engine.search("nutrition information panel", top_k=2)
