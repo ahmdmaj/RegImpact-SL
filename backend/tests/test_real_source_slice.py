@@ -827,10 +827,10 @@ def test_real_slice_seeding_and_repository_roundtrip(test_db):
         "date_of_manufacture",
         "date_of_expiry",
         "batch_number",
-        "manufacturer_name_and_address",
-        "distributor_name_and_address",
+        "manufacturer_details",
+        "distributor_details",
         "country_of_origin",
-        "list_of_ingredients",
+        "ingredients_list",
         "not_for_retail_sale_statement",
     ]
     assert b2b_rule.obligation.disclosures is not None, "B2B obligation disclosures lost in roundtrip!"
@@ -983,8 +983,9 @@ def test_b2b_impact_mapping_disclosures_and_no_trilingual(seeded_real_db):
     assert any("net contents" in a.lower() for a in impact.action_items)
 
     # Verify affected documents and activities
-    assert "B2B Product Specification & Outer Label" in impact.affected_documents
-    assert "B2B Contract & Bulk Packaging Operations" in impact.affected_activities
+    assert any("business-to-business product packaging" in d.lower() for d in impact.affected_documents)
+    assert any("supplementary label specifications" in d.lower() for d in impact.affected_documents)
+    assert any("b2b product packaging design" in a.lower() for a in impact.affected_activities)
 
     # Verify evidence and clause references
     assert impact.clause_reference == "Regulation 3, Proviso (b)"
