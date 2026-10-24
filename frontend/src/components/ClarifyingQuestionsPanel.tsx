@@ -33,6 +33,13 @@ export const ClarifyingQuestionsPanel: React.FC<ClarifyingQuestionsPanelProps> =
 
   const getFriendlyFieldLabel = (field: string): string => {
     switch (field) {
+      case "market.b2b_only":
+      case "market_channel":
+        return "Market Distribution Channel";
+      case "packaged_in_presence_of_purchaser":
+        return "Packaged in Front of Purchaser";
+      case "products.prepackaged":
+        return "Prepackaged Status";
       case "uses_synthetic_colorings":
         return "Synthetic Food Colorings";
       case "hazardous_chemicals_storage_liters":

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { BusinessProfile } from "@/services/api";
-import { ScenarioPresetCards } from "./ScenarioPresetCards";
+import { ScenarioPresetCards, PresetScenarioType } from "./ScenarioPresetCards";
 import { 
   Building2, 
   RotateCcw, 
@@ -11,7 +11,9 @@ import {
   Scale, 
   PackageCheck, 
   Globe2, 
-  Calendar 
+  Calendar,
+  Store,
+  Tag
 } from "lucide-react";
 
 interface ProfileFormProps {
@@ -23,12 +25,12 @@ interface ProfileFormProps {
 
 export const ProfileForm: React.FC<ProfileFormProps> = ({
   initialProfile,
-  initialAsAtDate = "2024-08-01",
+  initialAsAtDate = "2026-08-01",
   onAnalyze,
   isLoading,
 }) => {
-  const [activePreset, setActivePreset] = useState<"compliant" | "incomplete" | "exempt" | null>("compliant");
-  const [businessId, setBusinessId] = useState(initialProfile?.business_id || "BIZ-COLOMBO-FOODS");
+  const [activePreset, setActivePreset] = useState<PresetScenarioType | null>("retail");
+  const [businessId, setBusinessId] = useState(initialProfile?.business_id || "BIZ-SL-RETAIL-01");
   const [activity, setActivity] = useState(initialProfile?.activity || "food_manufacturing");
   const [employeeCount, setEmployeeCount] = useState<string>(
     initialProfile?.employee_count !== undefined && initialProfile?.employee_count !== null
@@ -44,7 +46,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
   const [capacityPeriod, setCapacityPeriod] = useState(initialProfile?.production_capacity?.per_period || "day");
   
   const [productCategory, setProductCategory] = useState(
-    initialProfile?.products?.[0]?.category || "biscuits"
+    initialProfile?.products?.[0]?.category || "Bottled Mixed Fruit Jam"
   );
   const [prepackagedState, setPrepackagedState] = useState<string>(
     initialProfile?.products?.[0]?.prepackaged === true
@@ -53,6 +55,9 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
       ? "false"
       : "true"
   );
+
+  const [marketChannel, setMarketChannel] = useState<"retail" | "b2b" | "unknown">("retail");
+  const [purchaserPresent, setPurchaserPresent] = useState<"false" | "true" | "unknown">("false");
 
   const [marketDomestic, setMarketDomestic] = useState<string>(
     initialProfile?.market?.domestic === true
@@ -72,44 +77,64 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
   const [asAtDate, setAsAtDate] = useState(initialAsAtDate);
 
   // Load Preset
-  const handleSelectPreset = (type: "compliant" | "incomplete" | "exempt") => {
+  const handleSelectPreset = (type: PresetScenarioType) => {
     setActivePreset(type);
-    if (type === "compliant") {
-      setBusinessId("BIZ-COLOMBO-FOODS");
+    if (type === "retail") {
+      setBusinessId("BIZ-SL-RETAIL-01");
       setActivity("food_manufacturing");
       setEmployeeCount("25");
       setCapacityValue("100");
       setCapacityUnit("kg");
       setCapacityPeriod("day");
-      setProductCategory("biscuits");
+      setProductCategory("Bottled Mixed Fruit Jam");
       setPrepackagedState("true");
+      setPurchaserPresent("false");
+      setMarketChannel("retail");
       setMarketDomestic("true");
       setMarketExport("false");
-      setAsAtDate("2024-08-01");
+      setAsAtDate("2026-08-01");
+    } else if (type === "b2b") {
+      setBusinessId("BIZ-SL-B2B-01");
+      setActivity("food_manufacturing");
+      setEmployeeCount("40");
+      setCapacityValue("500");
+      setCapacityUnit("kg");
+      setCapacityPeriod("day");
+      setProductCategory("Industrial Bulk Mango Puree (200L Drum)");
+      setPrepackagedState("true");
+      setPurchaserPresent("false");
+      setMarketChannel("b2b");
+      setMarketDomestic("true");
+      setMarketExport("false");
+      setAsAtDate("2026-08-01");
     } else if (type === "incomplete") {
-      setBusinessId("BIZ-KANDY-BAKERY");
+      setBusinessId("BIZ-SL-UNKNOWN-CHANNEL");
       setActivity("food_manufacturing");
       setEmployeeCount("15");
-      setCapacityValue("");
+      setCapacityValue("80");
       setCapacityUnit("kg");
       setCapacityPeriod("day");
-      setProductCategory("bread_and_pastry");
+      setProductCategory("Bakery Goods");
       setPrepackagedState("true");
-      setMarketDomestic("true");
+      setPurchaserPresent("false");
+      setMarketChannel("unknown");
+      setMarketDomestic("unknown");
       setMarketExport("unknown");
-      setAsAtDate("2024-08-01");
+      setAsAtDate("2026-08-01");
     } else if (type === "exempt") {
-      setBusinessId("BIZ-GALLE-COTTAGE");
+      setBusinessId("BIZ-SL-OVER-COUNTER");
       setActivity("food_manufacturing");
-      setEmployeeCount("8");
-      setCapacityValue("30");
+      setEmployeeCount("5");
+      setCapacityValue("20");
       setCapacityUnit("kg");
       setCapacityPeriod("day");
-      setProductCategory("traditional_sweets");
+      setProductCategory("Traditional Fresh Sweets");
       setPrepackagedState("false");
+      setPurchaserPresent("true");
+      setMarketChannel("retail");
       setMarketDomestic("true");
       setMarketExport("false");
-      setAsAtDate("2024-08-01");
+      setAsAtDate("2026-08-01");
     }
   };
 
@@ -121,6 +146,8 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
     setCapacityValue("");
     setProductCategory("");
     setPrepackagedState("unknown");
+    setPurchaserPresent("unknown");
+    setMarketChannel("unknown");
     setMarketDomestic("unknown");
     setMarketExport("unknown");
   };
@@ -130,6 +157,16 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
 
     const empCountNum = employeeCount.trim() === "" ? null : Number(employeeCount);
     const capNum = capacityValue.trim() === "" ? null : Number(capacityValue);
+
+    // Build market object: if all subfields are unknown, pass null so Kleene logic detects missing data
+    let marketObj: any = null;
+    if (marketChannel !== "unknown" || marketDomestic !== "unknown" || marketExport !== "unknown") {
+      marketObj = {
+        domestic: marketDomestic === "true" ? true : marketDomestic === "false" ? false : null,
+        export_flag: marketExport === "true" ? true : marketExport === "false" ? false : null,
+        b2b_only: marketChannel === "b2b" ? true : marketChannel === "retail" ? false : null,
+      };
+    }
 
     const profile: BusinessProfile = {
       business_id: businessId.trim() || "BIZ-SL-CUSTOM",
@@ -143,14 +180,13 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
       } : null,
       products: productCategory ? [
         {
+          product_name: productCategory,
           category: productCategory,
           prepackaged: prepackagedState === "true" ? true : prepackagedState === "false" ? false : null,
         }
       ] : [],
-      market: {
-        domestic: marketDomestic === "true" ? true : marketDomestic === "false" ? false : null,
-        export_flag: marketExport === "true" ? true : marketExport === "false" ? false : null,
-      },
+      market: marketObj,
+      packaged_in_presence_of_purchaser: purchaserPresent === "true" ? true : purchaserPresent === "false" ? false : null,
     };
 
     onAnalyze(profile, asAtDate);
@@ -326,12 +362,53 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
           </div>
         </div>
 
+        {/* Market Channel & Purchaser Presence (Gazette 2494/47 Regulation 3) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+          <div>
+            <label className="block text-xs font-medium text-zinc-300 mb-1 flex items-center gap-1.5">
+              <Store className="w-3.5 h-3.5 text-zinc-500" />
+              <span>Market Distribution Channel</span>
+            </label>
+            <select
+              value={marketChannel}
+              onChange={(e) => {
+                setActivePreset(null);
+                setMarketChannel(e.target.value as any);
+              }}
+              className="w-full h-9 bg-zinc-950 border border-zinc-800 rounded-md px-2.5 text-xs text-zinc-100 focus:outline-none focus:ring-1 focus:ring-zinc-500 cursor-pointer"
+            >
+              <option value="retail">Retail Consumer Channel (b2b_only = false)</option>
+              <option value="b2b">B2B Wholesale Only (b2b_only = true)</option>
+              <option value="unknown">Unspecified (UNKNOWN - Kleene Missing Data)</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-zinc-300 mb-1 flex items-center gap-1.5">
+              <Tag className="w-3.5 h-3.5 text-zinc-500" />
+              <span>Packaged in Front of Purchaser</span>
+            </label>
+            <select
+              value={purchaserPresent}
+              onChange={(e) => {
+                setActivePreset(null);
+                setPurchaserPresent(e.target.value as any);
+              }}
+              className="w-full h-9 bg-zinc-950 border border-zinc-800 rounded-md px-2.5 text-xs text-zinc-100 focus:outline-none focus:ring-1 focus:ring-zinc-500 cursor-pointer"
+            >
+              <option value="false">No — Prepackaged at facility (Standard Mandate)</option>
+              <option value="true">Yes — Packaged in presence of purchaser (Exempt)</option>
+              <option value="unknown">Unspecified (UNKNOWN)</option>
+            </select>
+          </div>
+        </div>
+
         {/* Market Destination & As-At Date */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
           <div>
             <label className="block text-xs font-medium text-zinc-300 mb-1 flex items-center gap-1.5">
               <Globe2 className="w-3.5 h-3.5 text-zinc-500" />
-              <span>Market Destination Scope</span>
+              <span>Geographic Destination</span>
             </label>
             <div className="grid grid-cols-2 gap-2">
               <select

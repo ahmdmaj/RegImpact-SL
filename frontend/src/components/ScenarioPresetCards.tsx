@@ -3,9 +3,11 @@
 import React from "react";
 import { Sparkles } from "lucide-react";
 
+export type PresetScenarioType = "retail" | "b2b" | "incomplete" | "exempt";
+
 interface ScenarioPresetCardsProps {
-  onSelectPreset: (type: "compliant" | "incomplete" | "exempt") => void;
-  activePreset?: "compliant" | "incomplete" | "exempt" | null;
+  onSelectPreset: (type: PresetScenarioType) => void;
+  activePreset?: PresetScenarioType | null;
 }
 
 export const ScenarioPresetCards: React.FC<ScenarioPresetCardsProps> = ({
@@ -14,24 +16,31 @@ export const ScenarioPresetCards: React.FC<ScenarioPresetCardsProps> = ({
 }) => {
   const presets = [
     {
-      id: "compliant" as const,
-      title: "Large Manufacturer",
-      desc: "25 employees, 100 kg/day capacity, prepackaged biscuits.",
-      tag: "Mandatory Rules",
+      id: "retail" as const,
+      title: "Retail Packaged Food",
+      desc: "Prepackaged jam/biscuits for retail sale. Triggers Regulation 3 retail mandate.",
+      tag: "Mandatory Retail",
       dot: "bg-emerald-400",
     },
     {
+      id: "b2b" as const,
+      title: "B2B Bulk Processor",
+      desc: "Industrial puree in drums, B2B only. Triggers 10 disclosures + 3mm mark.",
+      tag: "Mandatory B2B",
+      dot: "bg-sky-400",
+    },
+    {
       id: "incomplete" as const,
-      title: "Incomplete Bakery",
-      desc: "15 employees, capacity unknown. Tests Kleene clarifications.",
+      title: "Incomplete Channel",
+      desc: "Market channel (b2b_only) missing. Triggers Kleene clarifying questions.",
       tag: "Missing Data",
       dot: "bg-amber-400",
     },
     {
       id: "exempt" as const,
-      title: "Micro Cottage",
-      desc: "8 employees, 30 kg/day capacity, bulk unpackaged sweets.",
-      tag: "Exemptions",
+      title: "Over-the-Counter",
+      desc: "Packaged in presence of purchaser. Triggers statutory exemption.",
+      tag: "Exemption",
       dot: "bg-zinc-400",
     },
   ];
@@ -46,7 +55,7 @@ export const ScenarioPresetCards: React.FC<ScenarioPresetCardsProps> = ({
         <span className="text-[11px] text-zinc-500 font-mono">1-Click Test Scenarios</span>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
         {presets.map((p) => {
           const isActive = activePreset === p.id;
           return (
