@@ -183,11 +183,13 @@ class OracleBaseline(BaselineSystem):
 
         if not self.llm_client:
             return EvaluationResult(
-                status=OutcomeStatus.APPLICABLE,
+                status=OutcomeStatus.UNSUPPORTED,
                 rule_id=scenario.clause_id,
                 missing_fields=[],
                 evaluation_trace=[],
-                reason="Oracle baseline simulation response.",
+                reason="Baseline B0 unavailable: LLM client is not configured.",
+                error="missing_llm_client",
+                failed=True,
             )
 
         # Retrieve oracle ground-truth context
@@ -252,12 +254,15 @@ class BM25Baseline(BaselineSystem):
             return self.predictor(scenario)
 
         if not self.retrieval_engine or not self.llm_client:
+            missing_dep = "retrieval engine" if not self.retrieval_engine else "LLM client"
             return EvaluationResult(
-                status=OutcomeStatus.APPLICABLE,
+                status=OutcomeStatus.UNSUPPORTED,
                 rule_id=scenario.clause_id,
                 missing_fields=[],
                 evaluation_trace=[],
-                reason="BM25 baseline simulation response.",
+                reason=f"Baseline B1 unavailable: {missing_dep} is not configured.",
+                error=f"missing_{missing_dep.replace(' ', '_')}",
+                failed=True,
             )
 
         # Construct query from scenario
@@ -327,12 +332,15 @@ class DenseBaseline(BaselineSystem):
             return self.predictor(scenario)
 
         if not self.retrieval_engine or not self.llm_client:
+            missing_dep = "retrieval engine" if not self.retrieval_engine else "LLM client"
             return EvaluationResult(
-                status=OutcomeStatus.APPLICABLE,
+                status=OutcomeStatus.UNSUPPORTED,
                 rule_id=scenario.clause_id,
                 missing_fields=[],
                 evaluation_trace=[],
-                reason="Dense RAG baseline simulation response.",
+                reason=f"Baseline B2 unavailable: {missing_dep} is not configured.",
+                error=f"missing_{missing_dep.replace(' ', '_')}",
+                failed=True,
             )
 
         query = f"{scenario.clause_id} {scenario.business_profile.activity or ''} {scenario.business_profile.industry or ''}".strip()
@@ -401,12 +409,15 @@ class HybridBaseline(BaselineSystem):
             return self.predictor(scenario)
 
         if not self.retrieval_engine or not self.llm_client:
+            missing_dep = "retrieval engine" if not self.retrieval_engine else "LLM client"
             return EvaluationResult(
-                status=OutcomeStatus.APPLICABLE,
+                status=OutcomeStatus.UNSUPPORTED,
                 rule_id=scenario.clause_id,
                 missing_fields=[],
                 evaluation_trace=[],
-                reason="Hybrid RAG baseline simulation response.",
+                reason=f"Baseline B3 unavailable: {missing_dep} is not configured.",
+                error=f"missing_{missing_dep.replace(' ', '_')}",
+                failed=True,
             )
 
         query = f"{scenario.clause_id} {scenario.business_profile.activity or ''} {scenario.business_profile.industry or ''}".strip()
