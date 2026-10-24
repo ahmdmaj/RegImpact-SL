@@ -192,6 +192,7 @@ def rule_orm_to_domain(orm: "RuleORM") -> Rule:
         type=obl_dict.get("type", ""),
         text=obl_dict.get("text", ""),
         impact_categories=obl_dict.get("impact_categories", []),
+        disclosures=obl_dict.get("disclosures"),
     )
 
     # verification — stored in source JSON or verification_report JSON
@@ -245,6 +246,7 @@ def rule_domain_to_orm_dict(rule: Rule, clause_id: str, clause_version: int) -> 
             "type": rule.obligation.type,
             "text": rule.obligation.text,
             "impact_categories": rule.obligation.impact_categories,
+            "disclosures": rule.obligation.disclosures,
         },
         "validity": {
             "published": rule.validity.published,
