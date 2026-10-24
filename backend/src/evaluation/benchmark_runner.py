@@ -10,6 +10,7 @@ evaluation metrics defined in Section 10.2:
 """
 
 from collections import defaultdict
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Set, Tuple
 
 from backend.src.evaluation.baselines import BaselineSystem
@@ -32,9 +33,13 @@ class BenchmarkRunner:
         self,
         system: BaselineSystem,
         scenarios: Optional[List[BenchmarkScenario]] = None,
+        dataset_version: Optional[str] = None,
+        dataset_path: Optional[str] = None,
+        configuration: Optional[Dict[str, Any]] = None,
     ) -> EvaluationReport:
         """Run benchmark evaluation for a given system against scenarios."""
         target_scenarios = scenarios if scenarios is not None else self.scenarios
+        run_timestamp = datetime.now(timezone.utc).isoformat()
         if not target_scenarios:
             return EvaluationReport(
                 system_name=system.name,
@@ -46,14 +51,32 @@ class BenchmarkRunner:
                 abstention_f1=0.0,
                 missing_fields_accuracy=0.0,
                 scenario_evaluations=[],
+                dataset_version=dataset_version,
+                dataset_path=str(dataset_path) if dataset_path else None,
+                configuration=configuration or {},
+                timestamp=run_timestamp,
+                errors=[],
             )
 
         scenario_evaluations: List[ScenarioEvaluation] = []
         predictions: List[Tuple[BenchmarkScenario, EvaluationResult]] = []
+        errors: List[str] = []
 
         # 1. Execute all scenarios through the system
         for scen in target_scenarios:
-            result = system.evaluate_scenario(scen)
+            try:
+                result = system.evaluate_scenario(scen)
+            except Exception as e:
+                err_msg = f"Error evaluating scenario {scen.scenario_id}: {e}"
+                errors.append(err_msg)
+                result = EvaluationResult(
+                    status=OutcomeStatus.UNSUPPORTED,
+                    rule_id=scen.clause_id,
+                    missing_fields=[],
+                    evaluation_trace=[],
+                    reason=err_msg,
+                )
+
             predictions.append((scen, result))
 
             is_correct = result.status == scen.gold_outcome
@@ -64,6 +87,9 @@ class BenchmarkRunner:
             missing_correct = True
             if scen.gold_outcome == OutcomeStatus.CONDITIONAL_MISSING_DATA:
                 missing_correct = (gold_missing == pred_missing)
+
+            extra_meta = scen.model_extra or {}
+            target_rules = getattr(scen, "target_rule_ids", None) or extra_meta.get("target_rule_ids")
 
             scenario_evaluations.append(
                 ScenarioEvaluation(
@@ -77,6 +103,9 @@ class BenchmarkRunner:
                     gold_missing_fields=scen.gold_missing_fields,
                     missing_fields_correct=missing_correct,
                     pair_id=scen.pair_id,
+                    evaluation_trace=getattr(result, "evaluation_trace", []),
+                    reason=result.reason,
+                    target_rule_ids=target_rules,
                 )
             )
 
@@ -120,6 +149,11 @@ class BenchmarkRunner:
             consistency_score=round(consistency_score, 4) if consistency_score is not None else None,
             temporal_accuracy=round(temporal_acc, 4) if temporal_acc is not None else None,
             scenario_evaluations=scenario_evaluations,
+            dataset_version=dataset_version,
+            dataset_path=str(dataset_path) if dataset_path else None,
+            configuration=configuration or {},
+            timestamp=run_timestamp,
+            errors=errors,
         )
 
     def _compute_classification_metrics(
@@ -262,3 +296,10 @@ def compare_systems(
     for sys in systems:
         reports[sys.name] = runner.run(sys, scenarios)
     return reports
+
+
+# Re-export loader and validator for convenience
+from backend.src.evaluation.benchmark_validator import (  # noqa: E402
+    load_benchmark_scenarios,
+    validate_benchmark_slice,
+)

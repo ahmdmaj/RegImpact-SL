@@ -207,6 +207,9 @@ class ScenarioEvaluation(BaseModel):
     gold_missing_fields: Optional[List[str]] = None
     missing_fields_correct: bool = True
     pair_id: Optional[str] = None
+    evaluation_trace: List[Dict[str, Any]] = []
+    reason: Optional[str] = None
+    target_rule_ids: Optional[List[str]] = None
 
 
 class EvaluationReport(BaseModel):
@@ -223,6 +226,11 @@ class EvaluationReport(BaseModel):
     consistency_score: Optional[float] = None
     temporal_accuracy: Optional[float] = None
     scenario_evaluations: List[ScenarioEvaluation] = []
+    dataset_version: Optional[str] = None
+    dataset_path: Optional[str] = None
+    timestamp: Optional[str] = None
+    configuration: Optional[Dict[str, Any]] = None
+    errors: List[str] = []
 
 
 

@@ -577,7 +577,18 @@ class SystemP(BaselineSystem):
             return eval_result
 
         # --- Mode 2: Direct Rule Store Mode (Phase A compatibility) ---
-        rule = self.rules.get(scenario.clause_id)
+        target_rule_id = getattr(scenario, "target_rule_id", None)
+        if not target_rule_id:
+            extra = getattr(scenario, "model_extra", None) or {}
+            target_rule_ids = getattr(scenario, "target_rule_ids", None) or extra.get("target_rule_ids")
+            if target_rule_ids and isinstance(target_rule_ids, list) and len(target_rule_ids) > 0:
+                target_rule_id = target_rule_ids[0]
+
+        rule = None
+        if target_rule_id and target_rule_id in self.rules:
+            rule = self.rules[target_rule_id]
+        if not rule:
+            rule = self.rules.get(scenario.clause_id)
         if not rule:
             for r in self.rules.values():
                 if r.rule_id == scenario.clause_id or r.source.clause == scenario.clause_id:
