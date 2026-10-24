@@ -510,7 +510,13 @@ def seed_regulatory_corpus(
                 existing_clause = db.query(ClauseORM).filter_by(clause_id=clause_pk).first()
 
                 if not existing_clause:
-                    emb = active_embedding.embed_text(seg.text) if active_embedding else None
+                    emb = None
+                    if active_embedding:
+                        try:
+                            emb = active_embedding.embed_text(seg.text)
+                        except Exception as emb_exc:
+                            logger.warning("Could not compute embedding for %s (%s); proceeding with unvectorized clause.", clause_pk, emb_exc)
+                            emb = None
                     clause_orm = ClauseORM(
                         clause_id=clause_pk,
                         version_number=1,
@@ -523,6 +529,7 @@ def seed_regulatory_corpus(
                         char_end=seg.char_end,
                         is_compilable=True,
                         embedding=emb,
+                        embedding_verified=bool(emb and not isinstance(active_embedding, MockEmbeddingClient)),
                     )
                     db.add(clause_orm)
                     db.flush()

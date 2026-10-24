@@ -43,7 +43,7 @@ def get_database_url() -> str:
     return os.environ.get("DATABASE_URL", _DEFAULT_SQLITE_URL)
 
 
-def create_engine_from_url(url: str | None = None) -> Engine:
+def create_engine_from_url(url: str | None = None, **kwargs) -> Engine:
     """Create a SQLAlchemy engine from a URL.
 
     Applies SQLite-specific pragma (foreign_keys = ON) automatically.
@@ -52,8 +52,8 @@ def create_engine_from_url(url: str | None = None) -> Engine:
     resolved_url = url or get_database_url()
     is_sqlite = resolved_url.startswith("sqlite")
 
-    connect_args = {}
-    engine_kwargs = {}
+    connect_args = kwargs.pop("connect_args", {})
+    engine_kwargs = dict(kwargs)
     if is_sqlite:
         # Allow the same in-memory database to be used across threads in tests
         connect_args["check_same_thread"] = False
