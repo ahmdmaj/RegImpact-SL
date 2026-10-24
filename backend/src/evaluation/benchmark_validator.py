@@ -39,6 +39,66 @@ class ValidationReport(BaseModel):
     warnings: List[str] = Field(default_factory=list)
 
 
+# Known legally operative fields for Regulation 3 applicability
+LEGALLY_OPERATIVE_FIELDS = {
+    "activity",
+    "industry",
+    "products",
+    "products[0].prepackaged",
+    "packaged_in_presence_of_purchaser",
+    "market.b2b_only",
+    "production_capacity",
+    "production_capacity.value",
+    "production_capacity.unit",
+}
+
+
+def flatten_profile(profile: Any) -> Dict[str, Any]:
+    """Flatten a BusinessProfile model and its nested structures into dotted paths."""
+    res: Dict[str, Any] = {}
+    if profile is None:
+        return res
+
+    p_dict = profile.model_dump(exclude_none=False) if hasattr(profile, "model_dump") else dict(profile)
+
+    def _flatten(d: Any, prefix: str = ""):
+        if isinstance(d, dict):
+            for k, v in d.items():
+                pfx = f"{prefix}.{k}" if prefix else k
+                _flatten(v, pfx)
+        elif isinstance(d, list):
+            for idx, item in enumerate(d):
+                pfx = f"{prefix}[{idx}]"
+                _flatten(item, pfx)
+        else:
+            res[prefix] = d
+
+    _flatten(p_dict)
+    # Also include model_extra if present
+    if hasattr(profile, "model_extra") and profile.model_extra:
+        for k, v in profile.model_extra.items():
+            if k not in p_dict:
+                _flatten(v, k)
+    return res
+
+
+def compute_profile_diff(p1: Any, p2: Any) -> Dict[str, Tuple[Any, Any]]:
+    """Compute differences between two business profiles, ignoring business_id."""
+    f1 = flatten_profile(p1)
+    f2 = flatten_profile(p2)
+    all_keys = set(f1.keys()) | set(f2.keys())
+    diffs: Dict[str, Tuple[Any, Any]] = {}
+    for k in sorted(all_keys):
+        # Ignore business_id identifier difference across pair instances
+        if k == "business_id":
+            continue
+        v1 = f1.get(k)
+        v2 = f2.get(k)
+        if v1 != v2:
+            diffs[k] = (v1, v2)
+    return diffs
+
+
 def load_benchmark_scenarios(path: Union[str, Path]) -> List[BenchmarkScenario]:
     """Load and parse benchmark scenarios from a JSONL file."""
     p = Path(path)
@@ -129,6 +189,15 @@ def validate_benchmark_slice(
                     f"Incomplete scenario '{s.scenario_id}' missing required gold_missing_fields list."
                 )
 
+        # Temporal scenario checks
+        if s.scenario_type == "temporal":
+            extra = s.model_extra or {}
+            gold_temp = getattr(s, "gold_temporal_status", None) or extra.get("gold_temporal_status")
+            if not gold_temp:
+                warnings.append(
+                    f"Temporal scenario '{s.scenario_id}' does not declare explicit 'gold_temporal_status'."
+                )
+
         # Pair grouping
         if s.scenario_type == "minimal_pair":
             if not s.pair_id:
@@ -144,10 +213,8 @@ def validate_benchmark_slice(
 
         # Provenance field audits
         extra = s.model_extra or {}
-        is_gold_scen = extra.get("is_gold_scenario", False)
-        is_gold_r = extra.get("is_gold_rule", False)
-        review_status = extra.get("review_status", "")
-        reviewer_role = extra.get("reviewer_role", "")
+        is_gold_scen = extra.get("is_gold_scenario", False) or getattr(s, "is_gold_scenario", False)
+        is_gold_r = extra.get("is_gold_rule", False) or getattr(s, "is_gold_rule", False)
 
         if is_gold_scen:
             gold_count += 1
@@ -189,31 +256,65 @@ def validate_benchmark_slice(
                 if rid not in known_rules:
                     errors.append(f"Scenario '{s.scenario_id}' references unknown rule '{rid}'.")
 
-    # 3. Minimal pair consistency (flip verification)
+    # 3. Minimal pair consistency (flip verification + input diff verification)
     for pair_id, members in minimal_pairs.items():
         if len(members) != 2:
             errors.append(f"Minimal pair '{pair_id}' must have exactly 2 scenarios, got {len(members)}.")
             continue
-        outcomes = {m.gold_outcome for m in members}
+        m1, m2 = members[0], members[1]
+        outcomes = {m1.gold_outcome, m2.gold_outcome}
         if OutcomeStatus.APPLICABLE not in outcomes or OutcomeStatus.NOT_APPLICABLE not in outcomes:
             errors.append(
-                f"Minimal pair '{pair_id}' does not flip outcomes: found {[m.gold_outcome.value for m in members]}."
+                f"Minimal pair '{pair_id}' does not flip outcomes: found {[m1.gold_outcome.value, m2.gold_outcome.value]}."
             )
 
-    # 4. Invariance pair consistency (stability verification)
+        # Input difference verification
+        diffs = compute_profile_diff(m1.business_profile, m2.business_profile)
+        declared_diff = (
+            getattr(m1, "pair_diff_field", None)
+            or getattr(m2, "pair_diff_field", None)
+            or (m1.model_extra or {}).get("pair_diff_field")
+            or (m2.model_extra or {}).get("pair_diff_field")
+        )
+        if len(diffs) == 0:
+            errors.append(f"Minimal pair '{pair_id}' has zero profile input differences (identical profiles).")
+        elif declared_diff:
+            diff_keys = set(diffs.keys())
+            if diff_keys != {declared_diff}:
+                errors.append(
+                    f"Minimal pair '{pair_id}' input differences {sorted(diff_keys)} do not match declared perturbation '{declared_diff}'."
+                )
+        elif len(diffs) > 1:
+            errors.append(
+                f"Minimal pair '{pair_id}' has {len(diffs)} uncontrolled feature differences: {sorted(diffs.keys())}."
+            )
+
+    # 4. Invariance pair consistency (stability verification + irrelevant change verification)
     for pair_id, members in invariance_pairs.items():
         if len(members) != 2:
             errors.append(f"Invariance pair '{pair_id}' must have exactly 2 scenarios, got {len(members)}.")
             continue
-        if members[0].gold_outcome != members[1].gold_outcome:
+        m1, m2 = members[0], members[1]
+        if m1.gold_outcome != m2.gold_outcome:
             errors.append(
-                f"Invariance pair '{pair_id}' outcome unstable: {members[0].gold_outcome} != {members[1].gold_outcome}."
+                f"Invariance pair '{pair_id}' outcome unstable: {m1.gold_outcome} != {m2.gold_outcome}."
             )
+
+        # Input difference verification: only irrelevant metadata may change
+        diffs = compute_profile_diff(m1.business_profile, m2.business_profile)
+        if len(diffs) == 0:
+            errors.append(f"Invariance pair '{pair_id}' has zero profile differences (identical profiles).")
+        else:
+            for diff_k in diffs.keys():
+                for rel_k in LEGALLY_OPERATIVE_FIELDS:
+                    if diff_k == rel_k or diff_k.startswith(f"{rel_k}."):
+                        errors.append(
+                            f"Invariance pair '{pair_id}' mutates legally relevant field '{diff_k}' (values: {diffs[diff_k]})."
+                        )
 
     # 5. Clause grouping split safety
     try:
         train_set, test_set = split_scenarios_by_clause(scenarios, test_ratio=0.3, random_seed=42)
-        # If single clause, split safely puts all in train (0% leakage)
         train_clauses = {s.clause_id for s in train_set}
         test_clauses = {s.clause_id for s in test_set}
         leakage = train_clauses.intersection(test_clauses)
