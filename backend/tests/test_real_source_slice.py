@@ -779,8 +779,8 @@ def test_real_slice_seeding_and_repository_roundtrip(test_db):
     # 1. Authoritative Gazette document verification
     doc = test_db.query(SourceDocumentORM).filter_by(id="doc_gazette_2494_47").first()
     assert doc is not None, "Promulgated Gazette document missing after seed_real_slice()"
-    assert doc.gazette_number == "2494/47"
-    assert doc.doc_type == "gazette_extraordinary"
+    assert "2494/47" in doc.gazette_no
+    assert doc.instrument_type == "gazette_regulation"
 
     # 2. Both rules present
     rules = test_db.query(RuleORM).filter(
@@ -790,11 +790,13 @@ def test_real_slice_seeding_and_repository_roundtrip(test_db):
 
     # 3. Retrieve through actual repository implementation
     repo = PostgresRegulatoryRepository(test_db)
-    retail_rule = repo.get_rule_by_id("RULE-FCAU-2494-47-REG-3")
-    b2b_rule = repo.get_rule_by_id("RULE-FCAU-2494-47-REG-3-B2B")
+    retail_rules = repo.get_rules_by_ids(["RULE-FCAU-2494-47-REG-3"])
+    b2b_rules = repo.get_rules_by_ids(["RULE-FCAU-2494-47-REG-3-B2B"])
 
-    assert retail_rule is not None
-    assert b2b_rule is not None
+    assert len(retail_rules) == 1
+    assert len(b2b_rules) == 1
+    retail_rule = retail_rules[0]
+    b2b_rule = b2b_rules[0]
 
     # 4. Provenance and source quote verification
     assert retail_rule.source.instrument == "Food (Labelling and Advertising) Regulations 2026"
@@ -885,8 +887,9 @@ def test_regression_disclosures_persistence_roundtrip(test_db):
             quote_span="Test quote span",
         ),
         verification=Verification(
-            review_status="APPROVED",
-            is_gold_rule=False,
+            status="APPROVED",
+            extraction_model="manual_audit",
+            agreement=True,
         ),
     )
 
@@ -901,8 +904,9 @@ def test_regression_disclosures_persistence_roundtrip(test_db):
     test_db.commit()
 
     # 3. Reload from database through repository
-    reloaded_rule = repo.get_rule_by_id("RULE-REGRESSION-DISCLOSURE-001")
-    assert reloaded_rule is not None
+    reloaded_rules = repo.get_rules_by_ids(["RULE-REGRESSION-DISCLOSURE-001"])
+    assert len(reloaded_rules) == 1
+    reloaded_rule = reloaded_rules[0]
     assert reloaded_rule.obligation.disclosures == sample_disclosures, (
         f"Reloaded disclosures mismatch: {reloaded_rule.obligation.disclosures} != {sample_disclosures}"
     )
@@ -928,13 +932,18 @@ def test_regression_disclosures_persistence_roundtrip(test_db):
             page=1,
             quote_span="Standard retail quote",
         ),
+        verification=Verification(
+            status="APPROVED",
+            extraction_model="manual_audit",
+            agreement=True,
+        ),
     )
     test_db.add(RuleORM(**rule_domain_to_orm_dict(rule_null_disc)))
     test_db.commit()
 
-    reloaded_null = repo.get_rule_by_id("RULE-REGRESSION-NULL-DISC")
-    assert reloaded_null is not None
-    assert reloaded_null.obligation.disclosures is None
+    reloaded_null_list = repo.get_rules_by_ids(["RULE-REGRESSION-NULL-DISC"])
+    assert len(reloaded_null_list) == 1
+    assert reloaded_null_list[0].obligation.disclosures is None
 
 
 # ===========================================================================
@@ -944,8 +953,9 @@ def test_regression_disclosures_persistence_roundtrip(test_db):
 def test_b2b_impact_mapping_disclosures_and_no_trilingual(seeded_real_db):
     """Task 2: Verify B2B impact mapping surfaces 10 disclosures + bold statement without trilingual contradiction."""
     repo = PostgresRegulatoryRepository(seeded_real_db)
-    b2b_rule = repo.get_rule_by_id("RULE-FCAU-2494-47-REG-3-B2B")
-    assert b2b_rule is not None
+    b2b_rules = repo.get_rules_by_ids(["RULE-FCAU-2494-47-REG-3-B2B"])
+    assert len(b2b_rules) == 1
+    b2b_rule = b2b_rules[0]
 
     impact = map_impact(b2b_rule)
     assert impact is not None
@@ -989,6 +999,8 @@ def test_api_analysis_endpoint_retail_profile(client_with_real_slice):
         "business_profile": {
             "business_id": "BIZ-RETAIL-01",
             "activity": "food_manufacturing",
+            "packaged_in_presence_of_purchaser": False,
+            "market": {"b2b_only": False},
             "products": [
                 {
                     "name": "Bottled Mixed Fruit Jam",
@@ -1019,6 +1031,8 @@ def test_api_analysis_endpoint_b2b_profile(client_with_real_slice):
         "business_profile": {
             "business_id": "BIZ-B2B-01",
             "activity": "food_manufacturing",
+            "packaged_in_presence_of_purchaser": False,
+            "market": {"b2b_only": True},
             "products": [
                 {
                     "name": "Industrial Bulk Mango Puree (200L Drum)",
@@ -1055,11 +1069,12 @@ def test_api_analysis_endpoint_missing_market_channel(client_with_real_slice):
         "business_profile": {
             "business_id": "BIZ-UNKNOWN-CHANNEL",
             "activity": "food_manufacturing",
+            "packaged_in_presence_of_purchaser": False,
+            "market": None,
             "products": [
                 {
                     "name": "Packaged Curry Powder",
                     "prepackaged": True,
-                    # market_channel explicitly omitted
                 }
             ],
         },
@@ -1071,8 +1086,8 @@ def test_api_analysis_endpoint_missing_market_channel(client_with_real_slice):
     eval_map = {e["rule_id"]: e for e in data["evaluations"]}
     assert eval_map["RULE-FCAU-2494-47-REG-3"]["status"] == OutcomeStatus.CONDITIONAL_MISSING_DATA.value
     assert eval_map["RULE-FCAU-2494-47-REG-3-B2B"]["status"] == OutcomeStatus.CONDITIONAL_MISSING_DATA.value
-    assert "products.market_channel" in eval_map["RULE-FCAU-2494-47-REG-3"]["missing_fields"]
-    assert "products.market_channel" in data["missing_fields"]
+    assert "market.b2b_only" in eval_map["RULE-FCAU-2494-47-REG-3"]["missing_fields"]
+    assert "market.b2b_only" in data["missing_fields"]
 
 
 def test_api_analysis_endpoint_b2b_missing_disclosure_applicability_contract(client_with_real_slice):
@@ -1087,6 +1102,8 @@ def test_api_analysis_endpoint_b2b_missing_disclosure_applicability_contract(cli
         "business_profile": {
             "business_id": "BIZ-B2B-MISSING-LABEL-DISCLOSURE",
             "activity": "food_manufacturing",
+            "packaged_in_presence_of_purchaser": False,
+            "market": {"b2b_only": True},
             "products": [
                 {
                     "name": "Bulk Desiccated Coconut",
@@ -1122,6 +1139,8 @@ def test_api_analysis_endpoint_b2b_marking_problem(client_with_real_slice):
         "business_profile": {
             "business_id": "BIZ-B2B-MARKING-QUERY",
             "activity": "food_manufacturing",
+            "packaged_in_presence_of_purchaser": False,
+            "market": {"b2b_only": True},
             "products": [
                 {
                     "name": "Industrial Baker Yeast 20kg",
@@ -1156,6 +1175,8 @@ def test_api_analysis_endpoint_out_of_scope_profile(client_with_real_slice):
         "business_profile": {
             "business_id": "BIZ-FARMING-01",
             "activity": "farming_and_agriculture",
+            "packaged_in_presence_of_purchaser": False,
+            "market": {"b2b_only": False},
             "products": [
                 {
                     "name": "Harvested Raw Paddy Rice",
@@ -1186,15 +1207,23 @@ def test_test_independence_fails_if_b2b_rule_missing():
     session = get_session_factory(engine)()
 
     # Seed only retail rule
-    from backend.data.seed_real_slice import SEED_RETAIL_RULE_DICT
-    session.add(RuleORM(**SEED_RETAIL_RULE_DICT))
+    retail_orm = RuleORM(
+        rule_id="RULE-FCAU-2494-47-REG-3",
+        clause_id="CLAUSE-DOC_GAZETTE_2494_47-REGULATION-3",
+        clause_version=1,
+        outcome_type="STANDARD",
+        applies_if={"all": [{"field": "activity", "op": "eq", "value": "food_manufacturing"}]},
+        obligation={"type": "labelling", "text": "Retail", "impact_categories": ["labelling"]},
+        validity={"published": "2026-06-26", "commences": "2026-07-01"},
+        source={"clause": "Regulation 3", "instrument": "Gazette 2494/47", "authority": "FAC", "gazette_no": "2494/47", "page": 1, "quote_span": "quote"},
+        review_status="APPROVED",
+    )
+    session.add(retail_orm)
     session.commit()
 
     repo = PostgresRegulatoryRepository(session)
-    assert repo.get_rule_by_id("RULE-FCAU-2494-47-REG-3") is not None
-    assert repo.get_rule_by_id("RULE-FCAU-2494-47-REG-3-B2B") is None, (
-        "B2B rule should be absent in this negative test fixture"
-    )
+    assert len(repo.get_rules_by_ids(["RULE-FCAU-2494-47-REG-3"])) == 1
+    assert len(repo.get_rules_by_ids(["RULE-FCAU-2494-47-REG-3-B2B"])) == 0
     session.close()
 
 
@@ -1208,6 +1237,7 @@ def test_test_independence_fails_if_disclosures_removed_from_serialization():
         obligation=Obligation(
             type="b2b_labelling",
             text="B2B obligations",
+            impact_categories=["label_compliance"],
             disclosures=["common_name", "batch_number"],
         ),
         validity=Validity(published="2026-06-26", commences="2026-07-01"),
@@ -1218,6 +1248,11 @@ def test_test_independence_fails_if_disclosures_removed_from_serialization():
             gazette_no="2494/47",
             page=2,
             quote_span="quote",
+        ),
+        verification=Verification(
+            status="APPROVED",
+            extraction_model="manual_audit",
+            agreement=True,
         ),
     )
 
@@ -1247,6 +1282,7 @@ def test_test_independence_fails_if_trilingual_reintroduced_to_b2b():
         obligation=Obligation(
             type="b2b_labelling",
             text="B2B statutory labelling requirements",
+            impact_categories=["labelling"],
             disclosures=["common_name", "batch_number"],
         ),
         validity=Validity(published="2026-06-26", commences="2026-07-01"),
@@ -1257,6 +1293,11 @@ def test_test_independence_fails_if_trilingual_reintroduced_to_b2b():
             gazette_no="2494/47",
             page=2,
             quote_span="B2B statutory quote",
+        ),
+        verification=Verification(
+            status="APPROVED",
+            extraction_model="manual_audit",
+            agreement=True,
         ),
     )
 
