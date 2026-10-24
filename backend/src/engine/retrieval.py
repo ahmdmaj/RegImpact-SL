@@ -27,7 +27,14 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy.orm import Session
 
-from backend.src.db.models import ClauseORM, RuleORM, SourceDocumentORM
+from backend.src.db.models import (
+    ClauseORM,
+    RuleORM,
+    SourceDocumentORM,
+    SYNTHETIC_DOCUMENT_IDS,
+    SYNTHETIC_RULE_IDS,
+    is_synthetic_clause,
+)
 from backend.src.extraction.embedding_client import BaseEmbeddingClient, get_embedding_client
 
 logger = logging.getLogger(__name__)
@@ -53,6 +60,7 @@ class RetrievalResult(BaseModel):
     rank: int  # 1-indexed rank
     has_approved_rule: bool = False
     coverage_gap: bool = False
+    is_synthetic: bool = False
     metadata: Dict[str, Any] = {}
 
 
@@ -60,19 +68,25 @@ class RetrievalResult(BaseModel):
 # Coverage Gap Helper
 # ---------------------------------------------------------------------------
 
-def cross_reference_coverage_gaps(db: Session, clause_ids: List[str]) -> Set[str]:
+def cross_reference_coverage_gaps(
+    db: Session,
+    clause_ids: List[str],
+    include_synthetic: bool = False,
+) -> Set[str]:
     """Return the set of clause_ids that have at least one APPROVED Rule."""
     if not clause_ids:
         return set()
 
-    rows = (
-        db.query(RuleORM.clause_id)
-        .filter(
-            RuleORM.clause_id.in_(clause_ids),
-            RuleORM.review_status == "APPROVED",
-        )
-        .all()
+    query = db.query(RuleORM.clause_id).filter(
+        RuleORM.clause_id.in_(clause_ids),
+        RuleORM.review_status == "APPROVED",
     )
+    if not include_synthetic:
+        query = query.filter(
+            RuleORM.is_synthetic.is_(False),
+            ~RuleORM.rule_id.in_(SYNTHETIC_RULE_IDS),
+        )
+    rows = query.all()
     return {r[0] for r in rows}
 
 
@@ -145,6 +159,9 @@ class BM25RetrievalEngine(BaseRetrievalEngine):
                 "document_id": clause.document_id,
                 "document_title": doc.title if doc else "",
                 "is_compilable": clause.is_compilable,
+                "is_synthetic": getattr(clause, "is_synthetic", False) or is_synthetic_clause(
+                    clause, clause_id=clause.clause_id, document_id=clause.document_id
+                ),
             }
             tokens = _tokenize(clause.text)
             tf = Counter(tokens)
@@ -187,8 +204,13 @@ class BM25RetrievalEngine(BaseRetrievalEngine):
             return []
 
         # Score all candidate documents
+        include_synthetic = bool(filters.get("include_synthetic", False)) if filters else False
         scored_candidates: List[Tuple[float, int]] = []
         for doc_idx, entry in enumerate(self._corpus):
+            # Exclude synthetic fixtures unless explicitly requested
+            if not include_synthetic and entry.get("is_synthetic", False):
+                continue
+
             # Apply filters
             if filters:
                 if "document_id" in filters and entry["document_id"] != filters["document_id"]:
@@ -220,7 +242,7 @@ class BM25RetrievalEngine(BaseRetrievalEngine):
 
         # Cross-reference coverage gaps
         top_clause_ids = [self._corpus[idx]["clause_id"] for _, idx in top_slice]
-        approved_set = cross_reference_coverage_gaps(self.db, top_clause_ids)
+        approved_set = cross_reference_coverage_gaps(self.db, top_clause_ids, include_synthetic=include_synthetic)
 
         results: List[RetrievalResult] = []
         for rank, (score, doc_idx) in enumerate(top_slice, start=1):
@@ -240,6 +262,7 @@ class BM25RetrievalEngine(BaseRetrievalEngine):
                     rank=rank,
                     has_approved_rule=has_approved,
                     coverage_gap=not has_approved,
+                    is_synthetic=entry.get("is_synthetic", False),
                 )
             )
 
@@ -337,6 +360,11 @@ class DenseRetrievalEngine(BaseRetrievalEngine):
             .filter(ClauseORM.embedding.isnot(None))
         )
 
+        include_synthetic = bool(filters.get("include_synthetic", False)) if filters else False
+        if not include_synthetic:
+            query_builder = query_builder.filter(ClauseORM.is_synthetic.is_(False))
+            query_builder = query_builder.filter(~ClauseORM.document_id.in_(SYNTHETIC_DOCUMENT_IDS))
+
         if filters:
             if "document_id" in filters:
                 query_builder = query_builder.filter(ClauseORM.document_id == filters["document_id"])
@@ -352,7 +380,7 @@ class DenseRetrievalEngine(BaseRetrievalEngine):
             return []
 
         top_clause_ids = [clause.clause_id for clause, _, _ in rows]
-        approved_set = cross_reference_coverage_gaps(self.db, top_clause_ids)
+        approved_set = cross_reference_coverage_gaps(self.db, top_clause_ids, include_synthetic=include_synthetic)
 
         results: List[RetrievalResult] = []
         for rank, (clause, doc, distance) in enumerate(rows, start=1):
@@ -372,6 +400,9 @@ class DenseRetrievalEngine(BaseRetrievalEngine):
                     rank=rank,
                     has_approved_rule=has_approved,
                     coverage_gap=not has_approved,
+                    is_synthetic=getattr(clause, "is_synthetic", False) or is_synthetic_clause(
+                        clause, clause_id=clause.clause_id, document_id=clause.document_id
+                    ),
                 )
             )
 
@@ -400,8 +431,15 @@ class DenseRetrievalEngine(BaseRetrievalEngine):
         if not rows:
             return []
 
+        include_synthetic = bool(filters.get("include_synthetic", False)) if filters else False
         candidates: List[Tuple[float, ClauseORM, Optional[SourceDocumentORM]]] = []
         for clause, doc in rows:
+            if not include_synthetic and (
+                getattr(clause, "is_synthetic", False)
+                or is_synthetic_clause(clause, clause_id=clause.clause_id, document_id=clause.document_id)
+            ):
+                continue
+
             emb = clause.embedding
             if isinstance(emb, list) and len(emb) > 0:
                 sim = _cosine_similarity(query_vec, emb)
@@ -415,7 +453,7 @@ class DenseRetrievalEngine(BaseRetrievalEngine):
         top_slice = candidates[:top_k]
 
         top_clause_ids = [clause.clause_id for _, clause, _ in top_slice]
-        approved_set = cross_reference_coverage_gaps(self.db, top_clause_ids)
+        approved_set = cross_reference_coverage_gaps(self.db, top_clause_ids, include_synthetic=include_synthetic)
 
         results: List[RetrievalResult] = []
         for rank, (score, clause, doc) in enumerate(top_slice, start=1):
@@ -433,6 +471,9 @@ class DenseRetrievalEngine(BaseRetrievalEngine):
                     rank=rank,
                     has_approved_rule=has_approved,
                     coverage_gap=not has_approved,
+                    is_synthetic=getattr(clause, "is_synthetic", False) or is_synthetic_clause(
+                        clause, clause_id=clause.clause_id, document_id=clause.document_id
+                    ),
                 )
             )
 
@@ -495,8 +536,9 @@ class HybridRetrievalEngine(BaseRetrievalEngine):
             reverse=True,
         )
 
+        include_synthetic = bool(filters.get("include_synthetic", False)) if filters else False
         top_ids = sorted_clause_ids[:top_k]
-        approved_set = cross_reference_coverage_gaps(self.db, top_ids)
+        approved_set = cross_reference_coverage_gaps(self.db, top_ids, include_synthetic=include_synthetic)
 
         hybrid_results: List[RetrievalResult] = []
         for rank, cid in enumerate(top_ids, start=1):
@@ -515,6 +557,7 @@ class HybridRetrievalEngine(BaseRetrievalEngine):
                     rank=rank,
                     has_approved_rule=has_approved,
                     coverage_gap=not has_approved,
+                    is_synthetic=base_res.is_synthetic,
                 )
             )
 

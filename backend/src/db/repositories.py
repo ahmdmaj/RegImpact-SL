@@ -220,6 +220,8 @@ def rule_orm_to_domain(orm: "RuleORM") -> Rule:
         setattr(rule, "is_gold_rule", bool(orm.is_gold_rule))
     if hasattr(orm, "review_status") and orm.review_status:
         setattr(rule, "review_status", orm.review_status)
+    if hasattr(orm, "is_synthetic"):
+        setattr(rule, "is_synthetic", bool(orm.is_synthetic))
     return rule
 
 
@@ -285,6 +287,7 @@ def rule_domain_to_orm_dict(
             "justification": rule.verification.justification,
         },
         "cross_agreement": rule.verification.agreement,
+        "is_synthetic": getattr(rule, "is_synthetic", False),
     }
 
 

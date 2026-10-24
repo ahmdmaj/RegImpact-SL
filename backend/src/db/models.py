@@ -47,8 +47,67 @@ def _utcnow() -> datetime.datetime:
 
 
 # ---------------------------------------------------------------------------
-# Declarative base
+# Declarative base & Synthetic Isolation Identifiers
 # ---------------------------------------------------------------------------
+
+SYNTHETIC_DOCUMENT_IDS = {
+    "doc_fcau_labelling_2024",
+    "doc_cea_epl_2022",
+    "doc_caa_mrp_2023",
+}
+
+SYNTHETIC_RULE_IDS = {
+    "RULE-FCAU-REG-4",
+    "RULE-CEA-EPL-SCHED-B",
+    "RULE-CAA-MRP-DIR-3",
+    "RULE-FCAU-001",
+    "RULE-CEA-EPL-001",
+}
+
+SYNTHETIC_CLAUSE_PREFIXES = (
+    "CLAUSE-DOC_FCAU_LABELLING_2024",
+    "CLAUSE-DOC_CEA_EPL_2022",
+    "CLAUSE-DOC_CAA_MRP_2023",
+    "FCAU-REG-04",
+    "CEA-SCHED-01-B12",
+)
+
+
+def is_synthetic_document(doc: Any = None, doc_id: str | None = None) -> bool:
+    """Return True if document is explicitly marked synthetic or matches known test fixtures."""
+    if doc is not None and getattr(doc, "is_synthetic", False):
+        return True
+    did = doc_id or (getattr(doc, "id", None) if doc else None)
+    return bool(did and did.lower() in {d.lower() for d in SYNTHETIC_DOCUMENT_IDS})
+
+
+def is_synthetic_clause(clause: Any = None, clause_id: str | None = None, document_id: str | None = None) -> bool:
+    """Return True if clause belongs to a synthetic test fixture."""
+    if clause is not None and getattr(clause, "is_synthetic", False):
+        return True
+    cid = clause_id or (getattr(clause, "clause_id", None) if clause else None)
+    did = document_id or (getattr(clause, "document_id", None) if clause else None)
+    if did and is_synthetic_document(doc_id=did):
+        return True
+    if cid:
+        cid_upper = cid.upper()
+        if any(cid_upper.startswith(prefix) for prefix in SYNTHETIC_CLAUSE_PREFIXES):
+            return True
+    return False
+
+
+def is_synthetic_rule(rule: Any = None, rule_id: str | None = None, clause_id: str | None = None) -> bool:
+    """Return True if rule belongs to a synthetic test fixture."""
+    if rule is not None and getattr(rule, "is_synthetic", False):
+        return True
+    rid = rule_id or (getattr(rule, "rule_id", None) if rule else None)
+    cid = clause_id or (getattr(rule, "clause_id", None) if rule else None)
+    if rid and rid.upper() in {r.upper() for r in SYNTHETIC_RULE_IDS}:
+        return True
+    if cid and is_synthetic_clause(clause_id=cid):
+        return True
+    return False
+
 
 class Base(DeclarativeBase):
     pass
@@ -84,6 +143,7 @@ class SourceDocumentORM(Base):
     extraction_status = Column(String(50), nullable=False, default="PENDING")
     extraction_tool = Column(String(100), nullable=True)
     extraction_warnings = Column(JSON, nullable=True)
+    is_synthetic = Column(Boolean, nullable=False, default=False, server_default="0")
     created_at = Column(DateTime(timezone=True), nullable=False, default=_utcnow)
 
     # Relationships
@@ -181,6 +241,7 @@ class ClauseORM(Base):
     is_compilable = Column(Boolean, nullable=False, default=True)
     non_compilable_reason = Column(Text, nullable=True)
     embedding = Column(EmbeddingColumnType, nullable=True)
+    is_synthetic = Column(Boolean, nullable=False, default=False, server_default="0")
     created_at = Column(DateTime(timezone=True), nullable=False, default=_utcnow)
     updated_at = Column(DateTime(timezone=True), nullable=False, default=_utcnow, onupdate=_utcnow)
 
@@ -244,6 +305,7 @@ class RuleORM(Base):
     extraction_prompt_hash = Column(String(64), nullable=True)
     cross_agreement = Column(Boolean, nullable=True)
     verification_report = Column(JSON, nullable=True)
+    is_synthetic = Column(Boolean, nullable=False, default=False, server_default="0")
 
     created_at = Column(DateTime(timezone=True), nullable=False, default=_utcnow)
     updated_at = Column(DateTime(timezone=True), nullable=False, default=_utcnow, onupdate=_utcnow)

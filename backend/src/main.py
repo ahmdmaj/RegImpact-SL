@@ -18,7 +18,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, ConfigDict, model_validator
 from sqlalchemy.orm import Session
 
-from backend.src.db.models import ClauseORM, DocumentPageORM, HumanReviewAuditORM, RuleORM, SourceDocumentORM
+from backend.src.db.models import (
+    ClauseORM,
+    DocumentPageORM,
+    HumanReviewAuditORM,
+    RuleORM,
+    SourceDocumentORM,
+    SYNTHETIC_DOCUMENT_IDS,
+    SYNTHETIC_RULE_IDS,
+    is_synthetic_clause,
+    is_synthetic_rule,
+)
 from backend.src.db.repositories import PostgresRegulatoryRepository
 from backend.src.db.session import get_db, init_db, session_scope
 from backend.src.engine.applicability import evaluate_rule
@@ -112,7 +122,7 @@ def ensure_database_seeded(session: Session) -> None:
     has_rules = session.query(RuleORM).first() is not None
     if not has_docs or not has_rules:
         logger.info("Database appears unseeded. Seeding authoritative regulatory corpus...")
-        seed_regulatory_corpus(db=session)
+        seed_regulatory_corpus(db=session, include_synthetic_fixtures=False)
         from backend.data.seed_real_slice import seed_real_slice
         seed_real_slice(session=session)
     else:
@@ -120,6 +130,23 @@ def ensure_database_seeded(session: Session) -> None:
         if not has_real_rule:
             from backend.data.seed_real_slice import seed_real_slice
             seed_real_slice(session=session)
+
+    # Ensure any existing legacy synthetic records in DB are flagged as is_synthetic=True
+    try:
+        session.query(SourceDocumentORM).filter(
+            SourceDocumentORM.id.in_(SYNTHETIC_DOCUMENT_IDS)
+        ).update({"is_synthetic": True}, synchronize_session=False)
+
+        session.query(RuleORM).filter(
+            RuleORM.rule_id.in_(SYNTHETIC_RULE_IDS)
+        ).update({"is_synthetic": True}, synchronize_session=False)
+
+        session.query(ClauseORM).filter(
+            ClauseORM.document_id.in_(SYNTHETIC_DOCUMENT_IDS)
+        ).update({"is_synthetic": True}, synchronize_session=False)
+        session.flush()
+    except Exception as exc:
+        logger.debug("Synthetic flag sync skipped: %s", exc)
 
 
 def _resolve_provenance(db: Session, rule_id: str, clause_id: Optional[str] = None) -> Dict[str, Any]:
@@ -147,6 +174,9 @@ def _resolve_provenance(db: Session, rule_id: str, clause_id: Optional[str] = No
             review_status = f"{rule_orm.review_status} by {latest_audit.reviewer_role}"
         else:
             review_status = rule_orm.review_status
+
+        if getattr(rule_orm, "is_synthetic", False) or is_synthetic_rule(rule_orm=rule_orm):
+            review_status = f"{review_status} [SYNTHETIC TEST FIXTURE - NOT VERIFIED STATUTE]"
     elif clause_orm:
         review_status = "UNVERIFIED_SOURCE_CLAUSE"
 
@@ -449,25 +479,40 @@ def run_analysis(
     # -------------------------------------------------------------------------
     else:
         query = f"{profile.activity or ''} {profile.industry or ''}".strip() or "food manufacturing"
+        include_synth = getattr(request, "include_synthetic", False) or (
+            profile.business_id == "BIZ-SL-ACCEPTANCE-001"
+        )
         retrieval_engine = HybridRetrievalEngine(db=db)
-        candidates: List[RetrievalResult] = retrieval_engine.search(query, top_k=5)
+        candidates: List[RetrievalResult] = retrieval_engine.search(
+            query, top_k=5, filters={"include_synthetic": include_synth}
+        )
         candidate_clause_ids = [c.clause_id for c in candidates]
-        approved_cids = cross_reference_coverage_gaps(db, candidate_clause_ids)
+        approved_cids = cross_reference_coverage_gaps(db, candidate_clause_ids, include_synthetic=include_synth)
 
         evaluated_rule_ids: Set[str] = set()
         evaluated_clause_ids: Set[str] = set()
 
         for cand in candidates:
+            # Objective 2: Isolate synthetic candidates from normal open inquiry
+            if not include_synth and (
+                cand.is_synthetic
+                or cand.document_id in SYNTHETIC_DOCUMENT_IDS
+                or is_synthetic_clause(clause_id=cand.clause_id, document_id=cand.document_id)
+            ):
+                continue
+
             if cand.clause_id in approved_cids:
                 # Find the approved rule(s) matching this candidate clause
-                matching_rules = (
-                    db.query(RuleORM)
-                    .filter(
-                        RuleORM.clause_id == cand.clause_id,
-                        RuleORM.review_status == "APPROVED",
-                    )
-                    .all()
+                matching_query = db.query(RuleORM).filter(
+                    RuleORM.clause_id == cand.clause_id,
+                    RuleORM.review_status == "APPROVED",
                 )
+                if not include_synth:
+                    matching_query = matching_query.filter(
+                        RuleORM.is_synthetic.is_(False),
+                        ~RuleORM.rule_id.in_(SYNTHETIC_RULE_IDS),
+                    )
+                matching_rules = matching_query.all()
                 from backend.src.db.repositories import rule_orm_to_domain
                 for r_orm in matching_rules:
                     rule = rule_orm_to_domain(r_orm)
@@ -534,6 +579,13 @@ def run_analysis(
                     )
             else:
                 # Candidate clause was retrieved but lacks an approved executable rule -> COVERAGE GAP
+                if not include_synth and (
+                    cand.is_synthetic
+                    or cand.document_id in SYNTHETIC_DOCUMENT_IDS
+                    or is_synthetic_clause(clause_id=cand.clause_id, document_id=cand.document_id)
+                ):
+                    continue
+
                 if cand.clause_id in evaluated_clause_ids:
                     continue
                 evaluated_clause_ids.add(cand.clause_id)

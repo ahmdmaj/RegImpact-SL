@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import datetime
+import hashlib
 import logging
 import os
 from pathlib import Path
@@ -331,12 +332,6 @@ KNOWN_DOCUMENT_METADATA: Dict[str, Dict[str, Any]] = {
         "authority": "Food Control Administration Unit (FCAU)",
         "instrument_type": "regulation",
     },
-    "labelling_regulations_final_-_11.02.2026.pdf": {
-        "doc_id": "doc_labelling_regulations_final_2026",
-        "title": "Food Labelling Regulations Final 2026",
-        "authority": "Food Advisory Committee",
-        "instrument_type": "regulation",
-    },
     "food_amendment_colouring_substances_regulations_2011_en.pdf": {
         "doc_id": "doc_colouring_substances_2011",
         "title": "Food (Colouring Substances) Regulations 2011",
@@ -357,6 +352,13 @@ KNOWN_DOCUMENT_METADATA: Dict[str, Dict[str, Any]] = {
     },
 }
 
+# Authenticated official Gazette allowlist for Dataset A seeding.
+# Restricts normal corpus seeding strictly to authenticated promulgated statutory instruments.
+# Secondary candidate Gazettes (2494/06, 2443/27, 2496/03) must not be ingested until verified.
+AUTHENTICATED_GAZETTE_ALLOWLIST: Dict[str, str] = {
+    "2494-47_e.pdf": "83ed19c22873471652d0073fe16c977442e42c8ecac2edf1d691d00d78d8a054",
+}
+
 
 # ---------------------------------------------------------------------------
 # Corpus Seeder Service
@@ -368,12 +370,14 @@ def seed_regulatory_corpus(
     force: bool = False,
     embedding_dimension: int = 768,
     llm_client: Optional[Any] = None,
+    include_synthetic_fixtures: Optional[bool] = None,
+    source_allowlist: Optional[Dict[str, str]] = None,
 ) -> Dict[str, Any]:
     """Seed the database with official source documents, segmented clauses, and rules.
 
-    Scans backend/data/raw_sources/ for existing PDF files, ingests them into the
-    database, segments clauses from pages, computes embeddings, and compiles candidate
-    rules using the live LLM client.
+    Scans backend/data/raw_sources/ for authenticated PDF files matching the allowlist,
+    ingests them into the database, segments clauses from pages, computes embeddings,
+    and compiles candidate rules using the live LLM client.
 
     Returns:
         Summary dict containing counts of ingested documents, clauses, and rules.
@@ -382,16 +386,47 @@ def seed_regulatory_corpus(
     from backend.src.extraction.llm_client import get_llm_client
     from backend.src.extraction.embedding_client import MockEmbeddingClient
 
+    if include_synthetic_fixtures is None:
+        # Exclude synthetic fixtures during normal seeding (raw_dir is None).
+        # Include them only when an explicit test fixture path (raw_dir) is provided.
+        include_synthetic_fixtures = raw_dir is not None
+
     raw_path = raw_dir or RAW_SOURCES_DIR
     if not raw_path.exists():
         raw_path.mkdir(parents=True, exist_ok=True)
 
-    # Scan for existing PDF files in raw_path; fall back to RAW_SOURCES_DIR if empty
-    pdf_files = sorted(list(raw_path.glob("*.pdf")))
-    if not pdf_files and RAW_SOURCES_DIR.exists():
-        pdf_files = sorted(list(RAW_SOURCES_DIR.glob("*.pdf")))
+    active_allowlist = source_allowlist or AUTHENTICATED_GAZETTE_ALLOWLIST
 
-    logger.info("Found %d PDF source files for corpus seeding.", len(pdf_files))
+    # Scan for candidate PDF files in raw_path; fall back to RAW_SOURCES_DIR if empty
+    candidate_pdfs = sorted(list(raw_path.glob("*.pdf")))
+    if not candidate_pdfs and RAW_SOURCES_DIR.exists():
+        candidate_pdfs = sorted(list(RAW_SOURCES_DIR.glob("*.pdf")))
+
+    # Filter to only authenticated source documents matching allowlist by name and SHA-256
+    pdf_files: List[Path] = []
+    for pdf_file in candidate_pdfs:
+        fn_lower = pdf_file.name.lower()
+        if fn_lower not in active_allowlist:
+            logger.debug("Skipping unverified source document %s (not in allowlist)", pdf_file.name)
+            continue
+
+        try:
+            content_bytes = pdf_file.read_bytes()
+            content_hash = hashlib.sha256(content_bytes).hexdigest()
+        except Exception as err:
+            logger.warning("Could not read %s for verification: %s", pdf_file.name, err)
+            continue
+
+        if content_hash != active_allowlist[fn_lower]:
+            logger.warning(
+                "Skipping %s: SHA-256 %s does not match expected allowlist hash %s",
+                pdf_file.name, content_hash, active_allowlist[fn_lower]
+            )
+            continue
+
+        pdf_files.append(pdf_file)
+
+    logger.info("Found %d authenticated PDF source files for corpus seeding.", len(pdf_files))
 
     ingestion_service = DocumentIngestionService(pdf_store_dir=raw_path)
     embedding_client = MockEmbeddingClient(dimension=embedding_dimension)
@@ -526,228 +561,235 @@ def seed_regulatory_corpus(
                         except Exception as exc:
                             logger.debug("Compilation skipped for clause %s: %s", clause_pk, exc)
 
-    # Register authoritative benchmark rules
-    for fixture in DOCUMENT_FIXTURES:
-        doc_id = fixture["doc_id"]
-        # Ensure parent SourceDocumentORM exists
-        if not db.get(SourceDocumentORM, doc_id):
-            pub_val = fixture.get("publication_date")
-            pub_date_obj = datetime.date.fromisoformat(pub_val) if isinstance(pub_val, str) else pub_val
-            doc_orm = SourceDocumentORM(
-                id=doc_id,
-                title=fixture["title"],
-                authority=fixture["authority"],
-                instrument_type=fixture["instrument_type"],
-                gazette_no=fixture.get("gazette_no"),
-                publication_date=pub_date_obj,
-                file_path=str(raw_path / f"{doc_id}.pdf"),
-                file_size_bytes=1024,
-                sha256_hash=f"fixture_hash_{doc_id}".ljust(64, "0")[:64],
-                page_count=len(fixture.get("pages", [1])),
-                extraction_status="SUCCESS",
-                extraction_tool="pymupdf",
-            )
-            db.add(doc_orm)
-            db.flush()
-            docs_ingested += 1
-
-        for page_idx, page_text in enumerate(fixture.get("pages", [])):
-            page_num = page_idx + 1
-            if not db.query(DocumentPageORM).filter_by(document_id=doc_id, page_number=page_num).first():
-                db.add(
-                    DocumentPageORM(
-                        document_id=doc_id,
-                        page_number=page_num,
-                        raw_text=page_text,
-                        char_count=len(page_text),
-                        page_hash=f"page_hash_{doc_id}_{page_num}".ljust(64, "0")[:64],
-                        is_ocr=False,
-                    )
+    # Register synthetic test fixtures ONLY when explicitly requested (isolated from normal seeding)
+    if include_synthetic_fixtures:
+        for fixture in DOCUMENT_FIXTURES:
+            doc_id = fixture["doc_id"]
+            # Ensure parent SourceDocumentORM exists with is_synthetic=True
+            if not db.get(SourceDocumentORM, doc_id):
+                pub_val = fixture.get("publication_date")
+                pub_date_obj = datetime.date.fromisoformat(pub_val) if isinstance(pub_val, str) else pub_val
+                doc_orm = SourceDocumentORM(
+                    id=doc_id,
+                    title=fixture["title"],
+                    authority=fixture["authority"],
+                    instrument_type=fixture["instrument_type"],
+                    gazette_no=fixture.get("gazette_no"),
+                    publication_date=pub_date_obj,
+                    file_path=str(raw_path / f"{doc_id}.pdf"),
+                    file_size_bytes=1024,
+                    sha256_hash=f"fixture_hash_{doc_id}".ljust(64, "0")[:64],
+                    page_count=len(fixture.get("pages", [1])),
+                    extraction_status="SUCCESS",
+                    extraction_tool="pymupdf",
+                    is_synthetic=True,
                 )
+                db.add(doc_orm)
                 db.flush()
+                docs_ingested += 1
 
-            segmented = segment_clauses_from_page(page_text, page_num)
-            for seg in segmented:
-                clause_pk = f"CLAUSE-{doc_id.upper()}-{seg.clause_number.replace(' ', '-').upper()}"
-                if not db.query(ClauseORM).filter_by(clause_id=clause_pk).first():
-                    emb = embedding_client.embed_text(seg.text)
-                    c_orm = ClauseORM(
-                        clause_id=clause_pk,
+            for page_idx, page_text in enumerate(fixture.get("pages", [])):
+                page_num = page_idx + 1
+                if not db.query(DocumentPageORM).filter_by(document_id=doc_id, page_number=page_num).first():
+                    db.add(
+                        DocumentPageORM(
+                            document_id=doc_id,
+                            page_number=page_num,
+                            raw_text=page_text,
+                            char_count=len(page_text),
+                            page_hash=f"page_hash_{doc_id}_{page_num}".ljust(64, "0")[:64],
+                            is_ocr=False,
+                        )
+                    )
+                    db.flush()
+
+                segmented = segment_clauses_from_page(page_text, page_num)
+                for seg in segmented:
+                    clause_pk = f"CLAUSE-{doc_id.upper()}-{seg.clause_number.replace(' ', '-').upper()}"
+                    if not db.query(ClauseORM).filter_by(clause_id=clause_pk).first():
+                        emb = embedding_client.embed_text(seg.text)
+                        c_orm = ClauseORM(
+                            clause_id=clause_pk,
+                            version_number=1,
+                            document_id=doc_id,
+                            clause_number=seg.clause_number,
+                            text=seg.text,
+                            start_page=seg.start_page,
+                            end_page=seg.end_page,
+                            char_start=seg.char_start,
+                            char_end=seg.char_end,
+                            is_compilable=True,
+                            embedding=emb,
+                            is_synthetic=True,
+                        )
+                        db.add(c_orm)
+                        db.flush()
+                        clauses_created += 1
+
+            for r_spec in fixture.get("rules", []):
+                target_clause_pk = f"CLAUSE-{doc_id.upper()}-{r_spec['clause_number'].replace(' ', '-').upper()}"
+                if not db.query(ClauseORM).filter_by(clause_id=target_clause_pk).first():
+                    quote = r_spec["source"].get("quote_span", "")
+                    emb = embedding_client.embed_text(quote or r_spec["clause_number"])
+                    clause_orm = ClauseORM(
+                        clause_id=target_clause_pk,
                         version_number=1,
                         document_id=doc_id,
-                        clause_number=seg.clause_number,
-                        text=seg.text,
-                        start_page=seg.start_page,
-                        end_page=seg.end_page,
-                        char_start=seg.char_start,
-                        char_end=seg.char_end,
+                        clause_number=r_spec["clause_number"],
+                        text=quote or r_spec["clause_number"],
+                        start_page=1,
+                        end_page=1,
+                        char_start=0,
+                        char_end=max(len(quote), 1),
                         is_compilable=True,
                         embedding=emb,
+                        is_synthetic=True,
                     )
-                    db.add(c_orm)
+                    db.add(clause_orm)
                     db.flush()
                     clauses_created += 1
 
-        for r_spec in fixture.get("rules", []):
-            target_clause_pk = f"CLAUSE-{doc_id.upper()}-{r_spec['clause_number'].replace(' ', '-').upper()}"
-            if not db.query(ClauseORM).filter_by(clause_id=target_clause_pk).first():
-                quote = r_spec["source"].get("quote_span", "")
-                emb = embedding_client.embed_text(quote or r_spec["clause_number"])
-                clause_orm = ClauseORM(
-                    clause_id=target_clause_pk,
+                rule_pk = r_spec["rule_id"]
+                existing_rule = db.query(RuleORM).filter_by(rule_id=rule_pk).first()
+                if not existing_rule:
+                    rule_orm = RuleORM(
+                        rule_id=rule_pk,
+                        clause_id=target_clause_pk,
+                        clause_version=1,
+                        outcome_type=r_spec["outcome_type"],
+                        applies_if=r_spec["applies_if"],
+                        exceptions=r_spec.get("exceptions", []),
+                        obligation=r_spec["obligation"],
+                        validity=r_spec["validity"],
+                        source=r_spec["source"],
+                        review_status=r_spec.get("review_status", "APPROVED"),
+                        is_synthetic=True,
+                    )
+                    db.add(rule_orm)
+                    db.flush()
+                    rules_registered += 1
+                    db.add(
+                        HumanReviewAuditORM(
+                            rule_id=rule_pk,
+                            reviewer_id="exp_adjudicator_01",
+                            reviewer_role="EXPERT_ADJUDICATOR",
+                            decision="APPROVED",
+                            rationale="Synthetic test fixture for benchmark/pipeline validation.",
+                        )
+                    )
+
+        # Seed legacy alias records for Phase A backward compatibility (also marked is_synthetic=True)
+        legacy_specs = [
+            {
+                "clause_id": "FCAU-REG-04",
+                "rule_id": "RULE-FCAU-001",
+                "doc_id": "doc_fcau_labelling_2024",
+                "clause_number": "Regulation 4",
+                "quote": (
+                    "Regulation 4. Every food manufacturing enterprise having a production capacity of 50 kg per day "
+                    "or more, and engaged in the production of prepackaged food products, shall ensure that each retail package "
+                    "carries a nutrition information panel in Sinhala, Tamil, and English."
+                ),
+                "applies_if": {
+                    "all": [
+                        {"field": "activity", "op": "eq", "value": "food_manufacturing"},
+                        {"field": "products.prepackaged", "op": "eq", "value": True},
+                        {"field": "production_capacity.kg_per_day", "op": "gte", "value": 50},
+                    ]
+                },
+                "obligation": {
+                    "type": "labelling",
+                    "text": "Ensure retail packages carry nutritional panel in Sinhala, Tamil, and English.",
+                    "impact_categories": ["packaging", "labelling"],
+                },
+                "validity": {"published": "2024-01-01", "commences": "2024-06-01", "transition_until": "2024-12-31"},
+                "source": {
+                    "clause": "Regulation 4",
+                    "instrument": "Food (Labelling and Advertising) Regulations",
+                    "authority": "Food Control Administration Unit (FCAU)",
+                    "gazette_no": "2024/01",
+                    "page": 1,
+                    "quote_span": "Regulation 4. Every food manufacturing enterprise having a production capacity of 50 kg per day or more, and engaged in the production of prepackaged food products, shall ensure that each retail package carries a nutrition information panel in Sinhala, Tamil, and English.",
+                },
+            },
+            {
+                "clause_id": "CEA-SCHED-01-B12",
+                "rule_id": "RULE-CEA-EPL-001",
+                "doc_id": "doc_cea_epl_2022",
+                "clause_number": "Schedule 1 Part B Item 12",
+                "quote": (
+                    "Schedule 1 Part B Item 12. Any industrial food manufacturing activity employing 20 or more persons "
+                    "shall obtain an Environmental Protection Licence (EPL Category B) prior to commencing continuous operations."
+                ),
+                "applies_if": {
+                    "all": [
+                        {"field": "activity", "op": "eq", "value": "food_manufacturing"},
+                        {"field": "employee_count", "op": "gte", "value": 20},
+                    ]
+                },
+                "obligation": {
+                    "type": "licensing",
+                    "text": "Obtain and renew Environmental Protection Licence (Category B) with effluent standards compliance.",
+                    "impact_categories": ["licensing", "process"],
+                },
+                "validity": {"published": "2008-01-25", "commences": "2008-02-01"},
+                "source": {
+                    "clause": "Schedule 1 Part B Item 12",
+                    "instrument": "National Environmental (Protection and Quality) Regulations",
+                    "authority": "Central Environmental Authority (CEA)",
+                    "gazette_no": "1533/16",
+                    "page": 3,
+                    "quote_span": "Schedule 1 Part B Item 12. Any industrial food manufacturing activity employing 20 or more persons shall obtain an Environmental Protection Licence (EPL Category B) prior to commencing continuous operations.",
+                },
+            },
+        ]
+
+        for leg in legacy_specs:
+            cid = leg["clause_id"]
+            rid = leg["rule_id"]
+            if not db.query(ClauseORM).filter_by(clause_id=cid).first():
+                c_orm = ClauseORM(
+                    clause_id=cid,
                     version_number=1,
-                    document_id=doc_id,
-                    clause_number=r_spec["clause_number"],
-                    text=quote or r_spec["clause_number"],
-                    start_page=1,
-                    end_page=1,
+                    document_id=leg["doc_id"],
+                    clause_number=leg["clause_number"],
+                    text=leg["quote"],
+                    start_page=leg["source"]["page"],
+                    end_page=leg["source"]["page"],
                     char_start=0,
-                    char_end=max(len(quote), 1),
+                    char_end=len(leg["quote"]),
                     is_compilable=True,
-                    embedding=emb,
+                    embedding=embedding_client.embed_text(leg["quote"]),
+                    is_synthetic=True,
                 )
-                db.add(clause_orm)
-                db.flush()
+                db.add(c_orm)
                 clauses_created += 1
 
-            rule_pk = r_spec["rule_id"]
-            existing_rule = db.query(RuleORM).filter_by(rule_id=rule_pk).first()
-            if not existing_rule:
-                rule_orm = RuleORM(
-                    rule_id=rule_pk,
-                    clause_id=target_clause_pk,
+            if not db.query(RuleORM).filter_by(rule_id=rid).first():
+                r_orm = RuleORM(
+                    rule_id=rid,
+                    clause_id=cid,
                     clause_version=1,
-                    outcome_type=r_spec["outcome_type"],
-                    applies_if=r_spec["applies_if"],
-                    exceptions=r_spec.get("exceptions", []),
-                    obligation=r_spec["obligation"],
-                    validity=r_spec["validity"],
-                    source=r_spec["source"],
-                    review_status=r_spec.get("review_status", "APPROVED"),
+                    outcome_type="STANDARD",
+                    applies_if=leg["applies_if"],
+                    exceptions=[],
+                    obligation=leg["obligation"],
+                    validity=leg["validity"],
+                    source=leg["source"],
+                    review_status="APPROVED",
+                    is_synthetic=True,
                 )
-                db.add(rule_orm)
-                db.flush()
+                db.add(r_orm)
                 rules_registered += 1
                 db.add(
                     HumanReviewAuditORM(
-                        rule_id=rule_pk,
+                        rule_id=rid,
                         reviewer_id="exp_adjudicator_01",
                         reviewer_role="EXPERT_ADJUDICATOR",
                         decision="APPROVED",
-                        rationale="Verified against gazette source text with deterministic logic.",
+                        rationale="Synthetic test fixture for benchmark/pipeline validation.",
                     )
                 )
-
-    # Seed legacy alias records for Phase A backward compatibility
-    legacy_specs = [
-        {
-            "clause_id": "FCAU-REG-04",
-            "rule_id": "RULE-FCAU-001",
-            "doc_id": "doc_fcau_labelling_2024",
-            "clause_number": "Regulation 4",
-            "quote": (
-                "Regulation 4. Every food manufacturing enterprise having a production capacity of 50 kg per day "
-                "or more, and engaged in the production of prepackaged food products, shall ensure that each retail package "
-                "carries a nutrition information panel in Sinhala, Tamil, and English."
-            ),
-            "applies_if": {
-                "all": [
-                    {"field": "activity", "op": "eq", "value": "food_manufacturing"},
-                    {"field": "products.prepackaged", "op": "eq", "value": True},
-                    {"field": "production_capacity.kg_per_day", "op": "gte", "value": 50},
-                ]
-            },
-            "obligation": {
-                "type": "labelling",
-                "text": "Ensure retail packages carry nutritional panel in Sinhala, Tamil, and English.",
-                "impact_categories": ["packaging", "labelling"],
-            },
-            "validity": {"published": "2024-01-01", "commences": "2024-06-01", "transition_until": "2024-12-31"},
-            "source": {
-                "clause": "Regulation 4",
-                "instrument": "Food (Labelling and Advertising) Regulations",
-                "authority": "Food Control Administration Unit (FCAU)",
-                "gazette_no": "2024/01",
-                "page": 1,
-                "quote_span": "Regulation 4. Every food manufacturing enterprise having a production capacity of 50 kg per day or more, and engaged in the production of prepackaged food products, shall ensure that each retail package carries a nutrition information panel in Sinhala, Tamil, and English.",
-            },
-        },
-        {
-            "clause_id": "CEA-SCHED-01-B12",
-            "rule_id": "RULE-CEA-EPL-001",
-            "doc_id": "doc_cea_epl_2022",
-            "clause_number": "Schedule 1 Part B Item 12",
-            "quote": (
-                "Schedule 1 Part B Item 12. Any industrial food manufacturing activity employing 20 or more persons "
-                "shall obtain an Environmental Protection Licence (EPL Category B) prior to commencing continuous operations."
-            ),
-            "applies_if": {
-                "all": [
-                    {"field": "activity", "op": "eq", "value": "food_manufacturing"},
-                    {"field": "employee_count", "op": "gte", "value": 20},
-                ]
-            },
-            "obligation": {
-                "type": "licensing",
-                "text": "Obtain and renew Environmental Protection Licence (Category B) with effluent standards compliance.",
-                "impact_categories": ["licensing", "process"],
-            },
-            "validity": {"published": "2008-01-25", "commences": "2008-02-01"},
-            "source": {
-                "clause": "Schedule 1 Part B Item 12",
-                "instrument": "National Environmental (Protection and Quality) Regulations",
-                "authority": "Central Environmental Authority (CEA)",
-                "gazette_no": "1533/16",
-                "page": 3,
-                "quote_span": "Schedule 1 Part B Item 12. Any industrial food manufacturing activity employing 20 or more persons shall obtain an Environmental Protection Licence (EPL Category B) prior to commencing continuous operations.",
-            },
-        },
-    ]
-
-    for leg in legacy_specs:
-        cid = leg["clause_id"]
-        rid = leg["rule_id"]
-        if not db.query(ClauseORM).filter_by(clause_id=cid).first():
-            c_orm = ClauseORM(
-                clause_id=cid,
-                version_number=1,
-                document_id=leg["doc_id"],
-                clause_number=leg["clause_number"],
-                text=leg["quote"],
-                start_page=leg["source"]["page"],
-                end_page=leg["source"]["page"],
-                char_start=0,
-                char_end=len(leg["quote"]),
-                is_compilable=True,
-                embedding=embedding_client.embed_text(leg["quote"]),
-            )
-            db.add(c_orm)
-            clauses_created += 1
-
-        if not db.query(RuleORM).filter_by(rule_id=rid).first():
-            r_orm = RuleORM(
-                rule_id=rid,
-                clause_id=cid,
-                clause_version=1,
-                outcome_type="STANDARD",
-                applies_if=leg["applies_if"],
-                exceptions=[],
-                obligation=leg["obligation"],
-                validity=leg["validity"],
-                source=leg["source"],
-                review_status="APPROVED",
-            )
-            db.add(r_orm)
-            rules_registered += 1
-            db.add(
-                HumanReviewAuditORM(
-                    rule_id=rid,
-                    reviewer_id="exp_adjudicator_01",
-                    reviewer_role="EXPERT_ADJUDICATOR",
-                    decision="APPROVED",
-                    rationale="Verified against gazette source text with deterministic logic.",
-                )
-            )
 
     db.commit()
     summary = {

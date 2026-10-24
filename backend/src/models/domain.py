@@ -104,6 +104,7 @@ class Rule(BaseModel):
     exceptions: Optional[List[Any]] = []
     obligation: Obligation
     verification: Verification
+    is_synthetic: bool = False
 
 
 class EvaluationResult(BaseModel):
