@@ -930,6 +930,7 @@ async def upload_document(
             clause_pk = f"CLAUSE-{doc_id.upper()}-{seg.clause_number.replace(' ', '-').upper()}"
             existing = db.query(ClauseORM).filter_by(clause_id=clause_pk).first()
             if not existing:
+                is_live_emb = emb_client is not None and not isinstance(emb_client, MockEmbeddingClient)
                 emb = emb_client.embed_text(seg.text) if emb_client else None
                 clause_orm = ClauseORM(
                     clause_id=clause_pk,
@@ -943,6 +944,7 @@ async def upload_document(
                     char_end=seg.char_end,
                     is_compilable=True,
                     embedding=emb,
+                    embedding_verified=bool(emb and is_live_emb),
                 )
                 db.add(clause_orm)
                 db.flush()

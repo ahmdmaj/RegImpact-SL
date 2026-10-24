@@ -510,6 +510,10 @@ def get_llm_client(
             raise
 
     elif resolved_provider == "mock":
+        if not allow_mock_fallback:
+            raise LLMAuthenticationError(
+                "Mock LLM provider requested or configured, but allow_mock_fallback=False."
+            )
         return MockLLMClient()
 
     else:

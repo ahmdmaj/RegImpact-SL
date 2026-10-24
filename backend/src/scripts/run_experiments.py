@@ -149,6 +149,12 @@ def run_full_experiments(
                 )
             emb_client = MockEmbeddingClient(dimension=768)
 
+    if isinstance(emb_client, MockEmbeddingClient) and not allow_mock:
+        raise RuntimeError(
+            "Cannot execute benchmark experiments: Live embedding provider is not configured. "
+            "Empirical evaluation requires active credentials. Pass allow_mock=True only for explicit offline pipeline testing."
+        )
+
     if llm_client is not None:
         llm = llm_client
     else:
@@ -166,6 +172,12 @@ def run_full_experiments(
                 "reason": "Evaluated applicable under statutory terms.",
             }
             llm = MockLLMClient(canned_rule_dict=canned_res)
+
+    if isinstance(llm, MockLLMClient) and not allow_mock:
+        raise RuntimeError(
+            "Cannot execute benchmark experiments: Live LLM provider is not configured. "
+            "Empirical evaluation requires active credentials. Pass allow_mock=True only for explicit offline pipeline testing."
+        )
 
     systems = setup_evaluation_systems(db_session, emb_client, llm)
     runner = BenchmarkRunner()

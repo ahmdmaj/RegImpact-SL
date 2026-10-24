@@ -362,6 +362,10 @@ def get_embedding_client(
             raise
 
     elif resolved_provider == "mock":
+        if not allow_mock_fallback:
+            raise LLMAuthenticationError(
+                "Mock embedding provider requested or configured, but allow_mock_fallback=False."
+            )
         return MockEmbeddingClient()
 
     else:
