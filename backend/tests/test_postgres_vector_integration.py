@@ -20,15 +20,15 @@ from backend.tests.conftest import LIVE_DATABASE_URL
 DATABASE_URL = (
     LIVE_DATABASE_URL
     if (LIVE_DATABASE_URL and "postgresql" in LIVE_DATABASE_URL.lower())
-    else "postgresql://regimpact:regimpact@localhost:5432/regimpact"
+    else ""
 )
-IS_POSTGRES = "postgresql" in DATABASE_URL.lower()
+IS_POSTGRES = bool(DATABASE_URL and "postgresql" in DATABASE_URL.lower())
 
 def _can_connect_to_postgres() -> bool:
     if not IS_POSTGRES:
         return False
     try:
-        engine = create_engine_from_url(DATABASE_URL)
+        engine = create_engine_from_url(DATABASE_URL, connect_args={"connect_timeout": 1})
         with engine.connect() as conn:
             conn.execute(text("SELECT 1"))
         return True
