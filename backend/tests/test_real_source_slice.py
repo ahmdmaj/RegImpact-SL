@@ -988,8 +988,9 @@ def test_b2b_impact_mapping_disclosures_and_no_trilingual(seeded_real_db):
     assert any("b2b product packaging design" in a.lower() for a in impact.affected_activities)
 
     # Verify evidence and clause references
-    assert impact.clause_reference == "Regulation 3, Proviso (b)"
-    assert "Gazette Extraordinary No. 2494/47" in impact.document_name
+    assert b2b_rule.source.clause == "Regulation 3 Proviso (b)"
+    assert "Gazette Extraordinary No. 2494/47" in b2b_rule.source.instrument
+    assert any("regulation 3 proviso (b)" in a.lower() for a in impact.action_items)
 
 
 # ===========================================================================
