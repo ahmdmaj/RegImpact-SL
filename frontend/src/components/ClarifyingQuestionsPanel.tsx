@@ -127,7 +127,82 @@ export const ClarifyingQuestionsPanel: React.FC<ClarifyingQuestionsPanelProps> =
 
                 {/* Controls */}
                 <div className="flex items-center gap-2 flex-wrap shrink-0">
-                  {field === "uses_synthetic_colorings" ? (
+                  {field === "market.b2b_only" || field === "market_channel" ? (
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => handleApplyValue(field, false)}
+                        className={`px-2.5 py-1 rounded-md text-xs font-medium border transition-colors cursor-pointer ${
+                          currentVal === false
+                            ? "bg-zinc-800 text-white border-zinc-600"
+                            : "bg-zinc-900 text-zinc-300 border-zinc-800 hover:bg-zinc-800"
+                        }`}
+                      >
+                        Retail Sale (b2b_only=false)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleApplyValue(field, true)}
+                        className={`px-2.5 py-1 rounded-md text-xs font-medium border transition-colors cursor-pointer ${
+                          currentVal === true
+                            ? "bg-zinc-800 text-white border-zinc-600"
+                            : "bg-zinc-900 text-zinc-300 border-zinc-800 hover:bg-zinc-800"
+                        }`}
+                      >
+                        B2B Only (b2b_only=true)
+                      </button>
+                    </div>
+                  ) : field === "packaged_in_presence_of_purchaser" ? (
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => handleApplyValue(field, false)}
+                        className={`px-2.5 py-1 rounded-md text-xs font-medium border transition-colors cursor-pointer ${
+                          currentVal === false
+                            ? "bg-zinc-800 text-white border-zinc-600"
+                            : "bg-zinc-900 text-zinc-300 border-zinc-800 hover:bg-zinc-800"
+                        }`}
+                      >
+                        No (Prepackaged)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleApplyValue(field, true)}
+                        className={`px-2.5 py-1 rounded-md text-xs font-medium border transition-colors cursor-pointer ${
+                          currentVal === true
+                            ? "bg-zinc-800 text-white border-zinc-600"
+                            : "bg-zinc-900 text-zinc-300 border-zinc-800 hover:bg-zinc-800"
+                        }`}
+                      >
+                        Yes (Over-the-Counter)
+                      </button>
+                    </div>
+                  ) : field === "products.prepackaged" ? (
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => handleApplyValue(field, true)}
+                        className={`px-2.5 py-1 rounded-md text-xs font-medium border transition-colors cursor-pointer ${
+                          currentVal === true
+                            ? "bg-zinc-800 text-white border-zinc-600"
+                            : "bg-zinc-900 text-zinc-300 border-zinc-800 hover:bg-zinc-800"
+                        }`}
+                      >
+                        Yes (Prepackaged)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleApplyValue(field, false)}
+                        className={`px-2.5 py-1 rounded-md text-xs font-medium border transition-colors cursor-pointer ${
+                          currentVal === false
+                            ? "bg-zinc-800 text-white border-zinc-600"
+                            : "bg-zinc-900 text-zinc-300 border-zinc-800 hover:bg-zinc-800"
+                        }`}
+                      >
+                        No (Bulk / Loose)
+                      </button>
+                    </div>
+                  ) : field === "uses_synthetic_colorings" ? (
                     <div className="flex items-center gap-1.5">
                       <button
                         type="button"

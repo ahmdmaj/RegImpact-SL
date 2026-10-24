@@ -28,7 +28,7 @@ export default function Home() {
   const [regulations, setRegulations] = useState<ClauseVersion[]>([]);
   
   const [currentProfile, setCurrentProfile] = useState<BusinessProfile | null>(null);
-  const [currentAsAtDate, setCurrentAsAtDate] = useState<string>("2024-08-01");
+  const [currentAsAtDate, setCurrentAsAtDate] = useState<string>("2026-08-01");
   const [report, setReport] = useState<StructuredImpactReport | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -98,6 +98,13 @@ export default function Home() {
       }
     } else if (field === "activity") {
       updated.activity = String(value);
+    } else if (field === "market.b2b_only" || field === "market_channel") {
+      updated.market = {
+        ...(updated.market || {}),
+        b2b_only: Boolean(value),
+      };
+    } else if (field === "packaged_in_presence_of_purchaser") {
+      updated.packaged_in_presence_of_purchaser = Boolean(value);
     }
 
     setCurrentProfile(updated);
@@ -160,33 +167,42 @@ export default function Home() {
               <div className="flex items-center justify-between text-xs font-medium text-zinc-300 pb-2 border-b border-zinc-800">
                 <div className="flex items-center gap-2">
                   <BookOpen className="w-3.5 h-3.5 text-zinc-400" />
-                  <span>Statutory Regulatory Corpus</span>
+                  <span>Verified Statutory Corpus</span>
                 </div>
                 <span className="text-[10px] font-mono text-zinc-500">
                   {regulations.length > 0 ? `${regulations.length} Indexed Clauses` : "Official Gazettes"}
                 </span>
               </div>
 
-              <div className="space-y-1.5 text-xs">
-                <div className="p-2.5 rounded-md bg-zinc-950 border border-zinc-850">
-                  <div className="flex items-center justify-between font-medium text-zinc-200">
-                    <span className="text-[11px]">FCAU Regulation 4 (Labelling & Packaging)</span>
-                    <span className="text-[10px] font-mono text-zinc-500">Gazette 2024/01</span>
-                  </div>
-                  <p className="text-[11px] text-zinc-400 mt-0.5">
-                    Capacity &ge; 50 kg/day, Prepackaged food. Requires trilingual nutritional panel declarations.
-                  </p>
-                </div>
+              <div className="space-y-2 text-xs max-h-72 overflow-y-auto pr-1">
+                {healthStatus === "checking" && (
+                  <p className="text-[11px] text-zinc-500 italic p-2">Loading verified regulatory clauses...</p>
+                )}
 
-                <div className="p-2.5 rounded-md bg-zinc-950 border border-zinc-850">
-                  <div className="flex items-center justify-between font-medium text-zinc-200">
-                    <span className="text-[11px]">CEA EPL Schedule 1 Part B Item 12</span>
-                    <span className="text-[10px] font-mono text-zinc-500">Gazette 1533/16</span>
+                {healthStatus === "disconnected" && (
+                  <p className="text-[11px] text-zinc-500 italic p-2">Backend service offline. Reconnect to view indexed gazette clauses.</p>
+                )}
+
+                {healthStatus === "connected" && regulations.length === 0 && (
+                  <p className="text-[11px] text-zinc-500 italic p-2">No verified clauses found in persistent corpus.</p>
+                )}
+
+                {regulations.map((reg) => (
+                  <div key={`${reg.clause_id}-v${reg.version_number}`} className="p-2.5 rounded-md bg-zinc-950 border border-zinc-850 space-y-1">
+                    <div className="flex items-center justify-between font-medium text-zinc-200">
+                      <span className="text-[11px] font-mono text-zinc-300 font-semibold">{reg.clause_id}</span>
+                      <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-800/40 px-1.5 py-0.2 rounded">
+                        v{reg.version_number} &bull; Effective {reg.valid_from}
+                      </span>
+                    </div>
+                    <div className="text-[10px] text-zinc-400 font-medium">
+                      {reg.instrument}
+                    </div>
+                    <p className="text-[11px] text-zinc-400 line-clamp-3 leading-relaxed mt-1 font-serif bg-zinc-900/50 p-1.5 rounded border border-zinc-850/60">
+                      &ldquo;{reg.text}&rdquo;
+                    </p>
                   </div>
-                  <p className="text-[11px] text-zinc-400 mt-0.5">
-                    Workforce &ge; 20 persons in food manufacturing. Requires Environmental Protection Licence.
-                  </p>
-                </div>
+                ))}
               </div>
             </div>
           </div>
