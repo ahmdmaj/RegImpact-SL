@@ -235,7 +235,7 @@ def test_ret_bm25_004_empty_query(populated_db):
 def test_ret_dense_001_index_and_search(populated_db):
     """Dense retriever indexes clauses and executes vector search."""
     emb_client = MockEmbeddingClient(dimension=128)
-    engine = DenseRetrievalEngine(populated_db, embedding_client=emb_client)
+    engine = DenseRetrievalEngine(populated_db, embedding_client=emb_client, allow_unverified=True)
 
     # 1. Index all clauses
     indexed_count = engine.index_clauses()
@@ -252,7 +252,7 @@ def test_ret_dense_001_index_and_search(populated_db):
 def test_ret_dense_002_semantic_ranking(populated_db):
     """Dense retriever ranks environmental clause highest for environmental query."""
     emb_client = MockEmbeddingClient(dimension=128)
-    engine = DenseRetrievalEngine(populated_db, embedding_client=emb_client)
+    engine = DenseRetrievalEngine(populated_db, embedding_client=emb_client, allow_unverified=True)
     engine.index_clauses()
 
     results = engine.search("industrial manufacturing licence effluent", top_k=2)
@@ -263,7 +263,7 @@ def test_ret_dense_002_semantic_ranking(populated_db):
 def test_ret_dense_003_filter_by_document(populated_db):
     """Dense retriever obeys document_id filter."""
     emb_client = MockEmbeddingClient(dimension=128)
-    engine = DenseRetrievalEngine(populated_db, embedding_client=emb_client)
+    engine = DenseRetrievalEngine(populated_db, embedding_client=emb_client, allow_unverified=True)
     engine.index_clauses()
 
     results = engine.search(
@@ -276,7 +276,7 @@ def test_ret_dense_003_filter_by_document(populated_db):
 def test_ret_dense_004_idempotent_indexing(populated_db):
     """index_clauses does not re-compute embeddings when already stored."""
     emb_client = MockEmbeddingClient(dimension=128)
-    engine = DenseRetrievalEngine(populated_db, embedding_client=emb_client)
+    engine = DenseRetrievalEngine(populated_db, embedding_client=emb_client, allow_unverified=True)
 
     count1 = engine.index_clauses()
     assert count1 == 4
@@ -293,7 +293,7 @@ def test_ret_dense_004_idempotent_indexing(populated_db):
 def test_ret_hybrid_001_rrf_scoring(populated_db):
     """Hybrid ranker calculates RRF score combining BM25 and Dense ranks."""
     emb_client = MockEmbeddingClient(dimension=128)
-    dense_eng = DenseRetrievalEngine(populated_db, embedding_client=emb_client)
+    dense_eng = DenseRetrievalEngine(populated_db, embedding_client=emb_client, allow_unverified=True)
     dense_eng.index_clauses()
 
     bm25_eng = BM25RetrievalEngine(populated_db)
@@ -318,7 +318,7 @@ def test_ret_hybrid_001_rrf_scoring(populated_db):
 def test_ret_hybrid_002_promotes_consensus_passages(populated_db):
     """A passage returned in the top rank by both BM25 and Dense gets top RRF score."""
     emb_client = MockEmbeddingClient(dimension=128)
-    dense_eng = DenseRetrievalEngine(populated_db, embedding_client=emb_client)
+    dense_eng = DenseRetrievalEngine(populated_db, embedding_client=emb_client, allow_unverified=True)
     dense_eng.index_clauses()
 
     bm25_eng = BM25RetrievalEngine(populated_db)
@@ -409,7 +409,8 @@ def test_ret_emb_003_factory_mock_fallback(monkeypatch):
 
 def test_ret_dense_native_pgvector_dispatch(monkeypatch, populated_db):
     """DenseRetrievalEngine dispatches to native pgvector on postgres dialect and fallback on sqlite."""
-    engine = DenseRetrievalEngine(db=populated_db)
+    emb_client = MockEmbeddingClient(dimension=128)
+    engine = DenseRetrievalEngine(db=populated_db, embedding_client=emb_client, allow_unverified=True)
     engine.index_clauses()
 
     # On SQLite, verifies in-memory fallback runs successfully

@@ -294,12 +294,26 @@ class DenseRetrievalEngine(BaseRetrievalEngine):
         self,
         db: Session,
         embedding_client: Optional[BaseEmbeddingClient] = None,
+        allow_unverified: bool = False,
     ) -> None:
         self.db = db
-        self.embedding_client = embedding_client or get_embedding_client(allow_mock_fallback=True)
+        self.allow_unverified = allow_unverified
+        if embedding_client is not None:
+            self.embedding_client = embedding_client
+        else:
+            try:
+                self.embedding_client = get_embedding_client(allow_mock_fallback=False)
+            except Exception:
+                self.embedding_client = None
 
     def index_clauses(self, batch_size: int = 50) -> int:
         """Compute and persist embeddings for clauses that lack an embedding."""
+        if self.embedding_client is None:
+            logger.warning("Cannot index clauses: No embedding client configured.")
+            return 0
+
+        is_live_provider = not isinstance(self.embedding_client, MockEmbeddingClient)
+
         clauses_to_embed = (
             self.db.query(ClauseORM)
             .filter(ClauseORM.embedding.is_(None))
@@ -314,9 +328,14 @@ class DenseRetrievalEngine(BaseRetrievalEngine):
             embeddings = self.embedding_client.embed_batch(texts)
             for clause, emb in zip(chunk, embeddings):
                 clause.embedding = emb
+                clause.embedding_verified = is_live_provider
 
         self.db.commit()
-        logger.info("Indexed dense embeddings for %d clauses.", len(clauses_to_embed))
+        logger.info(
+            "Indexed %s embeddings for %d clauses.",
+            "verified live" if is_live_provider else "unverified test/mock",
+            len(clauses_to_embed),
+        )
         return len(clauses_to_embed)
 
     def search(
@@ -327,6 +346,17 @@ class DenseRetrievalEngine(BaseRetrievalEngine):
     ) -> List[RetrievalResult]:
         if self.embedding_client is None:
             logger.debug("No embedding client configured; dense retrieval returns empty.")
+            return []
+
+        allow_unverified = (
+            bool(filters.get("allow_unverified", False))
+            if filters
+            else self.allow_unverified
+        )
+        if isinstance(self.embedding_client, MockEmbeddingClient) and not allow_unverified:
+            logger.warning(
+                "Dense retrieval requires a genuine verified embedding provider; MockEmbeddingClient excluded."
+            )
             return []
 
         try:
@@ -345,14 +375,19 @@ class DenseRetrievalEngine(BaseRetrievalEngine):
             is_postgres = False
 
         if is_postgres:
-            return self._search_native_pgvector(query_vec, top_k=top_k, filters=filters)
-        return self._search_in_memory_fallback(query_vec, top_k=top_k, filters=filters)
+            return self._search_native_pgvector(
+                query_vec, top_k=top_k, filters=filters, allow_unverified=allow_unverified
+            )
+        return self._search_in_memory_fallback(
+            query_vec, top_k=top_k, filters=filters, allow_unverified=allow_unverified
+        )
 
     def _search_native_pgvector(
         self,
         query_vec: List[float],
         top_k: int = 10,
         filters: Optional[Dict[str, Any]] = None,
+        allow_unverified: bool = False,
     ) -> List[RetrievalResult]:
         """Perform native PostgreSQL vector search using the <=> cosine distance operator."""
         distance_expr = ClauseORM.embedding.cosine_distance(query_vec)
@@ -362,6 +397,9 @@ class DenseRetrievalEngine(BaseRetrievalEngine):
             .outerjoin(SourceDocumentORM, ClauseORM.document_id == SourceDocumentORM.id)
             .filter(ClauseORM.embedding.isnot(None))
         )
+
+        if not allow_unverified:
+            query_builder = query_builder.filter(ClauseORM.embedding_verified.is_(True))
 
         include_synthetic = bool(filters.get("include_synthetic", False)) if filters else False
         if not include_synthetic:
@@ -416,6 +454,7 @@ class DenseRetrievalEngine(BaseRetrievalEngine):
         query_vec: List[float],
         top_k: int = 10,
         filters: Optional[Dict[str, Any]] = None,
+        allow_unverified: bool = False,
     ) -> List[RetrievalResult]:
         """In-memory cosine similarity search fallback for SQLite and offline test doubles."""
         query_builder = (
@@ -423,6 +462,9 @@ class DenseRetrievalEngine(BaseRetrievalEngine):
             .outerjoin(SourceDocumentORM, ClauseORM.document_id == SourceDocumentORM.id)
             .filter(ClauseORM.embedding.isnot(None))
         )
+
+        if not allow_unverified:
+            query_builder = query_builder.filter(ClauseORM.embedding_verified.is_(True))
 
         if filters:
             if "document_id" in filters:
@@ -496,10 +538,11 @@ class HybridRetrievalEngine(BaseRetrievalEngine):
         bm25_engine: Optional[BM25RetrievalEngine] = None,
         dense_engine: Optional[DenseRetrievalEngine] = None,
         rrf_k: Optional[int] = None,
+        allow_unverified: bool = False,
     ) -> None:
         self.db = db
         self.bm25_engine = bm25_engine or BM25RetrievalEngine(db)
-        self.dense_engine = dense_engine or DenseRetrievalEngine(db)
+        self.dense_engine = dense_engine or DenseRetrievalEngine(db, allow_unverified=allow_unverified)
         self.rrf_k = rrf_k or int(os.environ.get("HYBRID_RRF_K", 60))
 
     def search(

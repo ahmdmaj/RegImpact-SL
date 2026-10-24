@@ -64,8 +64,8 @@ from backend.src.evaluation.statistics import (
     compute_contingency_table,
     paired_cluster_bootstrap_test,
 )
-from backend.src.extraction.compiler import MockLLMClient
-from backend.src.extraction.embedding_client import MockEmbeddingClient
+from backend.src.extraction.llm_client import MockLLMClient, get_llm_client
+from backend.src.extraction.embedding_client import MockEmbeddingClient, get_embedding_client
 from backend.src.models.domain import BenchmarkScenario, OutcomeStatus, ScenarioEvaluation
 from backend.src.scripts.seed_corpus import seed_regulatory_corpus
 
@@ -133,17 +133,39 @@ def run_full_experiments(
     n_bootstraps: int = 1000,
     llm_client: Optional[Any] = None,
     embedding_client: Optional[Any] = None,
+    allow_mock: bool = False,
 ) -> Dict[str, Any]:
     """Execute all baselines and ablations, compute metrics, and run statistical tests."""
-    emb_client = embedding_client or MockEmbeddingClient(dimension=768)
+    if embedding_client is not None:
+        emb_client = embedding_client
+    else:
+        try:
+            emb_client = get_embedding_client(allow_mock_fallback=False)
+        except Exception:
+            if not allow_mock:
+                raise RuntimeError(
+                    "Cannot execute benchmark experiments: Live embedding provider is not configured. "
+                    "Empirical evaluation requires active credentials. Pass allow_mock=True only for explicit offline pipeline testing."
+                )
+            emb_client = MockEmbeddingClient(dimension=768)
 
-    # Configure mock LLM client to return standard realistic baseline response
-    canned_res = {
-        "status": "APPLICABLE",
-        "missing_fields": [],
-        "reason": "Evaluated applicable under statutory terms.",
-    }
-    llm = llm_client or MockLLMClient(canned_rule_dict=canned_res)
+    if llm_client is not None:
+        llm = llm_client
+    else:
+        try:
+            llm = get_llm_client(allow_mock_fallback=False)
+        except Exception:
+            if not allow_mock:
+                raise RuntimeError(
+                    "Cannot execute benchmark experiments: Live LLM provider is not configured. "
+                    "Empirical evaluation requires active credentials. Pass allow_mock=True only for explicit offline pipeline testing."
+                )
+            canned_res = {
+                "status": "APPLICABLE",
+                "missing_fields": [],
+                "reason": "Evaluated applicable under statutory terms.",
+            }
+            llm = MockLLMClient(canned_rule_dict=canned_res)
 
     systems = setup_evaluation_systems(db_session, emb_client, llm)
     runner = BenchmarkRunner()
@@ -199,7 +221,18 @@ def run_full_experiments(
             "contingency": contingency,
         }
 
+    is_empirical = (
+        not isinstance(llm, MockLLMClient)
+        and not isinstance(emb_client, MockEmbeddingClient)
+    )
+    status_str = "VALID_EMPIRICAL_RUN" if is_empirical else "INVALIDATED_MOCK_DERIVED_RUN"
     return {
+        "status": status_str,
+        "is_empirical_result": is_empirical,
+        "quarantine_notice": None if is_empirical else (
+            "INVALIDATED: Executed using MockLLMClient and simulated baseline responses. "
+            "These metrics do NOT represent valid empirical evidence and must not be cited as empirical findings."
+        ),
         "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "total_scenarios": len(scenarios),
         "n_bootstraps": n_bootstraps,
@@ -330,6 +363,7 @@ def main() -> None:
     parser.add_argument("--out-dir", type=str, default=str(EVALUATION_DIR), help="Output directory for reports")
     parser.add_argument("--bootstraps", type=int, default=1000, help="Number of cluster bootstrap iterations")
     parser.add_argument("--db-url", type=str, default=None, help="Database URL (default: SQLite in-memory)")
+    parser.add_argument("--allow-mock", action="store_true", help="Allow running benchmark with mock clients for offline pipeline testing (invalidates empirical results)")
     args = parser.parse_args()
 
     out_path = Path(args.out_dir)
@@ -341,7 +375,7 @@ def main() -> None:
         seed_regulatory_corpus(db=session, force=False)
 
         scenarios = load_benchmark_scenarios(Path(args.benchmark))
-        results = run_full_experiments(scenarios, session, n_bootstraps=args.bootstraps)
+        results = run_full_experiments(scenarios, session, n_bootstraps=args.bootstraps, allow_mock=args.allow_mock)
 
         # 1. JSON results artifact
         json_file = out_path / "results.json"

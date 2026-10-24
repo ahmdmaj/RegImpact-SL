@@ -272,7 +272,7 @@ def test_base_b2_001_dense_pipeline(populated_eval_db, sample_scenario):
     }
     mock_llm = MockLLMClient(canned_rule_dict=canned_llm_response)
     emb_client = MockEmbeddingClient(dimension=64)
-    dense_engine = DenseRetrievalEngine(populated_eval_db, embedding_client=emb_client)
+    dense_engine = DenseRetrievalEngine(populated_eval_db, embedding_client=emb_client, allow_unverified=True)
 
     baseline = DenseBaseline(retrieval_engine=dense_engine, llm_client=mock_llm, top_k=2)
     result = baseline.evaluate_scenario(sample_scenario)
@@ -286,7 +286,7 @@ def test_base_b2_002_dense_llm_failure(populated_eval_db, sample_scenario):
     """B2 DenseBaseline handles LLM exceptions gracefully."""
     mock_llm = MockLLMClient(error_to_raise=ValueError("Malformed JSON response"))
     emb_client = MockEmbeddingClient(dimension=64)
-    dense_engine = DenseRetrievalEngine(populated_eval_db, embedding_client=emb_client)
+    dense_engine = DenseRetrievalEngine(populated_eval_db, embedding_client=emb_client, allow_unverified=True)
 
     baseline = DenseBaseline(retrieval_engine=dense_engine, llm_client=mock_llm)
     result = baseline.evaluate_scenario(sample_scenario)
@@ -309,10 +309,10 @@ def test_base_b3_001_hybrid_pipeline(populated_eval_db, sample_scenario):
     }
     mock_llm = MockLLMClient(canned_rule_dict=canned_llm_response)
     emb_client = MockEmbeddingClient(dimension=64)
-    dense_engine = DenseRetrievalEngine(populated_eval_db, embedding_client=emb_client)
+    dense_engine = DenseRetrievalEngine(populated_eval_db, embedding_client=emb_client, allow_unverified=True)
     bm25_engine = BM25RetrievalEngine(populated_eval_db)
     hybrid_engine = HybridRetrievalEngine(
-        populated_eval_db, bm25_engine=bm25_engine, dense_engine=dense_engine, rrf_k=60
+        populated_eval_db, bm25_engine=bm25_engine, dense_engine=dense_engine, rrf_k=60, allow_unverified=True
     )
 
     baseline = HybridBaseline(retrieval_engine=hybrid_engine, llm_client=mock_llm, top_k=2)
@@ -406,8 +406,8 @@ def test_base_comp_001_benchmark_runner_multi_system(populated_eval_db, sample_s
     emb_client = MockEmbeddingClient(dimension=64)
 
     bm25 = BM25RetrievalEngine(populated_eval_db)
-    dense = DenseRetrievalEngine(populated_eval_db, embedding_client=emb_client)
-    hybrid = HybridRetrievalEngine(populated_eval_db, bm25_engine=bm25, dense_engine=dense)
+    dense = DenseRetrievalEngine(populated_eval_db, embedding_client=emb_client, allow_unverified=True)
+    hybrid = HybridRetrievalEngine(populated_eval_db, bm25_engine=bm25, dense_engine=dense, allow_unverified=True)
 
     b0 = OracleBaseline(
         context_store={"Regulation 4": "Regulation 4 text."}, llm_client=mock_llm

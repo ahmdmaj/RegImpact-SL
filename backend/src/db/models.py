@@ -242,6 +242,7 @@ class ClauseORM(Base):
     is_compilable = Column(Boolean, nullable=False, default=True)
     non_compilable_reason = Column(Text, nullable=True)
     embedding = Column(EmbeddingColumnType, nullable=True)
+    embedding_verified = Column(Boolean, nullable=False, default=False, server_default="0")
     is_synthetic = Column(Boolean, nullable=False, default=False, server_default="0")
     created_at = Column(DateTime(timezone=True), nullable=False, default=_utcnow)
     updated_at = Column(DateTime(timezone=True), nullable=False, default=_utcnow, onupdate=_utcnow)
