@@ -71,7 +71,7 @@ class BaseRegulatoryRepository(ABC):
         """Return all rules (for seeded demo/test data compatibility)."""
 
     @abstractmethod
-    def get_approved_rules(self) -> List[Rule]:
+    def get_approved_rules(self, include_synthetic: bool = False) -> List[Rule]:
         """Return only rules with review_status == APPROVED (for production evaluation)."""
 
     @abstractmethod
@@ -120,9 +120,13 @@ class InMemoryRepository(BaseRegulatoryRepository):
                 unique_rules.append(r)
         return unique_rules
 
-    def get_approved_rules(self) -> List[Rule]:
-        """For the in-memory store all seeded rules are treated as approved."""
-        return self.get_all_rules()
+    def get_approved_rules(self, include_synthetic: bool = False) -> List[Rule]:
+        """For the in-memory store all seeded rules are treated as approved, with synthetic filtering."""
+        rules = self.get_all_rules()
+        if not include_synthetic:
+            from backend.src.db.models import is_synthetic_rule
+            rules = [r for r in rules if not getattr(r, "is_synthetic", False) and not is_synthetic_rule(rule=r)]
+        return rules
 
     def get_rules_by_ids(self, ids: List[str]) -> List[Rule]:
         result: List[Rule] = []
@@ -418,14 +422,16 @@ class PostgresRegulatoryRepository(BaseRegulatoryRepository):
                 logger.error("Failed to deserialise rule %r: %s", row.rule_id, exc)
         return rules
 
-    def get_approved_rules(self) -> List[Rule]:
-        from backend.src.db.models import RuleORM
+    def get_approved_rules(self, include_synthetic: bool = False) -> List[Rule]:
+        from backend.src.db.models import RuleORM, SYNTHETIC_RULE_IDS
 
-        rows = (
-            self._session.query(RuleORM)
-            .filter(RuleORM.review_status == "APPROVED")
-            .all()
-        )
+        query = self._session.query(RuleORM).filter(RuleORM.review_status == "APPROVED")
+        if not include_synthetic:
+            query = query.filter(
+                RuleORM.is_synthetic.is_(False),
+                ~RuleORM.rule_id.in_(SYNTHETIC_RULE_IDS),
+            )
+        rows = query.all()
         rules: List[Rule] = []
         for row in rows:
             try:

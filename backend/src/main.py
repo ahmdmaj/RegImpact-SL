@@ -175,7 +175,7 @@ def _resolve_provenance(db: Session, rule_id: str, clause_id: Optional[str] = No
         else:
             review_status = rule_orm.review_status
 
-        if getattr(rule_orm, "is_synthetic", False) or is_synthetic_rule(rule_orm=rule_orm):
+        if getattr(rule_orm, "is_synthetic", False) or is_synthetic_rule(rule=rule_orm):
             review_status = f"{review_status} [SYNTHETIC TEST FIXTURE - NOT VERIFIED STATUTE]"
     elif clause_orm:
         review_status = "UNVERIFIED_SOURCE_CLAUSE"
@@ -621,8 +621,13 @@ def run_analysis(
 
         # In addition, ensure all approved rules in the database are evaluated so the enterprise compliance
         # assessment is comprehensive across all active regulatory domains
-        all_approved_rules = repo.get_approved_rules()
+        all_approved_rules = repo.get_approved_rules(include_synthetic=include_synth)
         for rule in all_approved_rules:
+            if not include_synth and (
+                getattr(rule, "is_synthetic", False)
+                or is_synthetic_rule(rule=rule, rule_id=rule.rule_id)
+            ):
+                continue
             if rule.rule_id in evaluated_rule_ids:
                 continue
             evaluated_rule_ids.add(rule.rule_id)

@@ -35,7 +35,7 @@ from backend.src.db.models import (
     SYNTHETIC_RULE_IDS,
     is_synthetic_clause,
 )
-from backend.src.extraction.embedding_client import BaseEmbeddingClient, get_embedding_client
+from backend.src.extraction.embedding_client import BaseEmbeddingClient, MockEmbeddingClient, get_embedding_client
 
 logger = logging.getLogger(__name__)
 
