@@ -588,7 +588,8 @@ def seed_regulatory_corpus(
                                             )
                                         )
                         except Exception as exc:
-                            logger.debug("Compilation skipped for clause %s: %s", clause_pk, exc)
+                            logger.info("Compilation provider unavailable (%s); disabling compiler for remaining clauses in seeding run.", exc)
+                            compiler = None
 
     # Register synthetic test fixtures ONLY when explicitly requested (isolated from normal seeding)
     if include_synthetic_fixtures:

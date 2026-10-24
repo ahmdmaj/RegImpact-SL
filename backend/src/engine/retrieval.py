@@ -582,10 +582,34 @@ class HybridRetrievalEngine(BaseRetrievalEngine):
         top_ids = sorted_clause_ids[:top_k]
         approved_set = cross_reference_coverage_gaps(self.db, top_ids, include_synthetic=include_synthetic)
 
+        dense_active = len(dense_results) > 0
+        bm25_active = len(bm25_results) > 0
+
+        if dense_active and bm25_active:
+            actual_method = "hybrid_rrf"
+            fallback_reason = None
+        elif bm25_active and not dense_active:
+            actual_method = "bm25_fallback"
+            fallback_reason = (
+                "Dense retrieval produced zero verified candidates or embedding provider unconfigured; "
+                "fell back to BM25 lexical retrieval."
+            )
+        elif dense_active and not bm25_active:
+            actual_method = "dense"
+            fallback_reason = "BM25 produced no candidates; dense retrieval used."
+        else:
+            return []
+
         hybrid_results: List[RetrievalResult] = []
         for rank, cid in enumerate(top_ids, start=1):
             base_res = clause_map[cid]
             has_approved = cid in approved_set
+            meta = dict(getattr(base_res, "metadata", {}) or {})
+            meta.update({
+                "dense_active": dense_active,
+                "bm25_active": bm25_active,
+                "fallback_reason": fallback_reason,
+            })
             hybrid_results.append(
                 RetrievalResult(
                     clause_id=base_res.clause_id,
@@ -595,11 +619,12 @@ class HybridRetrievalEngine(BaseRetrievalEngine):
                     document_id=base_res.document_id,
                     document_title=base_res.document_title,
                     score=round(rrf_scores[cid], 5),
-                    retrieval_method="hybrid_rrf",
+                    retrieval_method=actual_method,
                     rank=rank,
                     has_approved_rule=has_approved,
                     coverage_gap=not has_approved,
                     is_synthetic=base_res.is_synthetic,
+                    metadata=meta,
                 )
             )
 

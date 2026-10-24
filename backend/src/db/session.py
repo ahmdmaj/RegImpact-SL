@@ -98,6 +98,11 @@ def create_tables(engine: Engine) -> None:
                     "ON clauses USING hnsw (embedding vector_cosine_ops);"
                 )
             )
+            # Idempotently ensure recent columns exist on pre-existing PostgreSQL databases
+            conn.execute(text("ALTER TABLE source_documents ADD COLUMN IF NOT EXISTS is_synthetic BOOLEAN NOT NULL DEFAULT FALSE;"))
+            conn.execute(text("ALTER TABLE clauses ADD COLUMN IF NOT EXISTS is_synthetic BOOLEAN NOT NULL DEFAULT FALSE;"))
+            conn.execute(text("ALTER TABLE clauses ADD COLUMN IF NOT EXISTS embedding_verified BOOLEAN NOT NULL DEFAULT FALSE;"))
+            conn.execute(text("ALTER TABLE rules ADD COLUMN IF NOT EXISTS is_synthetic BOOLEAN NOT NULL DEFAULT FALSE;"))
             conn.commit()
 
 

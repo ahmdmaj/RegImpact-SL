@@ -441,10 +441,13 @@ class HybridBaseline(BaselineSystem):
 
         try:
             response_dict = self.llm_client.generate_rule(prompt, BASELINE_EVALUATION_SCHEMA)
+            actual_method = passages[0].retrieval_method if passages else "hybrid_rrf"
+            fallback_reason = (passages[0].metadata or {}).get("fallback_reason") if passages else None
             meta = {
-                "method": "hybrid_rrf",
+                "method": actual_method,
                 "retrieved_clause_ids": [p.clause_id for p in passages],
                 "top_score": passages[0].score,
+                "fallback_reason": fallback_reason,
             }
             return _parse_llm_response(response_dict, scenario.clause_id, retrieval_metadata=meta)
         except Exception as exc:

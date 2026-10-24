@@ -178,13 +178,13 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
         unit: capacityUnit,
         per_period: capacityPeriod,
       } : null,
-      products: productCategory ? [
+      products: prepackagedState !== "unknown" ? [
         {
-          product_name: productCategory,
-          category: productCategory,
-          prepackaged: prepackagedState === "true" ? true : prepackagedState === "false" ? false : null,
+          product_name: productCategory || "general_food",
+          category: productCategory || "general_food",
+          prepackaged: prepackagedState === "true",
         }
-      ] : [],
+      ] : undefined,
       market: marketObj,
       packaged_in_presence_of_purchaser: purchaserPresent === "true" ? true : purchaserPresent === "false" ? false : null,
     };
@@ -260,8 +260,11 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
               className="w-full h-9 bg-zinc-950 border border-zinc-800 rounded-md px-2.5 text-xs text-zinc-100 focus:outline-none focus:ring-1 focus:ring-zinc-500 focus:border-zinc-500 cursor-pointer transition-colors"
             >
               <option value="food_manufacturing">Food Manufacturing (Industrial / Commercial)</option>
+              <option value="retail_trade">Food Retail & Grocery (retail_trade)</option>
+              <option value="distribution">Food Distribution / Wholesale (distribution)</option>
+              <option value="import">Food Import (import)</option>
+              <option value="storage">Storage & Warehousing (storage)</option>
               <option value="catering">Catering & Food Service</option>
-              <option value="retail">Food Retail & Grocery</option>
               <option value="agriculture">Agricultural Production</option>
             </select>
           </div>

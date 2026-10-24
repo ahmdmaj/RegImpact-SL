@@ -434,3 +434,21 @@ def test_ret_dense_native_pgvector_dispatch(monkeypatch, populated_db):
     res = engine.search("prepackaged labelling", top_k=2)
     assert len(called) == 1
     assert res == results_sqlite
+
+
+def test_ret_hybrid_truthful_fallback_when_dense_empty(populated_db):
+    """When dense retrieval produces 0 candidates, HybridRetrievalEngine truthfully reports bm25_fallback."""
+    bm25_eng = BM25RetrievalEngine(populated_db)
+    # Dense engine with no embedding client
+    dense_eng = DenseRetrievalEngine(populated_db, embedding_client=None, allow_unverified=False)
+    hybrid_eng = HybridRetrievalEngine(
+        populated_db, bm25_engine=bm25_eng, dense_engine=dense_eng, rrf_k=60
+    )
+
+    results = hybrid_eng.search("food manufacturing production capacity 50 kg", top_k=2)
+    assert len(results) > 0
+    top = results[0]
+    assert top.retrieval_method == "bm25_fallback", "Must NOT falsely claim hybrid_rrf when dense is inactive!"
+    assert top.metadata.get("dense_active") is False
+    assert top.metadata.get("bm25_active") is True
+    assert "Dense retrieval produced zero" in top.metadata.get("fallback_reason")

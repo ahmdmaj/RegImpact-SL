@@ -99,6 +99,7 @@ def test_live_postgres_native_vector_search():
             valid_from="2024-01-01",
             is_compilable=True,
             embedding=vec_a,
+            embedding_verified=True,
         )
         c2 = ClauseORM(
             clause_id="TEST-VEC-CLAUSE-B",
@@ -113,6 +114,7 @@ def test_live_postgres_native_vector_search():
             valid_from="2024-01-01",
             is_compilable=True,
             embedding=vec_b,
+            embedding_verified=True,
         )
 
         session.merge(c1)
@@ -124,8 +126,8 @@ def test_live_postgres_native_vector_search():
             def embed_text(self, text: str):
                 return vec_a
 
-        retriever = DenseRetrievalEngine(db=session, embedding_client=MockClientDim0())
-        results = retriever.search("dairy production", top_k=2)
+        retriever = DenseRetrievalEngine(db=session, embedding_client=MockClientDim0(), allow_unverified=True)
+        results = retriever.search("dairy production", top_k=2, filters={"allow_unverified": True})
 
         assert len(results) >= 2
         # Most similar clause must be Clause A
