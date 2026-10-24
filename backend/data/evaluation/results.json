@@ -1,4 +1,7 @@
 {
+  "status": "INVALIDATED_MOCK_DERIVED_RUN",
+  "is_empirical_result": false,
+  "quarantine_notice": "INVALIDATED: Baselines B0-B3 and statistical comparisons were evaluated using MockLLMClient and simulated baseline responses. These values do NOT represent valid empirical evidence and must not be cited as empirical findings.",
   "timestamp": "2026-10-16T11:56:37.108952+00:00",
   "total_scenarios": 21,
   "n_bootstraps": 1000,
