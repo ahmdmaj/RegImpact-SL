@@ -193,6 +193,10 @@ class BenchmarkScenario(BaseModel):
     gold_missing_fields: Optional[List[str]] = None
     gold_impact_categories: Optional[List[str]] = None
     pair_id: Optional[str] = None
+    target_rule_id: Optional[str] = None
+    outcome_scope: str = "RULE_SPECIFIC"
+    gold_temporal_status: Optional[str] = None
+    pair_diff_field: Optional[str] = None
 
 
 class ScenarioEvaluation(BaseModel):
@@ -210,6 +214,9 @@ class ScenarioEvaluation(BaseModel):
     evaluation_trace: List[Dict[str, Any]] = []
     reason: Optional[str] = None
     target_rule_ids: Optional[List[str]] = None
+    predicted_temporal_status: Optional[str] = None
+    gold_temporal_status: Optional[str] = None
+    temporal_status_correct: bool = True
 
 
 class EvaluationReport(BaseModel):
@@ -228,6 +235,7 @@ class EvaluationReport(BaseModel):
     scenario_evaluations: List[ScenarioEvaluation] = []
     dataset_version: Optional[str] = None
     dataset_path: Optional[str] = None
+    dataset_hash: Optional[str] = None
     timestamp: Optional[str] = None
     configuration: Optional[Dict[str, Any]] = None
     errors: List[str] = []

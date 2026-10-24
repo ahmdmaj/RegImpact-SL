@@ -40,6 +40,15 @@ class BenchmarkRunner:
         """Run benchmark evaluation for a given system against scenarios."""
         target_scenarios = scenarios if scenarios is not None else self.scenarios
         run_timestamp = datetime.now(timezone.utc).isoformat()
+
+        # Compute dataset SHA-256 hash if path provided
+        dataset_hash = None
+        if dataset_path:
+            p = Path(dataset_path)
+            if p.exists():
+                import hashlib
+                dataset_hash = hashlib.sha256(p.read_bytes()).hexdigest()
+
         if not target_scenarios:
             return EvaluationReport(
                 system_name=system.name,
@@ -53,6 +62,7 @@ class BenchmarkRunner:
                 scenario_evaluations=[],
                 dataset_version=dataset_version,
                 dataset_path=str(dataset_path) if dataset_path else None,
+                dataset_hash=dataset_hash,
                 configuration=configuration or {},
                 timestamp=run_timestamp,
                 errors=[],
@@ -88,6 +98,15 @@ class BenchmarkRunner:
             if scen.gold_outcome == OutcomeStatus.CONDITIONAL_MISSING_DATA:
                 missing_correct = (gold_missing == pred_missing)
 
+            # Check temporal status correctness
+            pred_temp = getattr(result, "temporal_status", None)
+            gold_temp = getattr(scen, "gold_temporal_status", None) or (
+                scen.model_extra.get("gold_temporal_status") if scen.model_extra else None
+            )
+            temp_correct = True
+            if gold_temp is not None:
+                temp_correct = (pred_temp == gold_temp)
+
             extra_meta = scen.model_extra or {}
             target_rules = getattr(scen, "target_rule_ids", None) or extra_meta.get("target_rule_ids")
 
@@ -106,6 +125,9 @@ class BenchmarkRunner:
                     evaluation_trace=getattr(result, "evaluation_trace", []),
                     reason=result.reason,
                     target_rule_ids=target_rules,
+                    predicted_temporal_status=pred_temp,
+                    gold_temporal_status=gold_temp,
+                    temporal_status_correct=temp_correct,
                 )
             )
 
@@ -128,10 +150,10 @@ class BenchmarkRunner:
             scenario_evaluations, target_scenarios
         )
 
-        # 6. Compute Temporal Scenario Accuracy
+        # 6. Compute Temporal Scenario Accuracy (validates both outcome and temporal_status)
         temporal_evals = [s for s in scenario_evaluations if s.scenario_type == "temporal"]
         temporal_acc = (
-            sum(1 for s in temporal_evals if s.is_outcome_correct) / len(temporal_evals)
+            sum(1 for s in temporal_evals if s.is_outcome_correct and s.temporal_status_correct) / len(temporal_evals)
             if temporal_evals
             else None
         )
@@ -151,6 +173,7 @@ class BenchmarkRunner:
             scenario_evaluations=scenario_evaluations,
             dataset_version=dataset_version,
             dataset_path=str(dataset_path) if dataset_path else None,
+            dataset_hash=dataset_hash,
             configuration=configuration or {},
             timestamp=run_timestamp,
             errors=errors,
