@@ -430,9 +430,29 @@ def seed_regulatory_corpus(
     logger.info("Found %d authenticated PDF source files for corpus seeding.", len(pdf_files))
 
     ingestion_service = DocumentIngestionService(pdf_store_dir=raw_path)
-    embedding_client = MockEmbeddingClient(dimension=embedding_dimension)
-    active_llm = llm_client or get_llm_client(allow_mock_fallback=True)
-    compiler = RuleCompiler(llm_client=active_llm)
+    if embedding_client is not None:
+        active_embedding = embedding_client
+    else:
+        try:
+            active_embedding = get_embedding_client(allow_mock_fallback=False)
+        except Exception:
+            if include_synthetic_fixtures:
+                active_embedding = MockEmbeddingClient(dimension=embedding_dimension)
+            else:
+                active_embedding = None
+
+    if llm_client is not None:
+        active_llm = llm_client
+    else:
+        try:
+            active_llm = get_llm_client(allow_mock_fallback=False)
+        except Exception:
+            if include_synthetic_fixtures:
+                active_llm = get_llm_client(allow_mock_fallback=True)
+            else:
+                active_llm = None
+
+    compiler = RuleCompiler(llm_client=active_llm) if active_llm else None
 
     docs_ingested = 0
     clauses_created = 0
@@ -490,7 +510,7 @@ def seed_regulatory_corpus(
                 existing_clause = db.query(ClauseORM).filter_by(clause_id=clause_pk).first()
 
                 if not existing_clause:
-                    emb = embedding_client.embed_text(seg.text)
+                    emb = active_embedding.embed_text(seg.text) if active_embedding else None
                     clause_orm = ClauseORM(
                         clause_id=clause_pk,
                         version_number=1,
@@ -510,7 +530,7 @@ def seed_regulatory_corpus(
 
                     # Attempt LLM compilation on candidate mandate clauses (up to 5 per document)
                     is_mandate = any(kw in seg.text.lower() for kw in ("shall", "must", "prohibit", "licence", "license", "penalty"))
-                    if is_mandate and compiles_for_doc < 5:
+                    if compiler and is_mandate and compiles_for_doc < 5:
                         compiles_for_doc += 1
                         try:
                             comp_res = compiler.compile_clause_with_agreement(
@@ -608,7 +628,8 @@ def seed_regulatory_corpus(
                 for seg in segmented:
                     clause_pk = f"CLAUSE-{doc_id.upper()}-{seg.clause_number.replace(' ', '-').upper()}"
                     if not db.query(ClauseORM).filter_by(clause_id=clause_pk).first():
-                        emb = embedding_client.embed_text(seg.text)
+                        fixture_emb_client = active_embedding or MockEmbeddingClient(dimension=embedding_dimension)
+                        emb = fixture_emb_client.embed_text(seg.text)
                         c_orm = ClauseORM(
                             clause_id=clause_pk,
                             version_number=1,
@@ -631,7 +652,8 @@ def seed_regulatory_corpus(
                 target_clause_pk = f"CLAUSE-{doc_id.upper()}-{r_spec['clause_number'].replace(' ', '-').upper()}"
                 if not db.query(ClauseORM).filter_by(clause_id=target_clause_pk).first():
                     quote = r_spec["source"].get("quote_span", "")
-                    emb = embedding_client.embed_text(quote or r_spec["clause_number"])
+                    fixture_emb_client = active_embedding or MockEmbeddingClient(dimension=embedding_dimension)
+                    emb = fixture_emb_client.embed_text(quote or r_spec["clause_number"])
                     clause_orm = ClauseORM(
                         clause_id=target_clause_pk,
                         version_number=1,
