@@ -969,57 +969,57 @@ async def upload_document(
             if existing_rule:
                 continue
 
-        try:
-            comp_res = compiler.compile_clause_with_agreement(
-                raw_text=clause.text,
-                source_metadata={
-                    "clause": clause.clause_number,
-                    "instrument": doc_title,
-                    "authority": doc_authority,
-                    "doc_id": doc_id,
-                    "page": clause.start_page,
-                },
-            )
-            if comp_res.rule:
-                r = comp_res.rule
-                rule_pk = f"RULE-{doc_id.upper()}-{clause.clause_number.replace(' ', '-').upper()}"
-                r_applies = r.applies_if.model_dump() if hasattr(r.applies_if, "model_dump") else r.applies_if
-                r_except = [e.model_dump() if hasattr(e, "model_dump") else e for e in (r.exceptions or [])]
-                r_oblig = r.obligation.model_dump() if hasattr(r.obligation, "model_dump") else r.obligation
-                r_valid = r.validity.model_dump() if hasattr(r.validity, "model_dump") else r.validity
-                r_src = r.source.model_dump() if hasattr(r.source, "model_dump") else (r.source or {})
-
-                rule_orm = RuleORM(
-                    rule_id=rule_pk,
-                    clause_id=clause.clause_id,
-                    clause_version=1,
-                    outcome_type=comp_res.outcome_type,
-                    applies_if=r_applies,
-                    exceptions=r_except,
-                    obligation=r_oblig,
-                    validity=r_valid,
-                    source=r_src,
-                    review_status=comp_res.review_status,
+            try:
+                comp_res = compiler.compile_clause_with_agreement(
+                    raw_text=clause.text,
+                    source_metadata={
+                        "clause": clause.clause_number,
+                        "instrument": doc_title,
+                        "authority": doc_authority,
+                        "doc_id": doc_id,
+                        "page": clause.start_page,
+                    },
                 )
-                db.add(rule_orm)
-                db.flush()
-                rules_compiled += 1
+                if comp_res.rule:
+                    r = comp_res.rule
+                    rule_pk = f"RULE-{doc_id.upper()}-{clause.clause_number.replace(' ', '-').upper()}"
+                    r_applies = r.applies_if.model_dump() if hasattr(r.applies_if, "model_dump") else r.applies_if
+                    r_except = [e.model_dump() if hasattr(e, "model_dump") else e for e in (r.exceptions or [])]
+                    r_oblig = r.obligation.model_dump() if hasattr(r.obligation, "model_dump") else r.obligation
+                    r_valid = r.validity.model_dump() if hasattr(r.validity, "model_dump") else r.validity
+                    r_src = r.source.model_dump() if hasattr(r.source, "model_dump") else (r.source or {})
 
-                if comp_res.review_status == "APPROVED":
-                    approved_count += 1
-                    db.add(
-                        HumanReviewAuditORM(
-                            rule_id=rule_pk,
-                            reviewer_id="system_dual_pass",
-                            reviewer_role="PRIMARY_ANNOTATOR",
-                            decision="APPROVED",
-                            rationale="Dual-pass LLM extraction cross-agreement confirmed.",
-                        )
+                    rule_orm = RuleORM(
+                        rule_id=rule_pk,
+                        clause_id=clause.clause_id,
+                        clause_version=1,
+                        outcome_type=comp_res.outcome_type,
+                        applies_if=r_applies,
+                        exceptions=r_except,
+                        obligation=r_oblig,
+                        validity=r_valid,
+                        source=r_src,
+                        review_status=comp_res.review_status,
                     )
-                elif comp_res.review_status == "PENDING_REVIEW":
-                    pending_count += 1
-        except Exception as exc:
-            logger.warning("Error compiling clause %s: %s", clause.clause_id, exc)
+                    db.add(rule_orm)
+                    db.flush()
+                    rules_compiled += 1
+
+                    if comp_res.review_status == "APPROVED":
+                        approved_count += 1
+                        db.add(
+                            HumanReviewAuditORM(
+                                rule_id=rule_pk,
+                                reviewer_id="system_dual_pass",
+                                reviewer_role="PRIMARY_ANNOTATOR",
+                                decision="APPROVED",
+                                rationale="Dual-pass LLM extraction cross-agreement confirmed.",
+                            )
+                        )
+                    elif comp_res.review_status == "PENDING_REVIEW":
+                        pending_count += 1
+            except Exception as exc:
+                logger.warning("Error compiling clause %s: %s", clause.clause_id, exc)
 
     db.commit()
 
