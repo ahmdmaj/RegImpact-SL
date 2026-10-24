@@ -515,7 +515,8 @@ def seed_regulatory_corpus(
                         try:
                             emb = active_embedding.embed_text(seg.text)
                         except Exception as emb_exc:
-                            logger.warning("Could not compute embedding for %s (%s); proceeding with unvectorized clause.", clause_pk, emb_exc)
+                            logger.warning("Embedding provider unavailable (%s); disabling embedding for remaining clauses in seeding run.", emb_exc)
+                            active_embedding = None
                             emb = None
                     clause_orm = ClauseORM(
                         clause_id=clause_pk,
