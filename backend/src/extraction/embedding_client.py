@@ -339,7 +339,9 @@ def get_embedding_client(
         elif allow_mock_fallback:
             resolved_provider = "mock"
         else:
-            resolved_provider = "mock"
+            raise LLMAuthenticationError(
+                "No live embedding credentials configured (GEMINI_API_KEY or OPENAI_API_KEY missing), and allow_mock_fallback=False."
+            )
 
     if resolved_provider == "openai":
         try:
