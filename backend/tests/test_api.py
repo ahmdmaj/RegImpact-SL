@@ -30,8 +30,14 @@ def test_get_regulations(client: TestClient):
     assert len(regulations) >= 2
 
     clause_ids = [r["clause_id"] for r in regulations]
-    assert "FCAU-REG-04" in clause_ids
-    assert "CEA-SCHED-01-B12" in clause_ids
+    assert "CLAUSE-DOC_GAZETTE_2494_47-REGULATION-3" in clause_ids
+    assert "CLAUSE-DOC_GAZETTE_2494_47-REGULATION-1" in clause_ids
+
+    # Verify authoritative clause structure
+    reg3 = next(r for r in regulations if r["clause_id"] == "CLAUSE-DOC_GAZETTE_2494_47-REGULATION-3")
+    assert reg3["version_number"] >= 1
+    assert "2494/47" in reg3["instrument"]
+    assert len(reg3["text"]) > 0
 
 
 # 3. Test POST /analysis with valid profile -> APPLICABLE + mapped impacts + trace
@@ -41,17 +47,19 @@ def test_post_analysis_applicable_profile(client: TestClient):
             "business_id": "BIZ-SL-001",
             "activity": "food_manufacturing",
             "employee_count": 25,
+            "packaged_in_presence_of_purchaser": False,
+            "market": {"b2b_only": False},
             "products": [{"category": "biscuits", "prepackaged": True}],
             "production_capacity": {"value": 100.0, "unit": "kg", "per_period": "day"},
         },
-        "as_at_date": "2024-08-01",
+        "as_at_date": "2026-08-01",
     }
 
     response = client.post("/analysis", json=payload)
     assert response.status_code == 200
     data = response.json()
 
-    assert data["as_at_date"] == "2024-08-01"
+    assert data["as_at_date"] == "2026-08-01"
     assert data["total_rules_evaluated"] >= 2
     assert data["applicable_rules_count"] >= 1
 
@@ -60,8 +68,8 @@ def test_post_analysis_applicable_profile(client: TestClient):
     assert len(data["affected_activities"]) > 0
     assert len(data["affected_documents"]) > 0
 
-    # Find the FCAU labelling rule in evaluations
-    fcau_eval = next((e for e in data["evaluations"] if e["rule_id"] == "RULE-FCAU-001"), None)
+    # Find the Regulation 3 retail labelling rule in evaluations
+    fcau_eval = next((e for e in data["evaluations"] if e["rule_id"] == "RULE-FCAU-2494-47-REG-3"), None)
     assert fcau_eval is not None
     assert fcau_eval["status"] == OutcomeStatus.APPLICABLE.value
     assert fcau_eval["impact"] is not None
@@ -70,8 +78,10 @@ def test_post_analysis_applicable_profile(client: TestClient):
 
     # Verify evaluation trace
     trace = fcau_eval["evaluation_trace"]
-    assert len(trace) == 3
-    assert all(t["result"] == "TRUE" for t in trace)
+    assert len(trace) >= 2
+    all_trace = [t for t in trace if t.get("block") == "all"]
+    assert len(all_trace) == 2
+    assert all(t["result"] == "TRUE" for t in all_trace)
 
 
 # 4. Test POST /analysis with incomplete profile -> CONDITIONAL_MISSING_DATA + clarifying questions
@@ -80,11 +90,12 @@ def test_post_analysis_incomplete_profile(client: TestClient):
         "business_profile": {
             "business_id": "BIZ-SL-002",
             "activity": "food_manufacturing",
-            "products": [{"category": "confectionery", "prepackaged": True}],
-            "production_capacity": None,  # Omitted required capacity
+            "products": [{"category": "confectionery"}],  # Omitted required prepackaged status
+            "packaged_in_presence_of_purchaser": False,
+            "market": {"b2b_only": False},
         },
-        "as_at_date": "2024-08-01",
-        "clause_ids": ["RULE-FCAU-001"],
+        "as_at_date": "2026-08-01",
+        "clause_ids": ["RULE-FCAU-2494-47-REG-3"],
     }
 
     response = client.post("/analysis", json=payload)
@@ -96,20 +107,20 @@ def test_post_analysis_incomplete_profile(client: TestClient):
     assert data["applicable_rules_count"] == 0
 
     # Missing field identification
-    assert "production_capacity.kg_per_day" in data["missing_fields"]
+    assert "products.prepackaged" in data["missing_fields"]
 
     # Clarifying questions generated
     assert len(data["clarifying_questions"]) > 0
-    capacity_question = next(
-        (q for q in data["clarifying_questions"] if "daily production capacity" in q.lower()),
+    prepackaged_question = next(
+        (q for q in data["clarifying_questions"] if "prepackaged" in q.lower()),
         None,
     )
-    assert capacity_question is not None
+    assert prepackaged_question is not None
 
     # Check evaluation details
     eval_item = data["evaluations"][0]
     assert eval_item["status"] == OutcomeStatus.CONDITIONAL_MISSING_DATA.value
-    assert "production_capacity.kg_per_day" in eval_item["missing_fields"]
+    assert "products.prepackaged" in eval_item["missing_fields"]
     # No false positive impact actions for conditional missing data
     assert eval_item["impact"] is None
 
@@ -120,10 +131,11 @@ def test_post_analysis_clause_filter(client: TestClient):
         "business_profile": {
             "business_id": "BIZ-SL-003",
             "activity": "food_manufacturing",
-            "employee_count": 5,
+            "market": {"b2b_only": False},
+            "products": [{"category": "biscuits", "prepackaged": True}],
         },
-        "as_at_date": "2024-08-01",
-        "clause_ids": ["RULE-CEA-EPL-001"],
+        "as_at_date": "2026-08-01",
+        "clause_ids": ["RULE-FCAU-2494-47-REG-3-B2B"],
     }
 
     response = client.post("/analysis", json=payload)
@@ -131,8 +143,8 @@ def test_post_analysis_clause_filter(client: TestClient):
     data = response.json()
 
     assert data["total_rules_evaluated"] == 1
-    assert data["evaluations"][0]["rule_id"] == "RULE-CEA-EPL-001"
-    # CEA requires employee_count >= 20; profile has 5 -> NOT_APPLICABLE
+    assert data["evaluations"][0]["rule_id"] == "RULE-FCAU-2494-47-REG-3-B2B"
+    # B2B rule requires market.b2b_only == True; profile has False -> NOT_APPLICABLE
     assert data["evaluations"][0]["status"] == OutcomeStatus.NOT_APPLICABLE.value
 
 
@@ -162,11 +174,13 @@ def test_post_analysis_provenance_and_audit_trail(client: TestClient):
             "business_id": "BIZ-SL-PROV",
             "activity": "food_manufacturing",
             "employee_count": 30,
+            "packaged_in_presence_of_purchaser": False,
+            "market": {"b2b_only": False},
             "products": [{"category": "biscuits", "prepackaged": True}],
             "production_capacity": {"value": 100.0, "unit": "kg", "per_period": "day"},
         },
-        "as_at_date": "2024-08-01",
-        "clause_ids": ["RULE-FCAU-001"],
+        "as_at_date": "2026-08-01",
+        "clause_ids": ["RULE-FCAU-2494-47-REG-3"],
     }
     response = client.post("/analysis", json=payload)
     assert response.status_code == 200
@@ -174,14 +188,16 @@ def test_post_analysis_provenance_and_audit_trail(client: TestClient):
     assert len(data["evaluations"]) >= 1
 
     ev = data["evaluations"][0]
-    assert ev["rule_id"] == "RULE-FCAU-001"
+    assert ev["rule_id"] == "RULE-FCAU-2494-47-REG-3"
     # Strict persistent provenance fields
     assert ev["document_title"] is not None
+    assert "2494/47" in ev["document_title"]
+    assert ev["document_id"] == "doc_gazette_2494_47"
     assert ev["page_number"] is not None and ev["page_number"] >= 1
     assert ev["char_start"] is not None and ev["char_start"] >= 0
     assert ev["char_end"] is not None and ev["char_end"] > ev["char_start"]
     assert "APPROVED" in ev["review_status"]
-    assert "EXPERT_ADJUDICATOR" in ev["review_status"]
+    assert "PRIMARY_ANNOTATOR" in ev["review_status"]
     assert ev["coverage_gap"] is False
 
 
