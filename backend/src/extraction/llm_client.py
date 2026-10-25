@@ -292,7 +292,7 @@ class OpenAILLMClient(BaseLLMClient):
 class GeminiLLMClient(BaseLLMClient):
     """Adapter for Google Gemini REST API (v1beta generateContent)."""
 
-    DEFAULT_MODEL = "gemini-1.5-pro"
+    DEFAULT_MODEL = "gemini-2.5-flash-lite"
     API_URL_TEMPLATE = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 
     def __init__(

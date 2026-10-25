@@ -151,6 +151,12 @@ class BM25RetrievalEngine(BaseRetrievalEngine):
         self._term_freqs = []
 
         for clause, doc in clauses:
+            is_synthetic_entry = (
+                getattr(clause, "is_synthetic", False)
+                or (doc and getattr(doc, "is_synthetic", False))
+                or is_synthetic_clause(clause, clause_id=clause.clause_id, document_id=clause.document_id)
+                or (doc and is_synthetic_document(doc, doc_id=doc.id))
+            )
             entry = {
                 "clause_id": clause.clause_id,
                 "clause_version": clause.version_number,
@@ -159,9 +165,7 @@ class BM25RetrievalEngine(BaseRetrievalEngine):
                 "document_id": clause.document_id,
                 "document_title": doc.title if doc else "",
                 "is_compilable": clause.is_compilable,
-                "is_synthetic": getattr(clause, "is_synthetic", False) or is_synthetic_clause(
-                    clause, clause_id=clause.clause_id, document_id=clause.document_id
-                ),
+                "is_synthetic": is_synthetic_entry,
             }
             tokens = _tokenize(clause.text)
             tf = Counter(tokens)
@@ -438,23 +442,44 @@ class DenseRetrievalEngine(BaseRetrievalEngine):
         top_k: int = 10,
         filters: Optional[Dict[str, Any]] = None,
     ) -> List[RetrievalResult]:
-        """Perform native PostgreSQL vector search using the <=> cosine distance operator."""
+        """Perform native PostgreSQL vector search using the <=> cosine distance operator with strict provenance."""
         distance_expr = ClauseORM.embedding.cosine_distance(query_vec)
 
         query_builder = (
             self.db.query(ClauseORM, SourceDocumentORM, distance_expr.label("distance"))
-            .outerjoin(SourceDocumentORM, ClauseORM.document_id == SourceDocumentORM.id)
+            .join(SourceDocumentORM, ClauseORM.document_id == SourceDocumentORM.id)
             .filter(ClauseORM.embedding.isnot(None))
         )
 
         allow_unverified = bool(filters.get("allow_unverified", False)) if filters else self.allow_unverified
         if not allow_unverified:
             query_builder = query_builder.filter(ClauseORM.embedding_verified.is_(True))
+            # Provenance constraints: must have non-empty, genuine provider and model names
+            query_builder = query_builder.filter(ClauseORM.embedding_provider.isnot(None))
+            query_builder = query_builder.filter(ClauseORM.embedding_provider != "")
+            query_builder = query_builder.filter(ClauseORM.embedding_provider != "unknown")
+            query_builder = query_builder.filter(ClauseORM.embedding_model.isnot(None))
+            query_builder = query_builder.filter(ClauseORM.embedding_model != "")
+            query_builder = query_builder.filter(ClauseORM.embedding_model != "unknown")
+            # Relationship constraints: parent source document must be authenticated and non-synthetic
+            query_builder = query_builder.filter(SourceDocumentORM.id.isnot(None))
+            query_builder = query_builder.filter(SourceDocumentORM.is_synthetic.is_(False))
+            query_builder = query_builder.filter(~SourceDocumentORM.id.in_(SYNTHETIC_DOCUMENT_IDS))
+            query_builder = query_builder.filter(~SourceDocumentORM.id.ilike("test_%"))
+            query_builder = query_builder.filter(~SourceDocumentORM.id.ilike("fixture_%"))
+            # Clause constraints: must not be synthetic or test fixture
+            query_builder = query_builder.filter(ClauseORM.is_synthetic.is_(False))
+            query_builder = query_builder.filter(~ClauseORM.clause_id.ilike("TEST-%"))
+            query_builder = query_builder.filter(~ClauseORM.clause_id.ilike("FIXTURE-%"))
 
         include_synthetic = bool(filters.get("include_synthetic", False)) if filters else False
         if not include_synthetic:
             query_builder = query_builder.filter(ClauseORM.is_synthetic.is_(False))
+            query_builder = query_builder.filter(SourceDocumentORM.is_synthetic.is_(False))
             query_builder = query_builder.filter(~ClauseORM.document_id.in_(SYNTHETIC_DOCUMENT_IDS))
+            query_builder = query_builder.filter(~SourceDocumentORM.id.in_(SYNTHETIC_DOCUMENT_IDS))
+            query_builder = query_builder.filter(~SourceDocumentORM.id.ilike("test_%"))
+            query_builder = query_builder.filter(~ClauseORM.clause_id.ilike("TEST-%"))
 
         if filters:
             if "document_id" in filters:
@@ -505,7 +530,7 @@ class DenseRetrievalEngine(BaseRetrievalEngine):
         top_k: int = 10,
         filters: Optional[Dict[str, Any]] = None,
     ) -> List[RetrievalResult]:
-        """In-memory cosine similarity search fallback for SQLite and offline test doubles."""
+        """In-memory cosine similarity search fallback for SQLite and offline test doubles with strict provenance."""
         query_builder = (
             self.db.query(ClauseORM, SourceDocumentORM)
             .outerjoin(SourceDocumentORM, ClauseORM.document_id == SourceDocumentORM.id)
@@ -515,6 +540,13 @@ class DenseRetrievalEngine(BaseRetrievalEngine):
         allow_unverified = bool(filters.get("allow_unverified", False)) if filters else self.allow_unverified
         if not allow_unverified:
             query_builder = query_builder.filter(ClauseORM.embedding_verified.is_(True))
+            query_builder = query_builder.filter(ClauseORM.embedding_provider.isnot(None))
+            query_builder = query_builder.filter(ClauseORM.embedding_provider != "")
+            query_builder = query_builder.filter(ClauseORM.embedding_provider != "unknown")
+            query_builder = query_builder.filter(ClauseORM.embedding_model.isnot(None))
+            query_builder = query_builder.filter(ClauseORM.embedding_model != "")
+            query_builder = query_builder.filter(ClauseORM.embedding_model != "unknown")
+            query_builder = query_builder.filter(ClauseORM.is_synthetic.is_(False))
 
         if filters:
             if "document_id" in filters:
@@ -527,16 +559,25 @@ class DenseRetrievalEngine(BaseRetrievalEngine):
             return []
 
         include_synthetic = bool(filters.get("include_synthetic", False)) if filters else False
+        expected_dim = self._get_expected_dimension()
         candidates: List[Tuple[float, ClauseORM, Optional[SourceDocumentORM]]] = []
         for clause, doc in rows:
-            if not include_synthetic and (
-                getattr(clause, "is_synthetic", False)
-                or is_synthetic_clause(clause, clause_id=clause.clause_id, document_id=clause.document_id)
-            ):
-                continue
+            # Synthetic / Test double exclusion
+            if not include_synthetic:
+                if getattr(clause, "is_synthetic", False) or is_synthetic_clause(
+                    clause, clause_id=clause.clause_id, document_id=clause.document_id
+                ):
+                    continue
+                if doc and (getattr(doc, "is_synthetic", False) or is_synthetic_document(doc, doc_id=doc.id)):
+                    continue
+
+            # In normal mode, parent source document must exist and not be synthetic
+            if not allow_unverified:
+                if doc is None or getattr(doc, "is_synthetic", False) or is_synthetic_document(doc, doc_id=doc.id):
+                    continue
 
             emb = clause.embedding
-            if isinstance(emb, list) and len(emb) > 0:
+            if isinstance(emb, list) and len(emb) == expected_dim and all(math.isfinite(x) for x in emb):
                 sim = _cosine_similarity(query_vec, emb)
                 if filters and "document_title" in filters:
                     doc_title = doc.title if doc else ""

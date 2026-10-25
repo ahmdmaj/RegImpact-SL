@@ -86,8 +86,12 @@ def test_live_postgres_native_vector_search():
                 file_path="backend/data/raw_sources/test_live.pdf",
                 file_size_bytes=1024,
                 page_count=1,
+                is_synthetic=True,
             )
             session.add(doc)
+            session.commit()
+        else:
+            existing_doc.is_synthetic = True
             session.commit()
 
         # Insert two test clauses with distinct known embeddings
@@ -110,7 +114,8 @@ def test_live_postgres_native_vector_search():
             valid_from="2024-01-01",
             is_compilable=True,
             embedding=vec_a,
-            embedding_verified=True,
+            embedding_verified=False,
+            is_synthetic=True,
         )
         c2 = ClauseORM(
             clause_id="TEST-VEC-CLAUSE-B",
@@ -125,7 +130,8 @@ def test_live_postgres_native_vector_search():
             valid_from="2024-01-01",
             is_compilable=True,
             embedding=vec_b,
-            embedding_verified=True,
+            embedding_verified=False,
+            is_synthetic=True,
         )
 
         session.merge(c1)
@@ -138,7 +144,11 @@ def test_live_postgres_native_vector_search():
                 return vec_a
 
         retriever = DenseRetrievalEngine(db=session, embedding_client=MockClientDim0(), allow_unverified=True)
-        results = retriever.search("dairy production", top_k=2, filters={"allow_unverified": True})
+        results = retriever.search(
+            "dairy production",
+            top_k=2,
+            filters={"allow_unverified": True, "include_synthetic": True},
+        )
 
         assert len(results) >= 2
         # Most similar clause must be Clause A
@@ -147,5 +157,7 @@ def test_live_postgres_native_vector_search():
         assert results[0].score > results[1].score
 
     finally:
-        session.rollback()
+        session.query(ClauseORM).filter(ClauseORM.document_id == "test_live_doc_pgvector").delete()
+        session.query(SourceDocumentORM).filter(SourceDocumentORM.id == "test_live_doc_pgvector").delete()
+        session.commit()
         session.close()
