@@ -54,6 +54,7 @@ SYNTHETIC_DOCUMENT_IDS = {
     "doc_fcau_labelling_2024",
     "doc_cea_epl_2022",
     "doc_caa_mrp_2023",
+    "test_live_doc_pgvector",
 }
 
 SYNTHETIC_RULE_IDS = {
@@ -70,6 +71,9 @@ SYNTHETIC_CLAUSE_PREFIXES = (
     "CLAUSE-DOC_CAA_MRP_2023",
     "FCAU-REG-04",
     "CEA-SCHED-01-B12",
+    "TEST-VEC-",
+    "TEST-",
+    "FIXTURE-",
 )
 
 
@@ -78,7 +82,14 @@ def is_synthetic_document(doc: Any = None, doc_id: str | None = None) -> bool:
     if doc is not None and getattr(doc, "is_synthetic", False):
         return True
     did = doc_id or (getattr(doc, "id", None) if doc else None)
-    return bool(did and did.lower() in {d.lower() for d in SYNTHETIC_DOCUMENT_IDS})
+    if not did:
+        return False
+    did_lower = did.lower()
+    if did_lower in {d.lower() for d in SYNTHETIC_DOCUMENT_IDS}:
+        return True
+    if did_lower.startswith("test_") or did_lower.startswith("fixture_"):
+        return True
+    return False
 
 
 def is_synthetic_clause(clause: Any = None, clause_id: str | None = None, document_id: str | None = None) -> bool:

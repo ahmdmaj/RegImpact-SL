@@ -1,0 +1,42 @@
+{
+  "source_document": {
+    "id": "test_live_doc_pgvector",
+    "title": "Live Test Document for Vector Search",
+    "sha256_hash": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+    "is_synthetic": false
+  },
+  "clauses": [
+    {
+      "clause_id": "TEST-VEC-CLAUSE-A",
+      "version_number": 1,
+      "document_id": "test_live_doc_pgvector",
+      "is_synthetic": false,
+      "embedding_verified": true,
+      "embedding_provider": null,
+      "embedding_model": null,
+      "vector_head": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "clause_id": "TEST-VEC-CLAUSE-B",
+      "version_number": 1,
+      "document_id": "test_live_doc_pgvector",
+      "is_synthetic": false,
+      "embedding_verified": true,
+      "embedding_provider": null,
+      "embedding_model": null,
+      "vector_head": [
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  ]
+}
