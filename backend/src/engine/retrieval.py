@@ -34,6 +34,7 @@ from backend.src.db.models import (
     SYNTHETIC_DOCUMENT_IDS,
     SYNTHETIC_RULE_IDS,
     is_synthetic_clause,
+    is_synthetic_document,
 )
 from backend.src.extraction.embedding_client import BaseEmbeddingClient, MockEmbeddingClient, get_embedding_client
 

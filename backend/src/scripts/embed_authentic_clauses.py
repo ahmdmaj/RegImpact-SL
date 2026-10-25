@@ -20,14 +20,14 @@ from backend.src.db.models import (
     is_synthetic_document,
 )
 from backend.src.db.session import session_scope
-from backend.src.extraction.embedding_client import SentenceTransformersEmbeddingClient
+from backend.src.extraction.embedding_client import SentenceTransformerEmbeddingClient
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
 
 
 def embed_authentic_clauses(force_reembed: bool = False) -> int:
-    client = SentenceTransformersEmbeddingClient(model_name="BAAI/bge-base-en-v1.5")
+    client = SentenceTransformerEmbeddingClient(model="BAAI/bge-base-en-v1.5")
     logger.info("Initialized embedding client: %r", client)
 
     embedded_count = 0
