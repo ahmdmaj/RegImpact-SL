@@ -92,6 +92,10 @@ class BaseEmbeddingClient(ABC):
         """Embed a single text string into a normalized dense vector."""
         pass
 
+    def embed_query(self, query: str) -> List[float]:
+        """Embed a search query string into a normalized dense vector."""
+        return self.embed_text(query)
+
     def embed_batch(self, texts: List[str]) -> List[List[float]]:
         """Embed a list of text strings into normalized dense vectors."""
         return [self.embed_text(t) for t in texts]
@@ -352,11 +356,36 @@ class SentenceTransformerEmbeddingClient(BaseEmbeddingClient):
         except Exception as exc:
             raise LLMClientError(f"Failed to load sentence-transformers model '{self._model_name}': {exc}") from exc
 
+        # Dimension verification against real model
+        real_dim = getattr(
+            self._model,
+            "get_embedding_dimension",
+            getattr(self._model, "get_sentence_embedding_dimension", None),
+        )()
+        if real_dim != self._dimension:
+            raise ValueError(
+                f"Configured embedding dimension ({self._dimension}) does not match "
+                f"real model output dimension ({real_dim}) for '{self._model_name}'."
+            )
+
+        # Provenance: resolve revision / commit sha from local cache snapshot if available
+        self._revision = "unknown"
+        try:
+            norm_name = self._model_name.replace("/", "--")
+            cache_snapshots = Path.home() / ".cache" / "huggingface" / "hub" / f"models--{norm_name}" / "snapshots"
+            if cache_snapshots.exists():
+                snapshots = [d.name for d in cache_snapshots.iterdir() if d.is_dir()]
+                if snapshots:
+                    self._revision = snapshots[0]
+        except Exception:
+            pass
+
         logger.info(
-            "Initialised SentenceTransformerEmbeddingClient (model=%s, dim=%d, device=%s)",
+            "Initialised SentenceTransformerEmbeddingClient (model=%s, dim=%d, device=%s, rev=%s)",
             self._model_name,
             self._dimension,
             self._device,
+            self._revision,
         )
 
     @property
@@ -375,15 +404,46 @@ class SentenceTransformerEmbeddingClient(BaseEmbeddingClient):
     def is_verified(self) -> bool:
         return True
 
+    def get_provenance(self) -> Dict[str, Any]:
+        return {
+            "provider": self.provider_name,
+            "model": self.model_name,
+            "dimension": self.dimension,
+            "is_verified": self.is_verified,
+            "device": self._device or "cpu",
+            "revision": self._revision,
+        }
+
     def embed_text(self, text: str) -> List[float]:
         results = self.embed_batch([text])
         return results[0]
+
+    def embed_query(self, query: str) -> List[float]:
+        """Embed a search query with BGE asymmetric retrieval instruction."""
+        if "bge" in self._model_name.lower() and not query.startswith("Represent this sentence"):
+            query_text = f"Represent this sentence for searching relevant passages: {query}"
+        else:
+            query_text = query
+        return self.embed_text(query_text)
 
     def embed_batch(self, texts: List[str]) -> List[List[float]]:
         if not texts:
             return []
         vectors = self._model.encode(texts, normalize_embeddings=True, show_progress_bar=False)
-        return [v.tolist() for v in vectors]
+        output: List[List[float]] = []
+        for v in vectors:
+            vec_list = v.tolist()
+            if len(vec_list) != self._dimension:
+                raise ValueError(
+                    f"Model '{self._model_name}' produced vector of dimension {len(vec_list)}, "
+                    f"expected {self._dimension}."
+                )
+            if any(not math.isfinite(x) for x in vec_list):
+                raise ValueError(
+                    f"Model '{self._model_name}' produced non-finite values (NaN/Inf)."
+                )
+            output.append(vec_list)
+        return output
 
 
 # ---------------------------------------------------------------------------

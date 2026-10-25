@@ -322,8 +322,13 @@ class DenseRetrievalEngine(BaseRetrievalEngine):
             return self.embedding_client.dimension
         return 768
 
-    def index_clauses(self, batch_size: int = 50) -> int:
-        """Compute and persist embeddings for clauses that lack an embedding."""
+    def index_clauses(
+        self,
+        batch_size: int = 50,
+        clause_ids: Optional[List[str]] = None,
+        reindex_unverified: bool = False,
+    ) -> int:
+        """Compute and persist embeddings for clauses that lack an embedding or match filter."""
         if self.embedding_client is None:
             logger.warning("Cannot index clauses: No embedding client configured.")
             return 0
@@ -333,11 +338,17 @@ class DenseRetrievalEngine(BaseRetrievalEngine):
         )
         expected_dim = self._get_expected_dimension()
 
-        clauses_to_embed = (
-            self.db.query(ClauseORM)
-            .filter(ClauseORM.embedding.is_(None))
-            .all()
-        )
+        query = self.db.query(ClauseORM)
+        if clause_ids is not None:
+            query = query.filter(ClauseORM.clause_id.in_(clause_ids))
+        elif reindex_unverified:
+            query = query.filter(
+                (ClauseORM.embedding.is_(None)) | (ClauseORM.embedding_verified.is_(False))
+            )
+        else:
+            query = query.filter(ClauseORM.embedding.is_(None))
+
+        clauses_to_embed = query.all()
         if not clauses_to_embed:
             return 0
 
@@ -392,13 +403,17 @@ class DenseRetrievalEngine(BaseRetrievalEngine):
 
         expected_dim = self._get_expected_dimension()
         try:
-            query_vec = self.embedding_client.embed_text(query)
+            embed_fn = getattr(self.embedding_client, "embed_query", self.embedding_client.embed_text)
+            query_vec = embed_fn(query)
             if len(query_vec) != expected_dim:
                 logger.warning(
                     "Query embedding dimension mismatch (%d != %d); dense retrieval unavailable.",
                     len(query_vec),
                     expected_dim,
                 )
+                return []
+            if any(not math.isfinite(x) for x in query_vec):
+                logger.warning("Query embedding contained non-finite values; dense retrieval unavailable.")
                 return []
         except Exception as exc:
             logger.warning("Embedding client failed (%s); dense retrieval unavailable.", exc)
