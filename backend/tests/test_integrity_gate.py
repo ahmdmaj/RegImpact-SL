@@ -144,6 +144,8 @@ def test_unverified_stored_embeddings_excluded_from_normal_dense_retrieval(db_se
         is_compilable=True,
         embedding=[0.5] * 128,
         embedding_verified=True,
+        embedding_provider="sentence-transformers",
+        embedding_model="BAAI/bge-base-en-v1.5",
     )
     db_session.add_all([c_unverified, c_verified])
     db_session.flush()
@@ -488,6 +490,8 @@ def test_hybrid_retrieval_truthful_method_reporting(db_session):
         is_compilable=True,
         embedding=vec,
         embedding_verified=True,
+        embedding_provider="sentence-transformers",
+        embedding_model="BAAI/bge-base-en-v1.5",
     )
     db_session.add(c1)
     db_session.commit()

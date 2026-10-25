@@ -560,7 +560,7 @@ class DenseRetrievalEngine(BaseRetrievalEngine):
             return []
 
         include_synthetic = bool(filters.get("include_synthetic", False)) if filters else False
-        expected_dim = self._get_expected_dimension()
+        expected_dim = self.target_dimension or (len(query_vec) if query_vec else self._get_expected_dimension())
         candidates: List[Tuple[float, ClauseORM, Optional[SourceDocumentORM]]] = []
         for clause, doc in rows:
             # Synthetic / Test double exclusion

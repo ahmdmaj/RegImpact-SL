@@ -247,6 +247,8 @@ def test_unverified_vectors_excluded_from_real_dense_retrieval(db_session: Sessi
         is_compilable=True,
         embedding=[0.0] * 768,
         embedding_verified=True,
+        embedding_provider="sentence-transformers",
+        embedding_model="BAAI/bge-base-en-v1.5",
     )
     db_session.add_all([doc, c1, c2])
     db_session.flush()

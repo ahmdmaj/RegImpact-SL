@@ -39,9 +39,14 @@ def test_live_llm_compilation_roundtrip():
         "gazette_no": "2024/99",
         "clause": "Regulation 4",
         "page": 1,
+        "published": "2024-01-01",
+        "commences": "2024-06-01",
     }
 
-    client = get_llm_client(allow_mock_fallback=False)
+    from backend.tests.conftest import LIVE_GEMINI_KEY, LIVE_OPENAI_KEY
+    live_key = os.getenv("GEMINI_API_KEY") or LIVE_GEMINI_KEY or os.getenv("OPENAI_API_KEY") or LIVE_OPENAI_KEY
+    live_prov = "gemini" if (os.getenv("GEMINI_API_KEY") or LIVE_GEMINI_KEY) else "openai"
+    client = get_llm_client(provider=live_prov, api_key=live_key, allow_mock_fallback=False)
     compiler = RuleCompiler(llm_client=client)
 
     result = compiler.compile_clause_with_agreement(raw_clause, metadata, max_retries=2)
