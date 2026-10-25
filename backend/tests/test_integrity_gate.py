@@ -359,7 +359,7 @@ def test_embedding_dimension_mismatch_rejected(db_session):
     db_session.add(clause)
     db_session.flush()
 
-    engine = DenseRetrievalEngine(db=db_session, embedding_client=BadDimClient(dimension=128), allow_unverified=True)
+    engine = DenseRetrievalEngine(db=db_session, embedding_client=BadDimClient(dimension=128), target_dimension=768, allow_unverified=True)
     with pytest.raises(ValueError) as exc_info:
         engine.index_clauses()
     assert "dimension mismatch" in str(exc_info.value).lower()

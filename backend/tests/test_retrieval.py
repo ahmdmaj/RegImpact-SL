@@ -409,7 +409,7 @@ def test_ret_emb_003_factory_mock_fallback(monkeypatch):
 
 def test_ret_dense_native_pgvector_dispatch(monkeypatch, populated_db):
     """DenseRetrievalEngine dispatches to native pgvector on postgres dialect and fallback on sqlite."""
-    emb_client = MockEmbeddingClient(dimension=128)
+    emb_client = MockEmbeddingClient(dimension=768)
     engine = DenseRetrievalEngine(db=populated_db, embedding_client=emb_client, allow_unverified=True)
     engine.index_clauses()
 
