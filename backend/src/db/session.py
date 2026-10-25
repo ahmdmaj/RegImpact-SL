@@ -102,6 +102,8 @@ def create_tables(engine: Engine) -> None:
             conn.execute(text("ALTER TABLE source_documents ADD COLUMN IF NOT EXISTS is_synthetic BOOLEAN NOT NULL DEFAULT FALSE;"))
             conn.execute(text("ALTER TABLE clauses ADD COLUMN IF NOT EXISTS is_synthetic BOOLEAN NOT NULL DEFAULT FALSE;"))
             conn.execute(text("ALTER TABLE clauses ADD COLUMN IF NOT EXISTS embedding_verified BOOLEAN NOT NULL DEFAULT FALSE;"))
+            conn.execute(text("ALTER TABLE clauses ADD COLUMN IF NOT EXISTS embedding_provider VARCHAR(50);"))
+            conn.execute(text("ALTER TABLE clauses ADD COLUMN IF NOT EXISTS embedding_model VARCHAR(100);"))
             conn.execute(text("ALTER TABLE rules ADD COLUMN IF NOT EXISTS is_synthetic BOOLEAN NOT NULL DEFAULT FALSE;"))
             conn.commit()
 

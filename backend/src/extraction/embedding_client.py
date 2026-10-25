@@ -63,6 +63,30 @@ class BaseEmbeddingClient(ABC):
         """Dimensionality of the output embedding vectors."""
         pass
 
+    @property
+    def provider_name(self) -> str:
+        """Identifier of the embedding provider."""
+        return "unknown"
+
+    @property
+    def model_name(self) -> str:
+        """Identifier of the specific embedding model."""
+        return "unknown"
+
+    @property
+    def is_verified(self) -> bool:
+        """Whether this client represents a genuine verified embedding model."""
+        return False
+
+    def get_provenance(self) -> Dict[str, Any]:
+        """Return structured provenance metadata for this embedding client."""
+        return {
+            "provider": self.provider_name,
+            "model": self.model_name,
+            "dimension": self.dimension,
+            "is_verified": self.is_verified,
+        }
+
     @abstractmethod
     def embed_text(self, text: str) -> List[float]:
         """Embed a single text string into a normalized dense vector."""
@@ -122,6 +146,18 @@ class OpenAIEmbeddingClient(BaseEmbeddingClient):
     @property
     def dimension(self) -> int:
         return self._dimension
+
+    @property
+    def provider_name(self) -> str:
+        return "openai"
+
+    @property
+    def model_name(self) -> str:
+        return self.model
+
+    @property
+    def is_verified(self) -> bool:
+        return True
 
     def _execute_with_retry(self, payload: Dict[str, Any]) -> Dict[str, Any]:
         url = f"{self.base_url}/embeddings"
@@ -226,6 +262,18 @@ class GeminiEmbeddingClient(BaseEmbeddingClient):
     def dimension(self) -> int:
         return self._dimension
 
+    @property
+    def provider_name(self) -> str:
+        return "gemini"
+
+    @property
+    def model_name(self) -> str:
+        return self.model
+
+    @property
+    def is_verified(self) -> bool:
+        return True
+
     def embed_text(self, text: str) -> List[float]:
         url = self.API_URL_TEMPLATE.format(model=self.model)
         params = {"key": self.api_key}
@@ -268,6 +316,77 @@ class GeminiEmbeddingClient(BaseEmbeddingClient):
 
 
 # ---------------------------------------------------------------------------
+# Local Sentence-Transformers Embedding Client (Open-Source / Offline)
+# ---------------------------------------------------------------------------
+
+class SentenceTransformerEmbeddingClient(BaseEmbeddingClient):
+    """Adapter for local open-source sentence-transformers models.
+
+    Approved by Proposal v4 Section 12 ("sentence-transformers or API models")
+    for reproducible evaluation without external cloud dependencies.
+    """
+
+    DEFAULT_MODEL = "BAAI/bge-base-en-v1.5"
+    DEFAULT_DIMENSION = 768
+
+    def __init__(
+        self,
+        model: Optional[str] = None,
+        dimension: Optional[int] = None,
+        device: Optional[str] = None,
+    ) -> None:
+        try:
+            from sentence_transformers import SentenceTransformer
+        except ImportError as exc:
+            raise LLMClientError(
+                "The 'sentence-transformers' package is required for local embeddings. "
+                "Install via: pip install sentence-transformers torch"
+            ) from exc
+
+        self._model_name = model or os.environ.get("EMBEDDING_MODEL") or self.DEFAULT_MODEL
+        self._dimension = int(os.environ.get("EMBEDDING_DIMENSION", dimension or self.DEFAULT_DIMENSION))
+        self._device = device or os.environ.get("TORCH_DEVICE")
+
+        try:
+            self._model = SentenceTransformer(self._model_name, device=self._device)
+        except Exception as exc:
+            raise LLMClientError(f"Failed to load sentence-transformers model '{self._model_name}': {exc}") from exc
+
+        logger.info(
+            "Initialised SentenceTransformerEmbeddingClient (model=%s, dim=%d, device=%s)",
+            self._model_name,
+            self._dimension,
+            self._device,
+        )
+
+    @property
+    def dimension(self) -> int:
+        return self._dimension
+
+    @property
+    def provider_name(self) -> str:
+        return "sentence-transformers"
+
+    @property
+    def model_name(self) -> str:
+        return self._model_name
+
+    @property
+    def is_verified(self) -> bool:
+        return True
+
+    def embed_text(self, text: str) -> List[float]:
+        results = self.embed_batch([text])
+        return results[0]
+
+    def embed_batch(self, texts: List[str]) -> List[List[float]]:
+        if not texts:
+            return []
+        vectors = self._model.encode(texts, normalize_embeddings=True, show_progress_bar=False)
+        return [v.tolist() for v in vectors]
+
+
+# ---------------------------------------------------------------------------
 # Deterministic Mock Embedding Client (Offline Tests)
 # ---------------------------------------------------------------------------
 
@@ -285,6 +404,18 @@ class MockEmbeddingClient(BaseEmbeddingClient):
     @property
     def dimension(self) -> int:
         return self._dimension
+
+    @property
+    def provider_name(self) -> str:
+        return "mock"
+
+    @property
+    def model_name(self) -> str:
+        return "mock-token-hash"
+
+    @property
+    def is_verified(self) -> bool:
+        return False
 
     def _token_vector(self, token: str) -> List[float]:
         """Compute a deterministic zero-mean Gaussian vector for a single token."""
@@ -321,6 +452,7 @@ class MockEmbeddingClient(BaseEmbeddingClient):
 def get_embedding_client(
     provider: Optional[str] = None,
     api_key: Optional[str] = None,
+    model: Optional[str] = None,
     allow_mock_fallback: bool = True,
 ) -> BaseEmbeddingClient:
     """Instantiate an embedding client matching environment configuration."""
@@ -345,7 +477,7 @@ def get_embedding_client(
 
     if resolved_provider == "openai":
         try:
-            return OpenAIEmbeddingClient(api_key=api_key)
+            return OpenAIEmbeddingClient(api_key=api_key, model=model)
         except LLMAuthenticationError:
             if allow_mock_fallback:
                 logger.warning("No OpenAI key found; falling back to MockEmbeddingClient.")
@@ -354,10 +486,19 @@ def get_embedding_client(
 
     elif resolved_provider == "gemini":
         try:
-            return GeminiEmbeddingClient(api_key=api_key)
+            return GeminiEmbeddingClient(api_key=api_key, model=model)
         except LLMAuthenticationError:
             if allow_mock_fallback:
                 logger.warning("No Gemini key found; falling back to MockEmbeddingClient.")
+                return MockEmbeddingClient()
+            raise
+
+    elif resolved_provider in ("sentence-transformers", "sentence_transformers", "local"):
+        try:
+            return SentenceTransformerEmbeddingClient(model=model)
+        except Exception:
+            if allow_mock_fallback:
+                logger.warning("SentenceTransformer failed to initialize; falling back to MockEmbeddingClient.")
                 return MockEmbeddingClient()
             raise
 

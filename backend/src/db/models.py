@@ -243,6 +243,8 @@ class ClauseORM(Base):
     non_compilable_reason = Column(Text, nullable=True)
     embedding = Column(EmbeddingColumnType, nullable=True)
     embedding_verified = Column(Boolean, nullable=False, default=False, server_default="0")
+    embedding_provider = Column(String(50), nullable=True)
+    embedding_model = Column(String(100), nullable=True)
     is_synthetic = Column(Boolean, nullable=False, default=False, server_default="0")
     created_at = Column(DateTime(timezone=True), nullable=False, default=_utcnow)
     updated_at = Column(DateTime(timezone=True), nullable=False, default=_utcnow, onupdate=_utcnow)

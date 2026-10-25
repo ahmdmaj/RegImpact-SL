@@ -294,10 +294,12 @@ class DenseRetrievalEngine(BaseRetrievalEngine):
         self,
         db: Session,
         embedding_client: Optional[BaseEmbeddingClient] = None,
+        target_dimension: Optional[int] = None,
         allow_unverified: bool = False,
     ) -> None:
         self.db = db
         self.allow_unverified = allow_unverified
+        self.target_dimension = target_dimension
         if embedding_client is not None:
             self.embedding_client = embedding_client
         else:
@@ -306,13 +308,30 @@ class DenseRetrievalEngine(BaseRetrievalEngine):
             except Exception:
                 self.embedding_client = None
 
+    def _get_expected_dimension(self) -> int:
+        """Resolve expected embedding dimension from explicit target, postgres dialect, or client."""
+        if self.target_dimension is not None:
+            return self.target_dimension
+        try:
+            bind = self.db.get_bind()
+            if bind and "postgresql" in bind.dialect.name:
+                return 768
+        except Exception:
+            pass
+        if self.embedding_client is not None:
+            return self.embedding_client.dimension
+        return 768
+
     def index_clauses(self, batch_size: int = 50) -> int:
         """Compute and persist embeddings for clauses that lack an embedding."""
         if self.embedding_client is None:
             logger.warning("Cannot index clauses: No embedding client configured.")
             return 0
 
-        is_live_provider = not isinstance(self.embedding_client, MockEmbeddingClient)
+        is_live_provider = getattr(self.embedding_client, "is_verified", False) and not isinstance(
+            self.embedding_client, MockEmbeddingClient
+        )
+        expected_dim = self._get_expected_dimension()
 
         clauses_to_embed = (
             self.db.query(ClauseORM)
@@ -327,13 +346,22 @@ class DenseRetrievalEngine(BaseRetrievalEngine):
             texts = [c.text for c in chunk]
             embeddings = self.embedding_client.embed_batch(texts)
             for clause, emb in zip(chunk, embeddings):
+                if len(emb) != expected_dim:
+                    raise ValueError(
+                        f"Embedding dimension mismatch: model produced vector of length {len(emb)}, "
+                        f"database schema expects {expected_dim}."
+                    )
                 clause.embedding = emb
                 clause.embedding_verified = is_live_provider
+                clause.embedding_provider = getattr(self.embedding_client, "provider_name", "unknown")
+                clause.embedding_model = getattr(self.embedding_client, "model_name", "unknown")
 
         self.db.commit()
         logger.info(
-            "Indexed %s embeddings for %d clauses.",
+            "Indexed %s embeddings (%s/%s) for %d clauses.",
             "verified live" if is_live_provider else "unverified test/mock",
+            getattr(self.embedding_client, "provider_name", "unknown"),
+            getattr(self.embedding_client, "model_name", "unknown"),
             len(clauses_to_embed),
         )
         return len(clauses_to_embed)
@@ -353,14 +381,25 @@ class DenseRetrievalEngine(BaseRetrievalEngine):
             if filters
             else self.allow_unverified
         )
-        if isinstance(self.embedding_client, MockEmbeddingClient) and not allow_unverified:
-            logger.warning(
-                "Dense retrieval requires a genuine verified embedding provider; MockEmbeddingClient excluded."
-            )
-            return []
+        if not allow_unverified:
+            if not getattr(self.embedding_client, "is_verified", False) or isinstance(
+                self.embedding_client, MockEmbeddingClient
+            ):
+                logger.warning(
+                    "Dense retrieval requires a genuine verified embedding provider; unverified client excluded."
+                )
+                return []
 
+        expected_dim = self._get_expected_dimension()
         try:
             query_vec = self.embedding_client.embed_text(query)
+            if len(query_vec) != expected_dim:
+                logger.warning(
+                    "Query embedding dimension mismatch (%d != %d); dense retrieval unavailable.",
+                    len(query_vec),
+                    expected_dim,
+                )
+                return []
         except Exception as exc:
             logger.warning("Embedding client failed (%s); dense retrieval unavailable.", exc)
             return []

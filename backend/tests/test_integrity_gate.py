@@ -275,3 +275,280 @@ def test_deterministic_analysis_succeeds_without_live_llm_or_dense_embeddings(cl
     assert summary is not None
     assert "Mock generated text explanation." not in summary
     assert "applicable" in summary.lower() or "regulatory" in summary.lower()
+
+
+# ---------------------------------------------------------------------------
+# 7. Mock/Manual Vectors Cannot Be Marked Verified
+# ---------------------------------------------------------------------------
+
+def test_mock_and_manual_vectors_cannot_be_marked_verified(db_session):
+    """Mock-derived or manually constructed vectors must not receive embedding_verified=True."""
+    mock_client = MockEmbeddingClient(dimension=768)
+    assert mock_client.is_verified is False
+    assert mock_client.provider_name == "mock"
+
+    doc = SourceDocumentORM(
+        id="doc_provenance_gate",
+        title="Provenance Test Doc",
+        authority="Test",
+        sha256_hash="5555555555555555555555555555555555555555555555555555555555555555",
+        file_path="dummy.pdf",
+        file_size_bytes=100,
+        page_count=1,
+    )
+    db_session.add(doc)
+    db_session.flush()
+
+    clause = ClauseORM(
+        clause_id="CLAUSE-MOCK-PROV-001",
+        version_number=1,
+        document_id="doc_provenance_gate",
+        clause_number="Reg 1",
+        text="Clause text for mock indexing test.",
+        start_page=1,
+        end_page=1,
+        is_compilable=True,
+    )
+    db_session.add(clause)
+    db_session.flush()
+
+    engine = DenseRetrievalEngine(db=db_session, embedding_client=mock_client, allow_unverified=True)
+    indexed = engine.index_clauses()
+    assert indexed == 1
+
+    db_session.refresh(clause)
+    assert clause.embedding is not None
+    assert clause.embedding_verified is False, "MockEmbeddingClient indexing MUST NOT mark embedding_verified=True"
+    assert clause.embedding_provider == "mock"
+
+
+# ---------------------------------------------------------------------------
+# 8. Incompatible Model Dimensions Rejected
+# ---------------------------------------------------------------------------
+
+def test_embedding_dimension_mismatch_rejected(db_session):
+    """Vectors with incompatible dimensions (e.g. 128 != 768) must be rejected."""
+    class BadDimClient(MockEmbeddingClient):
+        def embed_batch(self, texts):
+            return [[0.1] * 128 for _ in texts]
+        def embed_text(self, text):
+            return [0.1] * 128
+
+    doc = SourceDocumentORM(
+        id="doc_dim_gate",
+        title="Dimension Gate Test Doc",
+        authority="Test",
+        sha256_hash="6666666666666666666666666666666666666666666666666666666666666666",
+        file_path="dummy.pdf",
+        file_size_bytes=100,
+        page_count=1,
+    )
+    db_session.add(doc)
+    db_session.flush()
+
+    clause = ClauseORM(
+        clause_id="CLAUSE-DIM-001",
+        version_number=1,
+        document_id="doc_dim_gate",
+        clause_number="Reg Dim",
+        text="Clause text for dimension test.",
+        start_page=1,
+        end_page=1,
+        is_compilable=True,
+    )
+    db_session.add(clause)
+    db_session.flush()
+
+    engine = DenseRetrievalEngine(db=db_session, embedding_client=BadDimClient(dimension=128), allow_unverified=True)
+    with pytest.raises(ValueError) as exc_info:
+        engine.index_clauses()
+    assert "dimension mismatch" in str(exc_info.value).lower()
+
+
+# ---------------------------------------------------------------------------
+# 9. Provider Failure Does Not Produce Fabricated Vectors
+# ---------------------------------------------------------------------------
+
+def test_provider_failure_does_not_produce_fabricated_vector(db_session):
+    """When embedding generation fails, no fabricated vector is silently returned or persisted."""
+    class FailingClient(MockEmbeddingClient):
+        def embed_batch(self, texts):
+            from backend.src.extraction.llm_client import LLMRateLimitError
+            raise LLMRateLimitError("Live embedding provider quota exhausted (HTTP 429).")
+
+    doc = SourceDocumentORM(
+        id="doc_fail_gate",
+        title="Failure Gate Doc",
+        authority="Test",
+        sha256_hash="7777777777777777777777777777777777777777777777777777777777777777",
+        file_path="dummy.pdf",
+        file_size_bytes=100,
+        page_count=1,
+    )
+    db_session.add(doc)
+    db_session.flush()
+
+    clause = ClauseORM(
+        clause_id="CLAUSE-FAIL-001",
+        version_number=1,
+        document_id="doc_fail_gate",
+        clause_number="Reg Fail",
+        text="Clause text for failure test.",
+        start_page=1,
+        end_page=1,
+        is_compilable=True,
+    )
+    db_session.add(clause)
+    db_session.flush()
+
+    engine = DenseRetrievalEngine(db=db_session, embedding_client=FailingClient(), allow_unverified=True)
+    from backend.src.extraction.llm_client import LLMRateLimitError
+    with pytest.raises(LLMRateLimitError):
+        engine.index_clauses()
+
+    db_session.refresh(clause)
+    assert clause.embedding is None, "Failed embedding operation must NOT save fabricated vector!"
+
+
+# ---------------------------------------------------------------------------
+# 10. Embedding Provenance Survives Persistence and Reload
+# ---------------------------------------------------------------------------
+
+def test_embedding_provenance_persisted_and_reloaded(db_session):
+    """Clause embedding provenance (provider, model, verified status) persists and reloads correctly."""
+    doc = SourceDocumentORM(
+        id="doc_prov_reload",
+        title="Reload Test Doc",
+        authority="Test",
+        sha256_hash="8888888888888888888888888888888888888888888888888888888888888888",
+        file_path="dummy.pdf",
+        file_size_bytes=100,
+        page_count=1,
+    )
+    db_session.add(doc)
+    db_session.flush()
+
+    vec = [0.0] * 768
+    vec[42] = 1.0
+
+    clause = ClauseORM(
+        clause_id="CLAUSE-PROV-RELOAD-001",
+        version_number=1,
+        document_id="doc_prov_reload",
+        clause_number="Reg Prov",
+        text="Clause text for provenance reload test.",
+        start_page=1,
+        end_page=1,
+        is_compilable=True,
+        embedding=vec,
+        embedding_verified=True,
+        embedding_provider="gemini",
+        embedding_model="text-embedding-004",
+    )
+    db_session.add(clause)
+    db_session.commit()
+
+    # Query back
+    reloaded = db_session.query(ClauseORM).filter_by(clause_id="CLAUSE-PROV-RELOAD-001").one()
+    assert reloaded.embedding_verified is True
+    assert reloaded.embedding_provider == "gemini"
+    assert reloaded.embedding_model == "text-embedding-004"
+    assert len(reloaded.embedding) == 768
+
+
+# ---------------------------------------------------------------------------
+# 11. Hybrid Retrieval Truthful Method Reporting
+# ---------------------------------------------------------------------------
+
+def test_hybrid_retrieval_truthful_method_reporting(db_session):
+    """Hybrid retrieval must report 'hybrid_rrf' only when both rankers contribute, and 'bm25_fallback' otherwise."""
+    doc = SourceDocumentORM(
+        id="doc_hybrid_truth",
+        title="Hybrid Truth Doc",
+        authority="Test",
+        sha256_hash="9999999999999999999999999999999999999999999999999999999999999999",
+        file_path="dummy.pdf",
+        file_size_bytes=100,
+        page_count=1,
+    )
+    db_session.add(doc)
+    db_session.flush()
+
+    vec = [0.0] * 768
+    vec[0] = 1.0
+
+    c1 = ClauseORM(
+        clause_id="CLAUSE-HYB-TRUTH-001",
+        version_number=1,
+        document_id="doc_hybrid_truth",
+        clause_number="Reg 1",
+        text="Mandatory dairy manufacturing hygiene standard regulation.",
+        start_page=1,
+        end_page=1,
+        is_compilable=True,
+        embedding=vec,
+        embedding_verified=True,
+    )
+    db_session.add(c1)
+    db_session.commit()
+
+    # Case A: Dense engine has no verified client (dense yields 0) -> bm25_fallback
+    hybrid_fallback = HybridRetrievalEngine(db=db_session, allow_unverified=False)
+    assert hybrid_fallback.dense_engine.embedding_client is None
+
+    res_fallback = hybrid_fallback.search("dairy manufacturing hygiene standard", top_k=2)
+    assert len(res_fallback) > 0
+    assert res_fallback[0].retrieval_method == "bm25_fallback"
+    assert res_fallback[0].metadata.get("dense_active") is False
+    assert res_fallback[0].metadata.get("bm25_active") is True
+    assert "Dense retrieval produced zero verified candidates" in res_fallback[0].metadata.get("fallback_reason", "")
+
+    # Case B: Both BM25 and dense return candidates -> hybrid_rrf
+    from backend.src.extraction.embedding_client import BaseEmbeddingClient
+    class VerifiedTestClient(BaseEmbeddingClient):
+        @property
+        def dimension(self):
+            return 768
+        @property
+        def is_verified(self):
+            return True
+        @property
+        def provider_name(self):
+            return "verified-test"
+        @property
+        def model_name(self):
+            return "test-model-768"
+        def embed_text(self, text):
+            return vec
+
+    dense_active = DenseRetrievalEngine(db=db_session, embedding_client=VerifiedTestClient(), allow_unverified=False)
+    hybrid_active = HybridRetrievalEngine(db=db_session, dense_engine=dense_active, allow_unverified=False)
+
+    res_active = hybrid_active.search("dairy manufacturing hygiene standard", top_k=2)
+    assert len(res_active) > 0
+    assert res_active[0].retrieval_method == "hybrid_rrf"
+    assert res_active[0].metadata.get("dense_active") is True
+    assert res_active[0].metadata.get("bm25_active") is True
+    assert res_active[0].metadata.get("fallback_reason") is None
+
+
+# ---------------------------------------------------------------------------
+# 12. Authenticated Gazette SHA-256 Hash Strictly Enforced
+# ---------------------------------------------------------------------------
+
+def test_authenticated_gazette_hash_strictly_enforced():
+    """Verify that the authentic Gazette 2494/47 hash is strictly enforced and matches disk."""
+    import hashlib
+    pdf_path = Path("backend/data/raw_sources/2494-47_E.pdf")
+    assert pdf_path.exists(), "Authentic Gazette PDF must exist"
+
+    file_bytes = pdf_path.read_bytes()
+    assert len(file_bytes) == 424172, "File size must exactly match official 424,172 bytes"
+
+    actual_hash = hashlib.sha256(file_bytes).hexdigest()
+    expected_hash = "83ed19c22873471652d0073fe16c977442e42c8ecac2edf1d691d00d78d8a054"
+    typo_hash = "9fa733d3170e70a1a0e08f516a3bc89f6b4d3f3fdbf3cf8c7d0e49bb493e62dd"
+
+    assert actual_hash == expected_hash, f"Actual hash {actual_hash} does not match expected {expected_hash}"
+    assert actual_hash != typo_hash, "Actual hash must not match the documentation typo"
+
