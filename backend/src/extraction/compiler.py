@@ -108,6 +108,41 @@ from backend.src.extraction.llm_client import MockLLMClient  # noqa: E402
 # Prompt Construction
 # ---------------------------------------------------------------------------
 
+SCHEMA_HINT = """
+Return a SINGLE JSON object (not an array, no markdown fences) conforming strictly to this structure:
+{
+  "rule_id": "string",
+  "source": {
+    "instrument": "string",
+    "authority": "string",
+    "gazette_no": "string",
+    "clause": "string",
+    "page": 1,
+    "quote_span": "verbatim excerpt from raw_text grounding the rule"
+  },
+  "validity": {
+    "published": "YYYY-MM-DD",
+    "commences": "YYYY-MM-DD"
+  },
+  "applies_if": {
+    "all": [
+      {"field": "string", "op": "eq|gte|lte|gt|lt|in", "value": "threshold/string/boolean"}
+    ]
+  },
+  "obligation": {
+    "type": "MANDATE|PROHIBITION|PERMISSION",
+    "text": "plain text explanation",
+    "impact_categories": ["labelling|licensing|safety|environmental"]
+  },
+  "verification": {
+    "status": "PENDING_REVIEW|NON_COMPILABLE|CONDITIONAL_RULE",
+    "extraction_model": "llm",
+    "agreement": false
+  }
+}
+"""
+
+
 def construct_initial_prompt(raw_text: str, source_metadata: Dict[str, Any]) -> str:
     """Construct first-pass prompt for LLM rule compilation (literal extraction)."""
     metadata_json = json.dumps(source_metadata, indent=2)
@@ -116,13 +151,15 @@ def construct_initial_prompt(raw_text: str, source_metadata: Dict[str, Any]) -> 
         "Your goal is to convert the following Sri Lankan regulatory clause into a typed, verified Rule JSON.\n\n"
         "### STRICT EXTRACTION RULES:\n"
         "1. Every threshold, measurement unit, condition, and date MUST appear verbatim in raw_text.\n"
-        "2. The 'quote_span' field in source MUST be a verbatim excerpt from raw_text grounding the entire rule.\n"
+        "2. The 'quote_span' field in source MUST be an exact verbatim excerpt from raw_text grounding the entire rule.\n"
         "3. Do NOT hallucinate or infer numbers or dates that are not in the text.\n"
         "4. If the clause contains subjective, discretionary, or ambiguous language that cannot be safely compiled, "
-        "set verification.status to 'NON_COMPILABLE', provide a clear verification.reason, and leave applies_if empty.\n\n"
+        "set verification.status to 'NON_COMPILABLE', provide a clear verification.reason, and leave applies_if empty.\n"
+        "5. Return a SINGLE JSON object complying with the following schema structure:\n\n"
+        f"{SCHEMA_HINT}\n\n"
         f"### SOURCE METADATA:\n{metadata_json}\n\n"
         f"### RAW REGULATORY CLAUSE:\n{raw_text}\n\n"
-        "Output a valid JSON object strictly complying with the Rule schema."
+        "Output the valid Rule JSON object:"
     )
 
 
@@ -138,7 +175,8 @@ def construct_secondary_prompt(raw_text: str, source_metadata: Dict[str, Any]) -
         "3. Ensure the 'quote_span' is an exact literal excerpt from the text that legally justifies the rule.\n"
         "4. If statutory applicability depends on subjective criteria or discretionary administrative conditions, "
         "mark verification.status as 'CONDITIONAL_RULE' or 'NON_COMPILABLE'.\n"
-        "5. Output valid JSON only, complying with the Rule schema.\n\n"
+        "5. Return a SINGLE JSON object complying with the following schema structure:\n\n"
+        f"{SCHEMA_HINT}\n\n"
         f"### SOURCE CONTEXT:\n{metadata_json}\n\n"
         f"### CLAUSE TEXT:\n{raw_text}\n\n"
         "Output the formal Rule JSON:"
@@ -350,16 +388,41 @@ class RuleCompiler:
                 current_prompt = construct_retry_prompt(raw_text, source_metadata, {}, issues)
                 continue
 
+            # Defensive unwrapping if LLM returns a list or wraps in {"rule": ...}
+            if isinstance(candidate_dict, list) and len(candidate_dict) > 0:
+                candidate_dict = candidate_dict[0]
+            if isinstance(candidate_dict, dict) and "rule" in candidate_dict and isinstance(candidate_dict["rule"], dict):
+                candidate_dict = candidate_dict["rule"]
+
             # Ensure baseline metadata fields are preserved
             if isinstance(candidate_dict, dict):
+                if not candidate_dict.get("rule_id"):
+                    clause_tag = str(source_metadata.get("clause", "clause")).replace(" ", "_")
+                    doc_tag = str(source_metadata.get("doc_id", "doc")).replace(" ", "_")
+                    candidate_dict["rule_id"] = f"RULE-{doc_tag}-{clause_tag}".upper()
+
+                if not candidate_dict.get("verification"):
+                    candidate_dict["verification"] = {
+                        "status": "PENDING_REVIEW",
+                        "extraction_model": getattr(client, "model", "llm"),
+                        "agreement": False,
+                    }
+
                 src = candidate_dict.setdefault("source", {})
                 if isinstance(src, dict):
                     for k, v in source_metadata.items():
                         if k not in src or src[k] is None:
                             src[k] = v
 
+                val = candidate_dict.setdefault("validity", {})
+                if isinstance(val, dict):
+                    if not val.get("published") and source_metadata.get("published"):
+                        val["published"] = str(source_metadata["published"])
+                    if not val.get("commences") and source_metadata.get("commences"):
+                        val["commences"] = str(source_metadata["commences"])
+
             # Deterministic verification gatekeeper
-            report = self.verifier.verify(candidate_dict, source_text=raw_text)
+            report = self.verifier.verify(candidate_dict, source_text=raw_text, metadata=source_metadata)
             last_report = report
 
             if report.is_valid:
@@ -409,13 +472,14 @@ class RuleCompiler:
         source_metadata: Dict[str, Any],
         max_retries: int = 2,
         secondary_client: Optional[Union[LLMClient, BaseLLMClient]] = None,
+        auto_approve: bool = True,
     ) -> CompilationResult:
         """Perform dual-pass cross-extraction agreement on a regulatory clause.
 
         1. Pass A: Conservative literal extraction.
         2. Pass B: Structural decomposition extraction (with secondary prompt or client).
         3. Logic comparison: If passes disagree, rule is marked PENDING_REVIEW.
-        4. If both passes agree and pass verification, rule is marked APPROVED.
+        4. If both passes agree and pass verification, rule is marked APPROVED (or PENDING_REVIEW if auto_approve=False).
         5. Supports CONDITIONAL_RULE outcome identification.
         """
         if not raw_text or not raw_text.strip():
@@ -502,11 +566,13 @@ class RuleCompiler:
 
         if agreed:
             rule_a.verification.agreement = True
-            rule_a.verification.status = "APPROVED"
-            review_status = "APPROVED"
+            status_token = "APPROVED" if auto_approve else "PENDING_REVIEW"
+            rule_a.verification.status = status_token
+            review_status = status_token
         else:
             rule_a.verification.agreement = False
             rule_a.verification.status = "PENDING_REVIEW"
+            review_status = "PENDING_REVIEW"
             review_status = "PENDING_REVIEW"
             logger.warning(
                 "Cross-extraction disagreement on %s (%d discrepancies): %s",
