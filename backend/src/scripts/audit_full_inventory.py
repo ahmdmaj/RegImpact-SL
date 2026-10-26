@@ -2,7 +2,7 @@ import sys
 import hashlib
 import json
 from pathlib import Path
-import pypdf
+import fitz  # PyMuPDF
 
 sys.path.insert(0, ".")
 if sys.platform == "win32":
@@ -30,9 +30,9 @@ def sha256_file(filepath: Path) -> str:
 
 def inspect_pdf_text(filepath: Path) -> str:
     try:
-        reader = pypdf.PdfReader(str(filepath))
-        if len(reader.pages) > 0:
-            text = reader.pages[0].extract_text() or ""
+        doc = fitz.open(str(filepath))
+        if len(doc) > 0:
+            text = doc[0].get_text() or ""
             return text[:300].replace("\n", " ")
     except Exception as e:
         return f"<PDF read error: {e}>"
