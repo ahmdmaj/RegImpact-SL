@@ -16,11 +16,41 @@ from pydantic import BaseModel, Field
 from backend.src.evaluation.dataset_split import split_scenarios_by_clause
 from backend.src.models.domain import BenchmarkScenario, OutcomeStatus
 
-# Constants for authoritative Gazette slice
+# Constants for authoritative Gazette slices
 GAZETTE_2494_47_SHA256 = "83ed19c22873471652d0073fe16c977442e42c8ecac2edf1d691d00d78d8a054"
+GAZETTE_2494_06_SHA256 = "15803fe0b14aabe0c79126ebe7c8834d8063b6ed8c2a9033c1201ff538bcd95b"
+GAZETTE_2113_16_SHA256 = "3f85f3ef96b7622bdd3e45d7cc642fd96fdbd83a9f84f35f048121eab3e4016f"
+GAZETTE_1795_51_SHA256 = "b78479b6b08d12e11fd27cfc39677d5a284bc147bf16a777eafb495b86f4135a"
+
+AUTHENTIC_SOURCE_HASHES = {
+    GAZETTE_2494_47_SHA256: "Gazette 2494/47 (Labelling 2026)",
+    GAZETTE_2494_06_SHA256: "Gazette 2494/06 (Sugar Colour Coding 2026)",
+    GAZETTE_2113_16_SHA256: "Gazette 2113/16 (Preservatives 2019)",
+    GAZETTE_1795_51_SHA256: "Gazette 1795/51 (Flavourings 2013)",
+}
+
 KNOWN_REGULATION_3_RULES = {
     "RULE-FCAU-2494-47-REG-3",
     "RULE-FCAU-2494-47-REG-3-B2B",
+}
+
+KNOWN_AUTHENTIC_RULES = {
+    # Labelling 2026
+    "RULE-FCAU-2494-47-REG-3",
+    "RULE-FCAU-2494-47-REG-3-B2B",
+    # Sugar Amendment 2026
+    "RULE-SUGAR-2494-06-RED",
+    "RULE-SUGAR-2494-06-AMBER",
+    "RULE-SUGAR-2494-06-GREEN",
+    "RULE-SUGAR-2494-06-GLASS-PROVISO",
+    # Preservatives 2019
+    "RULE-PRESERVATIVE-MIXTURE-LIMIT",
+    "RULE-PRESERVATIVE-JAM-JELLY-LIMIT",
+    "RULE-PRESERVATIVE-LABEL-DECLARATION",
+    # Flavourings 2013
+    "RULE-FLAVOUR-INFANT-PROHIBITION",
+    "RULE-FLAVOUR-SCHEDULE-III-PROHIBITION",
+    "RULE-FLAVOUR-LABEL-DECLARATION",
 }
 
 

@@ -308,3 +308,117 @@ def compute_contingency_table(
             n_00 += 1
 
     return {"n_11": n_11, "n_10": n_10, "n_01": n_01, "n_00": n_00}
+
+
+@dataclass
+class CohensKappaResult:
+    """Summary of Cohen's kappa inter-annotator agreement test."""
+    n_items: int
+    observed_agreement: float
+    expected_agreement: float
+    kappa: float
+    std_err: float
+    ci_lower: float
+    ci_upper: float
+    interpretation: str
+    categories: List[str]
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "n_items": self.n_items,
+            "observed_agreement": round(self.observed_agreement, 4),
+            "expected_agreement": round(self.expected_agreement, 4),
+            "kappa": round(self.kappa, 4),
+            "std_err": round(self.std_err, 4),
+            "ci_lower": round(self.ci_lower, 4),
+            "ci_upper": round(self.ci_upper, 4),
+            "interpretation": self.interpretation,
+            "categories": self.categories,
+        }
+
+
+def compute_cohens_kappa(
+    annotations_a: Sequence[str],
+    annotations_b: Sequence[str],
+    categories: Optional[Sequence[str]] = None,
+    ci_level: float = 0.95,
+) -> CohensKappaResult:
+    """Compute Cohen's kappa coefficient of inter-annotator agreement.
+
+    Formula:
+        kappa = (P_o - P_e) / (1.0 - P_e)
+    where:
+        P_o = Observed proportion of agreement across items.
+        P_e = Expected proportion of agreement by chance.
+    """
+    if len(annotations_a) != len(annotations_b):
+        raise ValueError(
+            f"Annotation sequences must have identical length: {len(annotations_a)} != {len(annotations_b)}"
+        )
+    n = len(annotations_a)
+    if n == 0:
+        return CohensKappaResult(
+            n_items=0,
+            observed_agreement=0.0,
+            expected_agreement=0.0,
+            kappa=0.0,
+            std_err=0.0,
+            ci_lower=0.0,
+            ci_upper=0.0,
+            interpretation="No data",
+            categories=[],
+        )
+
+    all_cats = sorted(set(categories or (set(annotations_a) | set(annotations_b))))
+
+    # Observed agreement
+    agree_count = sum(1 for a, b in zip(annotations_a, annotations_b) if a == b)
+    p_o = agree_count / n
+
+    # Marginals for expected agreement
+    counts_a = collections.Counter(annotations_a)
+    counts_b = collections.Counter(annotations_b)
+    p_e = sum((counts_a[c] / n) * (counts_b[c] / n) for c in all_cats)
+
+    if math.isclose(p_e, 1.0):
+        kappa = 1.0 if math.isclose(p_o, 1.0) else 0.0
+    else:
+        kappa = (p_o - p_e) / (1.0 - p_e)
+
+    # Standard error approximation
+    denom = (1.0 - p_e)
+    if math.isclose(denom, 0.0) or n <= 1:
+        se = 0.0
+    else:
+        var_kappa = (p_o * (1.0 - p_o)) / (n * (denom ** 2)) if p_o < 1.0 else 0.0
+        se = math.sqrt(max(0.0, var_kappa))
+
+    z = 1.96 if math.isclose(ci_level, 0.95) else 1.645
+    ci_lower = max(-1.0, kappa - z * se)
+    ci_upper = min(1.0, kappa + z * se)
+
+    # Landis & Koch (1977) benchmark scale
+    if kappa < 0.0:
+        interp = "Poor agreement (less than chance)"
+    elif kappa <= 0.20:
+        interp = "Slight agreement"
+    elif kappa <= 0.40:
+        interp = "Fair agreement"
+    elif kappa <= 0.60:
+        interp = "Moderate agreement"
+    elif kappa <= 0.80:
+        interp = "Substantial agreement"
+    else:
+        interp = "Almost perfect agreement"
+
+    return CohensKappaResult(
+        n_items=n,
+        observed_agreement=p_o,
+        expected_agreement=p_e,
+        kappa=kappa,
+        std_err=se,
+        ci_lower=ci_lower,
+        ci_upper=ci_upper,
+        interpretation=interp,
+        categories=all_cats,
+    )

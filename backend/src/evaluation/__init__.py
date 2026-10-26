@@ -27,8 +27,10 @@ from backend.src.evaluation.metrics import (
 )
 from backend.src.evaluation.statistics import (
     BootstrapResult,
+    CohensKappaResult,
     PairedBootstrapResult,
     cluster_bootstrap_metric,
+    compute_cohens_kappa,
     compute_contingency_table,
     paired_cluster_bootstrap_test,
 )
@@ -59,7 +61,9 @@ __all__ = [
     "cluster_bootstrap_metric",
     "paired_cluster_bootstrap_test",
     "compute_contingency_table",
+    "compute_cohens_kappa",
     "BootstrapResult",
+    "CohensKappaResult",
     "PairedBootstrapResult",
     "BenchmarkScenario",
     "EvaluationReport",
