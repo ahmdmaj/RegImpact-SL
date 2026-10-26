@@ -56,8 +56,15 @@ This matrix establishes the compliance status of the RegImpact-SL codebase again
    - Candidate pool: Gazettes 2494/47, 2494/06, 2113/16, 1795/51, 2443/27, and post-OCR 1688/28 (strictly treated as candidates requiring individual clause review).
    - Domain exclusions: CEA (environmental licensing) and EPF/ETF (labour obligations) explicitly excluded under Section 11 Priority Rule.
    - Proposal v4 textual discrepancy documented: variance between Section 6 (20–30 instruments) and Section 9.1 (25–40 instruments) recorded as a drafting inconsistency; original Proposal v4 freeze file preserved unchanged.
-5. **Prioritized Action Plan (Next Steps)**:
-   - Perform primary human review on the 10 candidate rules via `/admin/reviews` using the [Candidate Rule Human-Review Register](file:///c:/Users/HP/Desktop/PROJECTS/RegImpact-SL/docs/CANDIDATE_RULE_HUMAN_REVIEW_REGISTER.md), amending the two mismatched flavouring rules.
+5. **Phase 3.8 Bounded Rule Correction and Source Verification (COMPLETED)**:
+   - Physical Gazette audit completed across Gazette 1795/51 (Flavourings 2013) and Gazette 2113/16 (Preservatives 2019).
+   - Reconciled Phase 3.6 anomaly claims: demonstrated that PostgreSQL DB already stored exact verbatim quote spans on Page 2 and Page 5. The discrepancies were localized to `docs/CANDIDATE_RULE_HUMAN_REVIEW_REGISTER.md` draft citations.
+   - Fully amended `docs/CANDIDATE_RULE_HUMAN_REVIEW_REGISTER.md` for `RULE-FLAVOUR-INFANT-PROHIBITION` (Reg 7(ii), p. 2), `RULE-FLAVOUR-LABEL-DECLARATION` (Reg 8(2)(d), p. 2), and `RULE-PRESERVATIVE-JAM-JELLY-LIMIT` (Sched II Item 3.1(h), p. 5, plus low-sugar proviso notes against Item 3.1(i)).
+   - Implemented focused 6-test suite in `backend/tests/test_phase_3_8_source_verification.py` (100% passing). Multi-phase regression verified passing (52 passed).
+   - Zero database mutation executed without authorization. Itemized database update authorization request documented in [docs/PHASE_3_8_BOUNDED_RULE_CORRECTION_AND_SOURCE_VERIFICATION_REPORT.md](file:///c:/Users/HP/Desktop/PROJECTS/RegImpact-SL/docs/PHASE_3_8_BOUNDED_RULE_CORRECTION_AND_SOURCE_VERIFICATION_REPORT.md).
+6. **Prioritized Action Plan (Next Steps)**:
+   - Obtain project owner authorization and execute itemized database field updates for Rules 6, 8, and 10.
+   - Perform primary human review on the 10 candidate rules via `/admin/reviews` using the corrected [Candidate Rule Human-Review Register](file:///c:/Users/HP/Desktop/PROJECTS/RegImpact-SL/docs/CANDIDATE_RULE_HUMAN_REVIEW_REGISTER.md).
    - Run Tesseract OCR on Gazette 1688/28 (Colouring 2011) and visually verify against the page scans.
    - Compile rules for 19 additional clauses from the 49 uncompiled authentic clauses in PostgreSQL to reach the locked Option A target of 25 distinct clauses.
    - Construct and pair 70 additional scenarios across the 25 clauses to reach the locked Option A minimum target of 100 scenarios.
