@@ -751,7 +751,7 @@ def test_non_finite_vector_values_excluded(db_session):
 def test_reg3_dual_pass_discrepancy_fails_closed():
     """Verify that predicate conflations and ad-hoc assumption differences fail closed to PENDING_REVIEW."""
     from backend.src.extraction.compiler import compute_rule_agreement
-    from backend.src.models.domain import AppliesIf, Condition, Obligation, Rule, Validity, Source
+    from backend.src.models.domain import AppliesIf, Condition, Obligation, Rule, Validity, Source, Verification
 
     # Pass A: Conflates 3 mm font size as an applicability condition (common LLM extraction defect)
     pass_a = Rule(
@@ -776,6 +776,7 @@ def test_reg3_dual_pass_discrepancy_fails_closed():
             text="Mandatory 'Not for retail sale' statement in bold type not less than 3 mm.",
             impact_categories=["labelling"],
         ),
+        verification=Verification(status="PENDING_REVIEW", extraction_model="test-pass-a", agreement=False),
     )
 
     # Pass B: Structural decomposition with ad-hoc field names
@@ -801,6 +802,7 @@ def test_reg3_dual_pass_discrepancy_fails_closed():
             text="Mandatory 'Not for retail sale' statement in bold type not less than 3 mm.",
             impact_categories=["labelling"],
         ),
+        verification=Verification(status="PENDING_REVIEW", extraction_model="test-pass-b", agreement=False),
     )
 
     agreed, discrepancies = compute_rule_agreement(pass_a, pass_b)
