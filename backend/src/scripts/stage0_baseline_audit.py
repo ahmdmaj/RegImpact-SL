@@ -50,7 +50,7 @@ def main():
                     {
                         "rule_id": r.rule_id,
                         "clause_id": r.clause_id,
-                        "status": r.status,
+                        "status": r.review_status,
                         "is_gold": getattr(r, "is_gold_rule", False),
                         "is_synthetic": r.is_synthetic,
                     }
@@ -70,7 +70,8 @@ def main():
         all_rules = db.query(RuleORM).all()
         print(f"\nTotal RuleORM: {len(all_rules)}")
         for r in all_rules:
-            print(f"Rule: {r.rule_id} | Clause: {r.clause_id} | Status: {r.status} | Gold: {getattr(r, 'is_gold_rule', False)} | Synth: {r.is_synthetic}")
+            print(f"Rule: {r.rule_id} | Clause: {r.clause_id} | Status: {r.review_status} | Gold: {getattr(r, 'is_gold_rule', False)} | Synth: {r.is_synthetic}")
+
 
         # Check HumanReviewAuditORM
         audits = db.query(HumanReviewAuditORM).all()
