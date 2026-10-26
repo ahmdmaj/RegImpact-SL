@@ -556,3 +556,255 @@ def test_authenticated_gazette_hash_strictly_enforced():
     assert actual_hash == expected_hash, f"Actual hash {actual_hash} does not match expected {expected_hash}"
     assert actual_hash != typo_hash, "Actual hash must not match the documentation typo"
 
+
+# ---------------------------------------------------------------------------
+# 13. Quarantined Test Uploads Excluded from Normal Dense and BM25 Retrieval
+# ---------------------------------------------------------------------------
+
+def test_quarantined_test_uploads_excluded_from_normal_retrieval(db_session):
+    """Quarantined dummy test upload clauses must be excluded from normal retrieval."""
+    from backend.src.db.models import SYNTHETIC_DOCUMENT_IDS, is_synthetic_clause, is_synthetic_document
+
+    quarantined_id = "doc_291759ecef9fc7c9129bff1139d1837790a50cac32236ec46c0e4b351d76270c"
+    assert quarantined_id in SYNTHETIC_DOCUMENT_IDS
+    assert is_synthetic_document(doc_id=quarantined_id) is True
+
+    # BM25 must exclude it
+    bm25 = BM25RetrievalEngine(db=db_session)
+    res_bm25 = bm25.search("cold storage digital temperature logging records", top_k=10)
+    for r in res_bm25:
+        assert r.document_id != quarantined_id, f"Quarantined document {quarantined_id} appeared in BM25 results!"
+        assert not r.clause_id.startswith("CLAUSE-DOC_291759ECEF9FC7C9")
+
+    # In-memory dense fallback must exclude it
+    query_vec = [0.1] * 128
+    dense = DenseRetrievalEngine(db=db_session, target_dimension=128, allow_unverified=False)
+    res_dense = dense._search_in_memory_fallback(query_vec, top_k=10)
+    for r in res_dense:
+        assert r.document_id != quarantined_id, f"Quarantined document {quarantined_id} appeared in Dense results!"
+        assert not r.clause_id.startswith("CLAUSE-DOC_291759ECEF9FC7C9")
+
+
+# ---------------------------------------------------------------------------
+# 14. Unpromulgated Draft and Lecture Slides Excluded from Normal Retrieval
+# ---------------------------------------------------------------------------
+
+def test_unpromulgated_draft_and_nonstatutory_docs_excluded(db_session):
+    """Working draft FAC 2026 and lecture slides must be strictly excluded from normal retrieval."""
+    from backend.src.db.models import is_synthetic_document
+
+    assert is_synthetic_document(doc_id="doc_lec_03") is True
+    assert is_synthetic_document(doc_id="doc_labelling_regulations_final_2026") is True
+
+    bm25 = BM25RetrievalEngine(db=db_session)
+    results = bm25.search("Food Labelling and Advertising Regulations", top_k=20)
+    for r in results:
+        assert r.document_id != "doc_lec_03"
+        assert r.document_id != "doc_labelling_regulations_final_2026", (
+            "Unpromulgated FAC draft clauses must NOT enter normal application retrieval!"
+        )
+
+
+# ---------------------------------------------------------------------------
+# 15. Verified Flag with Missing Provider/Model Provenance Excluded
+# ---------------------------------------------------------------------------
+
+def test_verified_flag_with_missing_provenance_strictly_excluded(db_session):
+    """A clause with embedding_verified=True but empty/missing provider/model must be excluded."""
+    doc = SourceDocumentORM(
+        id="doc_prov_defect_test",
+        title="Provenance Defect Doc",
+        authority="Test",
+        sha256_hash="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        file_path="dummy.pdf",
+        file_size_bytes=100,
+        page_count=1,
+    )
+    db_session.add(doc)
+    db_session.flush()
+
+    vec = [0.1] * 128
+    clause_bad_prov = ClauseORM(
+        clause_id="CLAUSE-DEFECT-PROV-001",
+        version_number=1,
+        document_id="doc_prov_defect_test",
+        clause_number="Reg Defect",
+        text="Clause with verified=True but missing provider name.",
+        start_page=1,
+        end_page=1,
+        is_compilable=True,
+        embedding=vec,
+        embedding_verified=True,
+        embedding_provider="",  # Empty provider!
+        embedding_model="some-model",
+    )
+    clause_unknown_prov = ClauseORM(
+        clause_id="CLAUSE-DEFECT-PROV-002",
+        version_number=1,
+        document_id="doc_prov_defect_test",
+        clause_number="Reg Defect 2",
+        text="Clause with verified=True but unknown model name.",
+        start_page=1,
+        end_page=1,
+        is_compilable=True,
+        embedding=vec,
+        embedding_verified=True,
+        embedding_provider="sentence-transformers",
+        embedding_model="unknown",  # "unknown" model!
+    )
+    clause_good_prov = ClauseORM(
+        clause_id="CLAUSE-DEFECT-PROV-003",
+        version_number=1,
+        document_id="doc_prov_defect_test",
+        clause_number="Reg Good",
+        text="Clause with verified=True and valid provider and model.",
+        start_page=1,
+        end_page=1,
+        is_compilable=True,
+        embedding=vec,
+        embedding_verified=True,
+        embedding_provider="sentence-transformers",
+        embedding_model="BAAI/bge-base-en-v1.5",
+    )
+    db_session.add_all([clause_bad_prov, clause_unknown_prov, clause_good_prov])
+    db_session.flush()
+
+    dense = DenseRetrievalEngine(db=db_session, target_dimension=128, allow_unverified=False)
+    results = dense._search_in_memory_fallback(vec, top_k=10)
+    returned_ids = {r.clause_id for r in results}
+
+    assert "CLAUSE-DEFECT-PROV-003" in returned_ids
+    assert "CLAUSE-DEFECT-PROV-001" not in returned_ids, "Empty provider clause must be excluded!"
+    assert "CLAUSE-DEFECT-PROV-002" not in returned_ids, "'unknown' model clause must be excluded!"
+
+
+# ---------------------------------------------------------------------------
+# 16. Non-Finite Vector Values Excluded
+# ---------------------------------------------------------------------------
+
+def test_non_finite_vector_values_excluded(db_session):
+    """Vectors containing NaN or Inf values must be excluded from dense retrieval."""
+    import math
+
+    doc = SourceDocumentORM(
+        id="doc_nan_inf_test",
+        title="NaN Inf Doc",
+        authority="Test",
+        sha256_hash="bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        file_path="dummy.pdf",
+        file_size_bytes=100,
+        page_count=1,
+    )
+    db_session.add(doc)
+    db_session.flush()
+
+    vec_nan = [0.1] * 128
+    vec_nan[5] = float("nan")
+
+    vec_inf = [0.1] * 128
+    vec_inf[10] = float("inf")
+
+    c_nan = ClauseORM(
+        clause_id="CLAUSE-NAN-001",
+        version_number=1,
+        document_id="doc_nan_inf_test",
+        clause_number="Reg NaN",
+        text="Clause with NaN vector.",
+        start_page=1,
+        end_page=1,
+        is_compilable=True,
+        embedding=vec_nan,
+        embedding_verified=True,
+        embedding_provider="sentence-transformers",
+        embedding_model="BAAI/bge-base-en-v1.5",
+    )
+    c_inf = ClauseORM(
+        clause_id="CLAUSE-INF-001",
+        version_number=1,
+        document_id="doc_nan_inf_test",
+        clause_number="Reg Inf",
+        text="Clause with Inf vector.",
+        start_page=1,
+        end_page=1,
+        is_compilable=True,
+        embedding=vec_inf,
+        embedding_verified=True,
+        embedding_provider="sentence-transformers",
+        embedding_model="BAAI/bge-base-en-v1.5",
+    )
+    db_session.add_all([c_nan, c_inf])
+    db_session.flush()
+
+    query_vec = [0.1] * 128
+    dense = DenseRetrievalEngine(db=db_session, target_dimension=128, allow_unverified=False)
+    results = dense._search_in_memory_fallback(query_vec, top_k=10)
+    returned_ids = {r.clause_id for r in results}
+
+    assert "CLAUSE-NAN-001" not in returned_ids, "NaN vector must be excluded!"
+    assert "CLAUSE-INF-001" not in returned_ids, "Inf vector must be excluded!"
+
+
+# ---------------------------------------------------------------------------
+# 17. Regulation 3 Dual-Pass Extraction Discrepancy Fails Closed
+# ---------------------------------------------------------------------------
+
+def test_reg3_dual_pass_discrepancy_fails_closed():
+    """Verify that predicate conflations and ad-hoc assumption differences fail closed to PENDING_REVIEW."""
+    from backend.src.extraction.compiler import compute_rule_agreement
+    from backend.src.models.domain import AppliesIf, Condition, Obligation, Rule, Validity, Source
+
+    # Pass A: Conflates 3 mm font size as an applicability condition (common LLM extraction defect)
+    pass_a = Rule(
+        rule_id="RULE-REG3-TEST-A",
+        source=Source(
+            instrument="Sri Lanka Gazette Extraordinary No. 2494/47",
+            authority="FCAU",
+            clause="Regulation 3",
+            page=1,
+            quote_span="A person shall not import, transport, distribute, store, sell, offer for sale... font size of not less than three millimetres (3 mm).",
+        ),
+        validity=Validity(published="2026-06-26", commences="2026-07-01"),
+        applies_if=AppliesIf(
+            all=[
+                Condition(field="product_type", op="eq", value="business-to-business food products"),
+                Condition(field="label_font_size", op="gte", value="3 mm"),
+            ]
+        ),
+        obligation=Obligation(
+            type="labelling",
+            text="Mandatory 'Not for retail sale' statement in bold type not less than 3 mm.",
+            impact_categories=["labelling"],
+        ),
+    )
+
+    # Pass B: Structural decomposition with ad-hoc field names
+    pass_b = Rule(
+        rule_id="RULE-REG3-TEST-B",
+        source=Source(
+            instrument="Sri Lanka Gazette Extraordinary No. 2494/47",
+            authority="FCAU",
+            clause="Regulation 3",
+            page=1,
+            quote_span="A person shall not import, transport, distribute, store, sell, offer for sale... font size of not less than three millimetres (3 mm).",
+        ),
+        validity=Validity(published="2026-06-26", commences="2026-07-01"),
+        applies_if=AppliesIf(
+            all=[
+                Condition(field="business_model", op="eq", value="business-to-business"),
+                Condition(field="packaging_status", op="eq", value="packaged"),
+            ]
+        ),
+        obligation=Obligation(
+            type="labelling",
+            text="Mandatory 'Not for retail sale' statement in bold type not less than 3 mm.",
+            impact_categories=["labelling"],
+        ),
+    )
+
+    agreed, discrepancies = compute_rule_agreement(pass_a, pass_b)
+
+    assert agreed is False, "Pass A and Pass B must NOT agree when predicates differ!"
+    assert len(discrepancies) > 0
+    assert any("Pass A conditions not in Pass B" in d for d in discrepancies)
+    assert any("Pass B conditions not in Pass A" in d for d in discrepancies)
+
