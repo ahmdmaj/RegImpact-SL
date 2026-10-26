@@ -32,6 +32,7 @@ export default function AdminReviewsPage() {
   const [loading, setLoading] = useState(true);
   const [actionInProgress, setActionInProgress] = useState<string | null>(null);
   const [reviewerId, setReviewerId] = useState("legal_officer_sl");
+  const [reviewerRole, setReviewerRole] = useState("PRIMARY_ANNOTATOR");
   const [rationales, setRationales] = useState<Record<string, string>>({});
   const [activeTab, setActiveTab] = useState<"queue" | "upload">("queue");
   const [expandedRawJson, setExpandedRawJson] = useState<Record<string, boolean>>({});
@@ -72,9 +73,10 @@ export default function AdminReviewsPage() {
   const handleApprove = async (ruleId: string) => {
     setActionInProgress(ruleId);
     try {
-      const rationale = rationales[ruleId] || "Grounding in statutory source text verified and deterministic Kleene logic approved.";
+      const rationale = rationales[ruleId]?.trim() || "Grounding in statutory source text verified and deterministic Kleene logic approved by primary annotator.";
       const res = await approveReview(ruleId, {
         reviewer_id: reviewerId,
+        reviewer_role: reviewerRole,
         rationale: rationale,
       });
       showToast(`Rule ${res.rule_id} successfully approved. Immutable audit record created.`);
@@ -90,9 +92,10 @@ export default function AdminReviewsPage() {
   const handleReject = async (ruleId: string) => {
     setActionInProgress(ruleId);
     try {
-      const rationale = rationales[ruleId] || "Extracted logic does not accurately reflect statutory intent or coverage constraints.";
+      const rationale = rationales[ruleId]?.trim() || "Extracted logic does not accurately reflect statutory intent or coverage constraints.";
       const res = await rejectReview(ruleId, {
         reviewer_id: reviewerId,
+        reviewer_role: reviewerRole,
         rationale: rationale,
       });
       showToast(`Rule ${res.rule_id} marked REJECTED.`);
@@ -190,7 +193,7 @@ export default function AdminReviewsPage() {
                   Human-In-The-Loop Audit
                 </span>
               </div>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-2 mt-1 flex-wrap">
                 <span className="text-xs text-zinc-400">Reviewer ID:</span>
                 <input
                   type="text"
@@ -199,6 +202,16 @@ export default function AdminReviewsPage() {
                   className="px-2 py-0.5 bg-zinc-950 border border-zinc-800 rounded text-xs font-mono text-zinc-200 focus:outline-none focus:border-zinc-500"
                   placeholder="Reviewer ID"
                 />
+                <span className="text-xs text-zinc-400 ml-2">Role:</span>
+                <select
+                  value={reviewerRole}
+                  onChange={(e) => setReviewerRole(e.target.value)}
+                  className="px-2 py-0.5 bg-zinc-950 border border-zinc-800 rounded text-xs font-mono text-zinc-200 focus:outline-none focus:border-zinc-500"
+                >
+                  <option value="PRIMARY_ANNOTATOR">Primary Annotator</option>
+                  <option value="SECONDARY_ANNOTATOR">Secondary Annotator</option>
+                  <option value="EXPERT_ADJUDICATOR">Expert Adjudicator (Legal)</option>
+                </select>
               </div>
             </div>
           </div>
@@ -250,7 +263,7 @@ export default function AdminReviewsPage() {
                 </div>
                 <h3 className="text-sm font-semibold text-zinc-100">Review Queue Empty</h3>
                 <p className="text-xs text-zinc-400 max-w-md mx-auto">
-                  All candidate statutory clauses have been verified and certified. Upload new Gazette PDFs or trigger seeder to populate.
+                  All candidate statutory rules in the review queue have been reviewed.
                 </p>
               </div>
             ) : (
@@ -270,7 +283,7 @@ export default function AdminReviewsPage() {
                         <div className="flex items-center gap-2.5">
                           <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-mono font-medium bg-zinc-800 text-amber-300 border border-zinc-700">
                             <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                            PENDING VERIFICATION
+                            PENDING HUMAN REVIEW
                           </span>
                           <span className="text-xs font-semibold text-zinc-100">
                             Rule: {rule.rule_id}
@@ -322,6 +335,17 @@ export default function AdminReviewsPage() {
                                 {JSON.stringify(rule.obligation, null, 2)}
                               </pre>
                             </div>
+
+                            {rule.exceptions && rule.exceptions.length > 0 && (
+                              <div className="p-2.5 rounded-lg bg-zinc-950 border border-zinc-800">
+                                <span className="text-[10px] font-mono uppercase text-zinc-500 block mb-1">
+                                  Statutory Exceptions & Provisos:
+                                </span>
+                                <pre className="font-mono text-rose-300 text-[11px] overflow-x-auto whitespace-pre-wrap">
+                                  {JSON.stringify(rule.exceptions, null, 2)}
+                                </pre>
+                              </div>
+                            )}
 
                             {rule.validity && (
                               <div className="p-2.5 rounded-lg bg-zinc-950 border border-zinc-800">
@@ -411,7 +435,7 @@ export default function AdminReviewsPage() {
                       <div className="p-4 bg-zinc-950 border-t border-zinc-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
                         <input
                           type="text"
-                          placeholder="Optional legal reviewer rationale / notes..."
+                          placeholder="Substantive reviewer rationale / legal justification (mandatory)..."
                           value={currentRationale}
                           onChange={(e) =>
                             setRationales((prev) => ({ ...prev, [rule.rule_id]: e.target.value }))
@@ -435,7 +459,7 @@ export default function AdminReviewsPage() {
                             disabled={isProcessing}
                             className="px-4 py-2 rounded-lg bg-white hover:bg-zinc-200 text-zinc-950 text-xs font-medium shadow-sm transition-all disabled:opacity-50 cursor-pointer"
                           >
-                            <span>{isProcessing ? "Processing..." : "Approve & Certify"}</span>
+                            <span>{isProcessing ? "Processing..." : "Approve Candidate Rule"}</span>
                           </button>
                         </div>
                       </div>

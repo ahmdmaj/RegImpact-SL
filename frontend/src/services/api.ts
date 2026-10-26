@@ -347,6 +347,7 @@ export interface ReviewItem {
 
 export interface ReviewDecisionPayload {
   reviewer_id?: string;
+  reviewer_role?: string;
   rationale?: string;
   amendments?: Record<string, unknown>;
 }
@@ -382,7 +383,7 @@ export async function getPendingReviews(): Promise<ReviewItem[]> {
 export async function approveReview(
   ruleId: string,
   payload: ReviewDecisionPayload = {}
-): Promise<{ status: string; rule_id: string; review_status: string; decision: string }> {
+): Promise<{ success: boolean; rule_id: string; review_status: string; message: string }> {
   const res = await fetch(`${API_BASE_URL}/admin/reviews/${encodeURIComponent(ruleId)}/approve`, {
     method: "POST",
     headers: getAuthHeaders({ "Content-Type": "application/json" }),
@@ -405,7 +406,7 @@ export async function approveReview(
 export async function rejectReview(
   ruleId: string,
   payload: ReviewDecisionPayload = {}
-): Promise<{ status: string; rule_id: string; review_status: string; decision: string }> {
+): Promise<{ success: boolean; rule_id: string; review_status: string; message: string }> {
   const res = await fetch(`${API_BASE_URL}/admin/reviews/${encodeURIComponent(ruleId)}/reject`, {
     method: "POST",
     headers: getAuthHeaders({ "Content-Type": "application/json" }),
