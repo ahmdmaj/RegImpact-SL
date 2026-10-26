@@ -759,6 +759,7 @@ def test_reg3_dual_pass_discrepancy_fails_closed():
         source=Source(
             instrument="Sri Lanka Gazette Extraordinary No. 2494/47",
             authority="FCAU",
+            gazette_no="Gazette Extraordinary No. 2494/47",
             clause="Regulation 3",
             page=1,
             quote_span="A person shall not import, transport, distribute, store, sell, offer for sale... font size of not less than three millimetres (3 mm).",
@@ -783,6 +784,7 @@ def test_reg3_dual_pass_discrepancy_fails_closed():
         source=Source(
             instrument="Sri Lanka Gazette Extraordinary No. 2494/47",
             authority="FCAU",
+            gazette_no="Gazette Extraordinary No. 2494/47",
             clause="Regulation 3",
             page=1,
             quote_span="A person shall not import, transport, distribute, store, sell, offer for sale... font size of not less than three millimetres (3 mm).",
