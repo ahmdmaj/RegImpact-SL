@@ -115,14 +115,22 @@ The 10 rules below were deterministically compiled from authentic operative clau
 #### 5. `RULE-PRESERVATIVE-JAM-JELLY-LIMIT`
 - **Rule Identifier**: `RULE-PRESERVATIVE-JAM-JELLY-LIMIT`
 - **Source Instrument**: The Sri Lanka Gazette Extraordinary No. 2113/16 (2019-03-05)
-- **Source Clause**: `Schedule II Item 3.1(h)`
+- **Source Clause**: `Schedule II Item 3.1(h)` (Fruit and fruit products - Jams, Jellies, marmalades)
 - **Observed Review Status**: `PENDING_REVIEW` (`is_gold_rule=False`)
-- **Source Evidence Available**: Quote span (106 chars) on Page 13:  
+- **Source Evidence Available**: Quote span (106 chars) on Page 5:  
   `"(h) Jams, Jellies, marmalades: Sorbates 300 mg/kg, Sulphites (as residual SO2) 100 mg/kg, Propionates GMP;"`  
   Verified SHA-256: `3f85f3ef96b7622bdd3e45d7cc642fd96fdbd83a9f84f35f048121eab3e4016f`
+- **Verified Statutory Limits**:
+  * Sorbates: Maximum 300 mg/kg
+  * Sulphites (as residual SO2): Maximum 100 mg/kg
+  * Propionates: Good Manufacturing Practice (GMP)
+- **Material Proviso & Scope Limitation (Item 3.1(i))**:
+  * Schedule II Item 3.1(i) immediately follows setting a distinct statutory ceiling for `"Jams, Jellies and marmalades, low in sugar or sugar free"`: **Sorbates 500 mg/kg**, Sulphites 100 mg/kg, Propionates GMP.
+  * `RULE-PRESERVATIVE-JAM-JELLY-LIMIT` currently applies broadly to `products.category eq "jams_jellies_marmalades"`. To prevent low-sugar jams from being improperly restricted to 300 mg/kg, the rule's scope must be qualified to standard sugar jams (e.g. `products.is_low_sugar eq False`), and a distinct candidate rule (`RULE-PRESERVATIVE-LOW-SUGAR-JAM-LIMIT`) should represent Item 3.1(i).
 - **Questions Requiring Human Judgement**:
-  1. How should "Propionates GMP" (Good Manufacturing Practice) be modeled in deterministic Kleene logic: does GMP constitute unconstrained compliance or a discretionary standard requiring `CONDITIONAL_RULE`?
-  2. Does the Sulphite limit of 100 mg/kg apply to residual $\text{SO}_2$ or total added salt mass?
+  1. Should `RULE-PRESERVATIVE-JAM-JELLY-LIMIT` include an explicit negative condition or exception excluding low-sugar/sugar-free jams, with Item 3.1(i) compiled as a separate rule?
+  2. What objective statutory threshold defines "low in sugar or sugar free" under Sri Lankan food law (e.g. total soluble solids percentage / Brix level)?
+  3. How should "Propionates GMP" be evaluated in deterministic Kleene logic: does GMP constitute unconstrained compliance or require `CONDITIONAL_RULE`?
 - **Primary Review Status**: PENDING_REVIEW (Queued in `/admin/reviews`)
 - **Independent Annotation Status**: PENDING (External dependency)
 - **Adjudication Status**: PENDING
@@ -173,14 +181,18 @@ The 10 rules below were deterministically compiled from authentic operative clau
 #### 8. `RULE-FLAVOUR-INFANT-PROHIBITION`
 - **Rule Identifier**: `RULE-FLAVOUR-INFANT-PROHIBITION`
 - **Source Instrument**: The Sri Lanka Gazette Extraordinary No. 1795/51 (2013-02-01)
-- **Source Clause**: `Regulation 7(i)`
+- **Source Clause**: `Regulation 7(ii)` (Flavour enhancers - Infant food prohibition)
 - **Observed Review Status**: `PENDING_REVIEW` (`is_gold_rule=False`)
-- **Source Evidence Available**: Quote span (128 chars) on Page 3:  
-  `"(i) shall not be added to any food for infants and young children except as permitted in the regulations made under the Act;"`  
+- **Source Evidence Available**: Quote span (87 chars) on Page 2:  
+  `"(ii) shall not be added to any food for infants or young children below three years of age; and"`  
   Verified SHA-256: `b78479b6b08d12e11fd27cfc39677d5a284bc147bf16a777eafb495b86f4135a`
+- **Verified Statutory Context**:
+  * Operative stem (Regulation 7, Page 2): `"7. Flavour enhancers – (ii) shall not be added to any food for infants or young children below three years of age; and"`
+  * Statutory definition (Regulation 10, Page 3): `‘‘foods for infants or young children below three years of age ’’ means foods that are specifically prepared, manufactured or marketed for infants or young children below three years of age.`
+  * Audit Reconciliation: The earlier Phase 3.5 register incorrectly cited Regulation 7(i) with a paraphrased quote on Page 3. The underlying database record in PostgreSQL and `execute_phase_3_3_segmentation.py` already contained the exact Regulation 7(ii) quote on Page 2.
 - **Questions Requiring Human Judgement**:
-  1. What age boundary legally defines "infants and young children" under Sri Lankan food law (e.g. infant $< 12$ months, young children $12\text{--}36$ months)?
-  2. Does the exception phrase ("except as permitted in the regulations made under the Act") require cross-referencing specific infant formula gazettes?
+  1. Is the statutory definition in Regulation 10 ("specifically prepared, manufactured or marketed for infants or young children below three years of age") an absolute demographic prohibition that overrides product formulation intent?
+  2. Confirm whether any other gazette promulgated under the Food Act creates an exemption for specific clinical infant formulas.
 - **Primary Review Status**: PENDING_REVIEW (Queued in `/admin/reviews`)
 - **Independent Annotation Status**: PENDING (External dependency)
 - **Adjudication Status**: PENDING
@@ -210,14 +222,17 @@ The 10 rules below were deterministically compiled from authentic operative clau
 #### 10. `RULE-FLAVOUR-LABEL-DECLARATION`
 - **Rule Identifier**: `RULE-FLAVOUR-LABEL-DECLARATION`
 - **Source Instrument**: The Sri Lanka Gazette Extraordinary No. 1795/51 (2013-02-01)
-- **Source Clause**: `Regulation 8`
+- **Source Clause**: `Regulation 8(2)(d)` (Labelling of food containing flavour enhancers)
 - **Observed Review Status**: `PENDING_REVIEW` (`is_gold_rule=False`)
-- **Source Evidence Available**: Quote span (322 chars) on Page 3:  
-  `"The label on every package of food containing added flavouring substances or flavour enhancers shall include a statement indicating the presence of such flavouring substances or flavour enhancers in the list of ingredients as 'Flavouring' or 'Flavour Enhancer' as the case may be, together with its common name or INS number."`  
+- **Source Evidence Available**: Quote span (248 chars) on Page 2:  
+  `"(d) any flavour enhancer or enhancers as an ingredient, shall include the words ‘‘flavour enhancer used’’ or ‘‘flavour enhancers used’’ as the case may be, along with the common name or names and the INS number or numbers, as the case may be."`  
   Verified SHA-256: `b78479b6b08d12e11fd27cfc39677d5a284bc147bf16a777eafb495b86f4135a`
+- **Verified Statutory Context**:
+  * Operative stem (Regulation 8(2), Page 2): `"(2) The label printed on or attached to the package of food containing – (d) any flavour enhancer or enhancers as an ingredient, shall include the words ‘‘flavour enhancer used’’ or ‘‘flavour enhancers used’’ as the case may be, along with the common name or names and the INS number or numbers, as the case may be."`
+  * Audit Reconciliation: The earlier Phase 3.5 register contained an LLM-synthesized summary quote on Page 3. The underlying database record in PostgreSQL and `execute_phase_3_3_segmentation.py` already contained the exact Regulation 8(2)(d) quote on Page 2.
 - **Questions Requiring Human Judgement**:
-  1. Does providing the INS number alone fulfill the obligation, or must both the class title ("Flavouring") and INS number appear together?
-  2. How does this requirement coordinate with Gazette 2494/47 Regulation 6(1)(c)?
+  1. Statutory phrasing is conjunctive: does compliance require BOTH the class title ("flavour enhancer used") AND the specific common name (e.g. "monosodium glutamate") AND the INS number (e.g. "621")?
+  2. How does this requirement coordinate with Gazette 2494/47 Regulation 6(1)(c) general ingredient labelling?
 - **Primary Review Status**: PENDING_REVIEW (Queued in `/admin/reviews`)
 - **Independent Annotation Status**: PENDING (External dependency)
 - **Adjudication Status**: PENDING
@@ -270,12 +285,12 @@ The 10 rules below were deterministically compiled from authentic operative clau
 | `RULE-SUGAR-2494-06-AMBER` | Gazette 2494/06 | Sched (Reg 3) | `PENDING_REVIEW` | PENDING | PENDING | PENDING | `False` |
 | `RULE-SUGAR-2494-06-GREEN` | Gazette 2494/06 | Sched (Reg 3) | `PENDING_REVIEW` | PENDING | PENDING | PENDING | `False` |
 | `RULE-SUGAR-2494-06-GLASS-PROVISO` | Gazette 2494/06 | Reg 3(1) prov | `PENDING_REVIEW` | PENDING | PENDING | PENDING | `False` |
-| `RULE-PRESERVATIVE-JAM-JELLY-LIMIT` | Gazette 2113/16 | Sched II 3.1 | `PENDING_REVIEW` | PENDING | PENDING | PENDING | `False` |
+| `RULE-PRESERVATIVE-JAM-JELLY-LIMIT` | Gazette 2113/16 | Sched II 3.1(h) | `PENDING_REVIEW` | PENDING | PENDING | PENDING | `False` |
 | `RULE-PRESERVATIVE-MIXTURE-LIMIT` | Gazette 2113/16 | Reg 4 | `PENDING_REVIEW` | PENDING | PENDING | PENDING | `False` |
 | `RULE-PRESERVATIVE-LABEL-DECLARATION` | Gazette 2113/16 | Reg 8 | `PENDING_REVIEW` | PENDING | PENDING | PENDING | `False` |
-| `RULE-FLAVOUR-INFANT-PROHIBITION` | Gazette 1795/51 | Reg 7(i) | `PENDING_REVIEW` | PENDING | PENDING | PENDING | `False` |
+| `RULE-FLAVOUR-INFANT-PROHIBITION` | Gazette 1795/51 | Reg 7(ii) | `PENDING_REVIEW` | PENDING | PENDING | PENDING | `False` |
 | `RULE-FLAVOUR-SCHEDULE-III-PROHIBITION` | Gazette 1795/51 | Reg 7(iii) | `PENDING_REVIEW` | PENDING | PENDING | PENDING | `False` |
-| `RULE-FLAVOUR-LABEL-DECLARATION` | Gazette 1795/51 | Reg 8 | `PENDING_REVIEW` | PENDING | PENDING | PENDING | `False` |
+| `RULE-FLAVOUR-LABEL-DECLARATION` | Gazette 1795/51 | Reg 8(2)(d) | `PENDING_REVIEW` | PENDING | PENDING | PENDING | `False` |
 | `RULE-FCAU-2494-47-REG-3` | Gazette 2494/47 | Reg 3 | `APPROVED` | **APPROVED** | PENDING | PENDING | `False` |
 | `RULE-FCAU-2494-47-REG-3-B2B` | Gazette 2494/47 | Reg 3 prov | `APPROVED` | **APPROVED** | PENDING | PENDING | `False` |
 
