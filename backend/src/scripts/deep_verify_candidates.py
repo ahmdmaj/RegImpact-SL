@@ -46,11 +46,10 @@ def analyze_pdf(c):
     doc = fitz.open(str(filepath))
     print(f"Page count: {len(doc)}")
     
-    # Extract text from page 1 and page 2
-    for p_num in range(min(len(doc), 3)):
-        print(f"\n--- PAGE {p_num + 1} TEXT SNIPPET (First 800 chars) ---")
+    for p_num in range(len(doc)):
         p_text = doc[p_num].get_text()
-        print(p_text[:800].strip())
+        print(f"\n--- PAGE {p_num + 1} FULL TEXT ({len(p_text)} chars) ---")
+        print(p_text.strip())
         
     # Check database document and clauses
     with session_scope() as db:
@@ -67,8 +66,9 @@ def analyze_pdf(c):
             clauses = db.query(ClauseORM).filter_by(document_id=c["doc_id"]).all()
             print(f"  Clauses in DB ({len(clauses)}):")
             for cl in clauses:
-                print(f"    - Clause ID: {cl.clause_id} | Num: {cl.clause_number} | Page: {cl.page_number} | verified_emb: {cl.embedding_verified}")
-                print(f"      Text: {cl.clause_text[:120]}...")
+                print(f"    - Clause ID: {cl.clause_id} | Num: {cl.clause_number} | Pages: {cl.start_page}-{cl.end_page} | verified_emb: {cl.embedding_verified}")
+                print(f"      Valid: {cl.valid_from} to {cl.valid_to} | Transition: {cl.transition_until} | Superseded by: {cl.superseded_by_clause_id}")
+                print(f"      Text: {cl.text[:120]}...")
         else:
             print(f"\nNo DB record found for {c['doc_id']}")
 
