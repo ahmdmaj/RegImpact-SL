@@ -1,0 +1,347 @@
+{
+  "source_documents": [
+    {
+      "id": "doc_291759ecef9fc7c9129bff1139d1837790a50cac32236ec46c0e4b351d76270c",
+      "title": "291759Ecef9Fc7C9129Bff1139D1837790A50Cac32236Ec46C0E4B351D76270C",
+      "is_synthetic": false,
+      "sha256_hash": "291759ecef9fc7c9129bff1139d1837790a50cac32236ec46c0e4b351d76270c",
+      "file_path": "backend/data/raw_sources/291759ecef9fc7c9129bff1139d1837790a50cac32236ec46c0e4b351d76270c.pdf"
+    },
+    {
+      "id": "doc_3e863d976d56eb45ca7d410173fd8b451d6fef7308cceb706afe6720cec78b7f",
+      "title": "3E863D976D56Eb45Ca7D410173Fd8B451D6Fef7308Cceb706Afe6720Cec78B7F",
+      "is_synthetic": false,
+      "sha256_hash": "3e863d976d56eb45ca7d410173fd8b451d6fef7308cceb706afe6720cec78b7f",
+      "file_path": "backend/data/raw_sources/3e863d976d56eb45ca7d410173fd8b451d6fef7308cceb706afe6720cec78b7f.pdf"
+    },
+    {
+      "id": "doc_3f75e3ac63af8670c6ddda34fa8a61d2869e7697d5c88dfaee34162f5036f6e1",
+      "title": "3F75E3Ac63Af8670C6Ddda34Fa8A61D2869E7697D5C88Dfaee34162F5036F6E1",
+      "is_synthetic": false,
+      "sha256_hash": "3f75e3ac63af8670c6ddda34fa8a61d2869e7697d5c88dfaee34162f5036f6e1",
+      "file_path": "backend/data/raw_sources/3f75e3ac63af8670c6ddda34fa8a61d2869e7697d5c88dfaee34162f5036f6e1.pdf"
+    },
+    {
+      "id": "doc_58a58c41bf7d133299fd0fc96a8057f321d0ebfc8d0292fb72ae9c77bc2be3d7",
+      "title": "58A58C41Bf7D133299Fd0Fc96A8057F321D0Ebfc8D0292Fb72Ae9C77Bc2Be3D7",
+      "is_synthetic": false,
+      "sha256_hash": "58a58c41bf7d133299fd0fc96a8057f321d0ebfc8d0292fb72ae9c77bc2be3d7",
+      "file_path": "backend/data/raw_sources/58a58c41bf7d133299fd0fc96a8057f321d0ebfc8d0292fb72ae9c77bc2be3d7.pdf"
+    },
+    {
+      "id": "doc_6530c833247216f50bf6761120432ef8395c53f2ac68966efbe177774b6828e0",
+      "title": "6530C833247216F50Bf6761120432Ef8395C53F2Ac68966Efbe177774B6828E0",
+      "is_synthetic": false,
+      "sha256_hash": "6530c833247216f50bf6761120432ef8395c53f2ac68966efbe177774b6828e0",
+      "file_path": "backend/data/raw_sources/6530c833247216f50bf6761120432ef8395c53f2ac68966efbe177774b6828e0.pdf"
+    },
+    {
+      "id": "doc_lec_03",
+      "title": "Lec 03",
+      "is_synthetic": false,
+      "sha256_hash": "b2cfaf0ae21c67ae28864038a0b21293eb4c0f888dbc984c331e975c5528c37f",
+      "file_path": "backend/data/raw_sources/b2cfaf0ae21c67ae28864038a0b21293eb4c0f888dbc984c331e975c5528c37f.pdf"
+    },
+    {
+      "id": "doc_c244fce78aa38cfc17dbd9029caf602d50bd10bfdfd6fcb20bc215e0b8d47bb8",
+      "title": "C244Fce78Aa38Cfc17Dbd9029Caf602D50Bd10Bfdfd6Fcb20Bc215E0B8D47Bb8",
+      "is_synthetic": false,
+      "sha256_hash": "c244fce78aa38cfc17dbd9029caf602d50bd10bfdfd6fcb20bc215e0b8d47bb8",
+      "file_path": "backend/data/raw_sources/c244fce78aa38cfc17dbd9029caf602d50bd10bfdfd6fcb20bc215e0b8d47bb8.pdf"
+    },
+    {
+      "id": "doc_fcau_labelling_2024",
+      "title": "Food (Labelling and Advertising) Regulations 2024",
+      "is_synthetic": false,
+      "sha256_hash": "fixture_hash_doc_fcau_labelling_20240000000000000000000000000000",
+      "file_path": "backend/data/raw_sources/doc_fcau_labelling_2024.pdf"
+    },
+    {
+      "id": "doc_cea_epl_2022",
+      "title": "National Environmental (Protection and Quality) Regulations (EPL Standards) 2022",
+      "is_synthetic": false,
+      "sha256_hash": "fixture_hash_doc_cea_epl_202200000000000000000000000000000000000",
+      "file_path": "backend/data/raw_sources/doc_cea_epl_2022.pdf"
+    },
+    {
+      "id": "doc_caa_mrp_2023",
+      "title": "Consumer Affairs Authority (Display of Maximum Retail Prices) Direction 2023",
+      "is_synthetic": false,
+      "sha256_hash": "fixture_hash_doc_caa_mrp_202300000000000000000000000000000000000",
+      "file_path": "backend/data/raw_sources/doc_caa_mrp_2023.pdf"
+    },
+    {
+      "id": "doc_labelling_regulations_final_2026",
+      "title": "Food (Labelling and Advertising) Regulations (FAC Draft Final 11.02.2026)",
+      "is_synthetic": false,
+      "sha256_hash": "c70b5668131b76ff206897ef391cb3402bb4bf6be39a76ad1400d24c07330142",
+      "file_path": "backend/data/raw_sources/c70b5668131b76ff206897ef391cb3402bb4bf6be39a76ad1400d24c07330142.pdf"
+    }
+  ],
+  "clauses": [
+    {
+      "clause_id": "CLAUSE-DOC_291759ECEF9FC7C9129BFF1139D1837790A50CAC32236EC46C0E4B351D76270C-REGULATION-50",
+      "document_id": "doc_291759ecef9fc7c9129bff1139d1837790a50cac32236ec46c0e4b351d76270c",
+      "is_synthetic": false,
+      "embedding_verified": true,
+      "embedding_provider": "sentence-transformers",
+      "embedding_model": "BAAI/bge-base-en-v1.5"
+    },
+    {
+      "clause_id": "CLAUSE-DOC_FCAU_LABELLING_2024-SECTION-32",
+      "document_id": "doc_fcau_labelling_2024",
+      "is_synthetic": false,
+      "embedding_verified": false,
+      "embedding_provider": null,
+      "embedding_model": null
+    },
+    {
+      "clause_id": "CLAUSE-DOC_FCAU_LABELLING_2024-REGULATION-4",
+      "document_id": "doc_fcau_labelling_2024",
+      "is_synthetic": false,
+      "embedding_verified": false,
+      "embedding_provider": null,
+      "embedding_model": null
+    },
+    {
+      "clause_id": "CLAUSE-DOC_FCAU_LABELLING_2024-REGULATION-5",
+      "document_id": "doc_fcau_labelling_2024",
+      "is_synthetic": false,
+      "embedding_verified": false,
+      "embedding_provider": null,
+      "embedding_model": null
+    },
+    {
+      "clause_id": "CLAUSE-DOC_FCAU_LABELLING_2024-REGULATION-9",
+      "document_id": "doc_fcau_labelling_2024",
+      "is_synthetic": false,
+      "embedding_verified": false,
+      "embedding_provider": null,
+      "embedding_model": null
+    },
+    {
+      "clause_id": "CLAUSE-DOC_FCAU_LABELLING_2024-REGULATION-15",
+      "document_id": "doc_fcau_labelling_2024",
+      "is_synthetic": false,
+      "embedding_verified": false,
+      "embedding_provider": null,
+      "embedding_model": null
+    },
+    {
+      "clause_id": "CLAUSE-DOC_CEA_EPL_2022-SECTION-32",
+      "document_id": "doc_cea_epl_2022",
+      "is_synthetic": false,
+      "embedding_verified": false,
+      "embedding_provider": null,
+      "embedding_model": null
+    },
+    {
+      "clause_id": "CLAUSE-DOC_CEA_EPL_2022-REGULATION-3",
+      "document_id": "doc_cea_epl_2022",
+      "is_synthetic": false,
+      "embedding_verified": false,
+      "embedding_provider": null,
+      "embedding_model": null
+    },
+    {
+      "clause_id": "CLAUSE-DOC_CEA_EPL_2022-REGULATION-8",
+      "document_id": "doc_cea_epl_2022",
+      "is_synthetic": false,
+      "embedding_verified": false,
+      "embedding_provider": null,
+      "embedding_model": null
+    },
+    {
+      "clause_id": "CLAUSE-DOC_CAA_MRP_2023-SECTION-10",
+      "document_id": "doc_caa_mrp_2023",
+      "is_synthetic": false,
+      "embedding_verified": false,
+      "embedding_provider": null,
+      "embedding_model": null
+    },
+    {
+      "clause_id": "CLAUSE-DOC_CAA_MRP_2023-SECTION-14",
+      "document_id": "doc_caa_mrp_2023",
+      "is_synthetic": false,
+      "embedding_verified": false,
+      "embedding_provider": null,
+      "embedding_model": null
+    },
+    {
+      "clause_id": "FCAU-REG-04",
+      "document_id": "doc_fcau_labelling_2024",
+      "is_synthetic": false,
+      "embedding_verified": false,
+      "embedding_provider": null,
+      "embedding_model": null
+    },
+    {
+      "clause_id": "CEA-SCHED-01-B12",
+      "document_id": "doc_cea_epl_2022",
+      "is_synthetic": false,
+      "embedding_verified": false,
+      "embedding_provider": null,
+      "embedding_model": null
+    },
+    {
+      "clause_id": "CLAUSE-DOC_3E863D976D56EB45CA7D410173FD8B451D6FEF7308CCEB706AFE6720CEC78B7F-REGULATION-50",
+      "document_id": "doc_3e863d976d56eb45ca7d410173fd8b451d6fef7308cceb706afe6720cec78b7f",
+      "is_synthetic": false,
+      "embedding_verified": true,
+      "embedding_provider": "sentence-transformers",
+      "embedding_model": "BAAI/bge-base-en-v1.5"
+    },
+    {
+      "clause_id": "CLAUSE-DOC_3F75E3AC63AF8670C6DDDA34FA8A61D2869E7697D5C88DFAEE34162F5036F6E1-REGULATION-50",
+      "document_id": "doc_3f75e3ac63af8670c6ddda34fa8a61d2869e7697d5c88dfaee34162f5036f6e1",
+      "is_synthetic": false,
+      "embedding_verified": true,
+      "embedding_provider": "sentence-transformers",
+      "embedding_model": "BAAI/bge-base-en-v1.5"
+    },
+    {
+      "clause_id": "CLAUSE-DOC_LABELLING_REGULATIONS_FINAL_2026-REGULATION-2",
+      "document_id": "doc_labelling_regulations_final_2026",
+      "is_synthetic": false,
+      "embedding_verified": true,
+      "embedding_provider": "sentence-transformers",
+      "embedding_model": "BAAI/bge-base-en-v1.5"
+    },
+    {
+      "clause_id": "CLAUSE-DOC_58A58C41BF7D133299FD0FC96A8057F321D0EBFC8D0292FB72AE9C77BC2BE3D7-REGULATION-50",
+      "document_id": "doc_58a58c41bf7d133299fd0fc96a8057f321d0ebfc8d0292fb72ae9c77bc2be3d7",
+      "is_synthetic": false,
+      "embedding_verified": true,
+      "embedding_provider": "sentence-transformers",
+      "embedding_model": "BAAI/bge-base-en-v1.5"
+    },
+    {
+      "clause_id": "CLAUSE-DOC_6530C833247216F50BF6761120432EF8395C53F2AC68966EFBE177774B6828E0-REGULATION-50",
+      "document_id": "doc_6530c833247216f50bf6761120432ef8395c53f2ac68966efbe177774b6828e0",
+      "is_synthetic": false,
+      "embedding_verified": true,
+      "embedding_provider": "sentence-transformers",
+      "embedding_model": "BAAI/bge-base-en-v1.5"
+    },
+    {
+      "clause_id": "CLAUSE-DOC_C244FCE78AA38CFC17DBD9029CAF602D50BD10BFDFD6FCB20BC215E0B8D47BB8-REGULATION-50",
+      "document_id": "doc_c244fce78aa38cfc17dbd9029caf602d50bd10bfdfd6fcb20bc215e0b8d47bb8",
+      "is_synthetic": false,
+      "embedding_verified": true,
+      "embedding_provider": "sentence-transformers",
+      "embedding_model": "BAAI/bge-base-en-v1.5"
+    },
+    {
+      "clause_id": "CLAUSE-DOC_LABELLING_REGULATIONS_FINAL_2026-CLAUSE-4.3",
+      "document_id": "doc_labelling_regulations_final_2026",
+      "is_synthetic": false,
+      "embedding_verified": true,
+      "embedding_provider": "sentence-transformers",
+      "embedding_model": "BAAI/bge-base-en-v1.5"
+    },
+    {
+      "clause_id": "CLAUSE-DOC_LABELLING_REGULATIONS_FINAL_2026-REGULATION-12",
+      "document_id": "doc_labelling_regulations_final_2026",
+      "is_synthetic": false,
+      "embedding_verified": true,
+      "embedding_provider": "sentence-transformers",
+      "embedding_model": "BAAI/bge-base-en-v1.5"
+    },
+    {
+      "clause_id": "CLAUSE-DOC_LABELLING_REGULATIONS_FINAL_2026-REGULATION-3",
+      "document_id": "doc_labelling_regulations_final_2026",
+      "is_synthetic": false,
+      "embedding_verified": true,
+      "embedding_provider": "sentence-transformers",
+      "embedding_model": "BAAI/bge-base-en-v1.5"
+    },
+    {
+      "clause_id": "CLAUSE-DOC_LABELLING_REGULATIONS_FINAL_2026-REGULATION-4",
+      "document_id": "doc_labelling_regulations_final_2026",
+      "is_synthetic": false,
+      "embedding_verified": true,
+      "embedding_provider": "sentence-transformers",
+      "embedding_model": "BAAI/bge-base-en-v1.5"
+    },
+    {
+      "clause_id": "CLAUSE-DOC_LABELLING_REGULATIONS_FINAL_2026-REGULATION-5",
+      "document_id": "doc_labelling_regulations_final_2026",
+      "is_synthetic": false,
+      "embedding_verified": true,
+      "embedding_provider": "sentence-transformers",
+      "embedding_model": "BAAI/bge-base-en-v1.5"
+    },
+    {
+      "clause_id": "CLAUSE-DOC_LABELLING_REGULATIONS_FINAL_2026-SECTION-1",
+      "document_id": "doc_labelling_regulations_final_2026",
+      "is_synthetic": false,
+      "embedding_verified": true,
+      "embedding_provider": "sentence-transformers",
+      "embedding_model": "BAAI/bge-base-en-v1.5"
+    },
+    {
+      "clause_id": "CLAUSE-DOC_LABELLING_REGULATIONS_FINAL_2026-SECTION-2.1",
+      "document_id": "doc_labelling_regulations_final_2026",
+      "is_synthetic": false,
+      "embedding_verified": true,
+      "embedding_provider": "sentence-transformers",
+      "embedding_model": "BAAI/bge-base-en-v1.5"
+    }
+  ],
+  "rules": [
+    {
+      "rule_id": "RULE-FCAU-REG-4",
+      "clause_id": "CLAUSE-DOC_FCAU_LABELLING_2024-REGULATION-4",
+      "review_status": "APPROVED",
+      "is_synthetic": false
+    },
+    {
+      "rule_id": "RULE-FCAU-REG-15",
+      "clause_id": "CLAUSE-DOC_FCAU_LABELLING_2024-REGULATION-15",
+      "review_status": "APPROVED",
+      "is_synthetic": false
+    },
+    {
+      "rule_id": "RULE-CEA-REG-3",
+      "clause_id": "CLAUSE-DOC_CEA_EPL_2022-REGULATION-3",
+      "review_status": "APPROVED",
+      "is_synthetic": false
+    },
+    {
+      "rule_id": "RULE-CEA-REG-8",
+      "clause_id": "CLAUSE-DOC_CEA_EPL_2022-REGULATION-8",
+      "review_status": "APPROVED",
+      "is_synthetic": false
+    },
+    {
+      "rule_id": "RULE-CAA-SEC-10",
+      "clause_id": "CLAUSE-DOC_CAA_MRP_2023-SECTION-10",
+      "review_status": "APPROVED",
+      "is_synthetic": false
+    },
+    {
+      "rule_id": "RULE-CAA-SEC-14",
+      "clause_id": "CLAUSE-DOC_CAA_MRP_2023-SECTION-14",
+      "review_status": "APPROVED",
+      "is_synthetic": false
+    },
+    {
+      "rule_id": "RULE-FCAU-001",
+      "clause_id": "FCAU-REG-04",
+      "review_status": "APPROVED",
+      "is_synthetic": false
+    },
+    {
+      "rule_id": "RULE-CEA-EPL-001",
+      "clause_id": "CEA-SCHED-01-B12",
+      "review_status": "APPROVED",
+      "is_synthetic": false
+    },
+    {
+      "rule_id": "RULE-FCAU-REAL-2026-REG-2",
+      "clause_id": "CLAUSE-DOC_LABELLING_REGULATIONS_FINAL_2026-REGULATION-2",
+      "review_status": "APPROVED",
+      "is_synthetic": false
+    }
+  ]
+}

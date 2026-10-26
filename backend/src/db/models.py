@@ -51,29 +51,54 @@ def _utcnow() -> datetime.datetime:
 # ---------------------------------------------------------------------------
 
 SYNTHETIC_DOCUMENT_IDS = {
+    # Hardcoded synthetic fixtures with pseudo-hashes
     "doc_fcau_labelling_2024",
     "doc_cea_epl_2022",
     "doc_caa_mrp_2023",
     "test_live_doc_pgvector",
+    # Non-statutory lecture slides (SUSL HPC lecture)
+    "doc_lec_03",
+    # Unpromulgated working draft (FAC Draft 11.02.2026)
+    "doc_labelling_regulations_final_2026",
+    # Integration test dummy uploads (size ~1037 bytes)
+    "doc_291759ecef9fc7c9129bff1139d1837790a50cac32236ec46c0e4b351d76270c",
+    "doc_3e863d976d56eb45ca7d410173fd8b451d6fef7308cceb706afe6720cec78b7f",
+    "doc_3f75e3ac63af8670c6ddda34fa8a61d2869e7697d5c88dfaee34162f5036f6e1",
+    "doc_58a58c41bf7d133299fd0fc96a8057f321d0ebfc8d0292fb72ae9c77bc2be3d7",
+    "doc_6530c833247216f50bf6761120432ef8395c53f2ac68966efbe177774b6828e0",
+    "doc_c244fce78aa38cfc17dbd9029caf602d50bd10bfdfd6fcb20bc215e0b8d47bb8",
 }
 
 SYNTHETIC_RULE_IDS = {
     "RULE-FCAU-REG-4",
+    "RULE-FCAU-REG-15",
+    "RULE-CEA-REG-3",
+    "RULE-CEA-REG-8",
+    "RULE-CAA-SEC-10",
+    "RULE-CAA-SEC-14",
     "RULE-CEA-EPL-SCHED-B",
     "RULE-CAA-MRP-DIR-3",
     "RULE-FCAU-001",
     "RULE-CEA-EPL-001",
+    "RULE-FCAU-REAL-2026-REG-2",
 }
 
 SYNTHETIC_CLAUSE_PREFIXES = (
     "CLAUSE-DOC_FCAU_LABELLING_2024",
     "CLAUSE-DOC_CEA_EPL_2022",
     "CLAUSE-DOC_CAA_MRP_2023",
+    "CLAUSE-DOC_LABELLING_REGULATIONS_FINAL_2026",
     "FCAU-REG-04",
     "CEA-SCHED-01-B12",
     "TEST-VEC-",
     "TEST-",
     "FIXTURE-",
+    "CLAUSE-DOC_291759ECEF9FC7C9",
+    "CLAUSE-DOC_3E863D976D56EB45",
+    "CLAUSE-DOC_3F75E3AC63AF8670",
+    "CLAUSE-DOC_58A58C41BF7D1332",
+    "CLAUSE-DOC_6530C833247216F5",
+    "CLAUSE-DOC_C244FCE78AA38CFC",
 )
 
 
