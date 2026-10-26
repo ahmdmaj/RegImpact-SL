@@ -1,0 +1,2092 @@
+{
+  "timestamp": "2026-10-26T13:07:25.302086",
+  "source_documents": [
+    {
+      "id": "doc_15803fe0b14aabe0c79126ebe7c8834d8063b6ed8c2a9033c1201ff538bcd95b",
+      "title": "15803Fe0B14Aabe0C79126Ebe7C8834D8063B6Ed8C2A9033C1201Ff538Bcd95B",
+      "authority": "Sri Lanka Regulatory Authority",
+      "gazette_no": null,
+      "publication_date": null,
+      "source_url": null,
+      "file_path": "backend/data/raw_sources/15803fe0b14aabe0c79126ebe7c8834d8063b6ed8c2a9033c1201ff538bcd95b.pdf",
+      "sha256_hash": "15803fe0b14aabe0c79126ebe7c8834d8063b6ed8c2a9033c1201ff538bcd95b",
+      "is_synthetic": false
+    },
+    {
+      "id": "doc_gazette_2443_27",
+      "title": "The Sri Lanka Gazette Extraordinary 2443/27",
+      "authority": "Government of Sri Lanka",
+      "gazette_no": null,
+      "publication_date": null,
+      "source_url": null,
+      "file_path": "backend/data/raw_sources/d7852dcc0da491ee0f67dbc355ad3ed96c1b860018b6151204d0db9d3fe2f45d.pdf",
+      "sha256_hash": "d7852dcc0da491ee0f67dbc355ad3ed96c1b860018b6151204d0db9d3fe2f45d",
+      "is_synthetic": false
+    },
+    {
+      "id": "doc_gazette_2496_03",
+      "title": "The Sri Lanka Gazette Extraordinary 2496/03",
+      "authority": "Government of Sri Lanka",
+      "gazette_no": null,
+      "publication_date": null,
+      "source_url": null,
+      "file_path": "backend/data/raw_sources/672a95c9c8e179b960dbcd00ebdd07f67e2848239a0c67ade17c8eaeed7f37b9.pdf",
+      "sha256_hash": "672a95c9c8e179b960dbcd00ebdd07f67e2848239a0c67ade17c8eaeed7f37b9",
+      "is_synthetic": false
+    },
+    {
+      "id": "doc_3cd9948d2c334d08a11dd5bc9cc1f1a1ec053d6e819ea30f205687dda7c342c7",
+      "title": "3Cd9948D2C334D08A11Dd5Bc9Cc1F1A1Ec053D6E819Ea30F205687Dda7C342C7",
+      "authority": "Sri Lanka Regulatory Authority",
+      "gazette_no": null,
+      "publication_date": null,
+      "source_url": null,
+      "file_path": "backend/data/raw_sources/3cd9948d2c334d08a11dd5bc9cc1f1a1ec053d6e819ea30f205687dda7c342c7.pdf",
+      "sha256_hash": "3cd9948d2c334d08a11dd5bc9cc1f1a1ec053d6e819ea30f205687dda7c342c7",
+      "is_synthetic": false
+    },
+    {
+      "id": "doc_3f85f3ef96b7622bdd3e45d7cc642fd96fdbd83a9f84f35f048121eab3e4016f",
+      "title": "3F85F3Ef96B7622Bdd3E45D7Cc642Fd96Fdbd83A9F84F35F048121Eab3E4016F",
+      "authority": "Sri Lanka Regulatory Authority",
+      "gazette_no": null,
+      "publication_date": null,
+      "source_url": null,
+      "file_path": "backend/data/raw_sources/3f85f3ef96b7622bdd3e45d7cc642fd96fdbd83a9f84f35f048121eab3e4016f.pdf",
+      "sha256_hash": "3f85f3ef96b7622bdd3e45d7cc642fd96fdbd83a9f84f35f048121eab3e4016f",
+      "is_synthetic": false
+    },
+    {
+      "id": "doc_fcau_labelling_advertising_en",
+      "title": "Food (Labelling and Advertising) Regulations",
+      "authority": "Food Control Administration Unit (FCAU)",
+      "gazette_no": null,
+      "publication_date": null,
+      "source_url": null,
+      "file_path": "backend/data/raw_sources/d5fd93679c6a3c12c64118d6a1e738e11fcbe1d8e577880fb4dae65d868272cd.pdf",
+      "sha256_hash": "d5fd93679c6a3c12c64118d6a1e738e11fcbe1d8e577880fb4dae65d868272cd",
+      "is_synthetic": false
+    },
+    {
+      "id": "doc_b78479b6b08d12e11fd27cfc39677d5a284bc147bf16a777eafb495b86f4135a",
+      "title": "B78479B6B08D12E11Fd27Cfc39677D5A284Bc147Bf16A777Eafb495B86F4135A",
+      "authority": "Sri Lanka Regulatory Authority",
+      "gazette_no": null,
+      "publication_date": null,
+      "source_url": null,
+      "file_path": "backend/data/raw_sources/b78479b6b08d12e11fd27cfc39677d5a284bc147bf16a777eafb495b86f4135a.pdf",
+      "sha256_hash": "b78479b6b08d12e11fd27cfc39677d5a284bc147bf16a777eafb495b86f4135a",
+      "is_synthetic": false
+    },
+    {
+      "id": "doc_gazette_2494_47",
+      "title": "Sri Lanka Gazette Extraordinary No. 2494/47: Food (Labelling and Advertising) Regulations 2026",
+      "authority": "Government of Sri Lanka",
+      "gazette_no": "Gazette Extraordinary No. 2494/47",
+      "publication_date": "2026-06-26",
+      "source_url": "http://www.documents.gov.lk/files/egz/2026/6/2494-47_E.pdf",
+      "file_path": "backend/data/raw_sources/83ed19c22873471652d0073fe16c977442e42c8ecac2edf1d691d00d78d8a054.pdf",
+      "sha256_hash": "83ed19c22873471652d0073fe16c977442e42c8ecac2edf1d691d00d78d8a054",
+      "is_synthetic": false
+    },
+    {
+      "id": "doc_291759ecef9fc7c9129bff1139d1837790a50cac32236ec46c0e4b351d76270c",
+      "title": "291759Ecef9Fc7C9129Bff1139D1837790A50Cac32236Ec46C0E4B351D76270C",
+      "authority": "Sri Lanka Regulatory Authority",
+      "gazette_no": null,
+      "publication_date": null,
+      "source_url": null,
+      "file_path": "backend/data/raw_sources/291759ecef9fc7c9129bff1139d1837790a50cac32236ec46c0e4b351d76270c.pdf",
+      "sha256_hash": "291759ecef9fc7c9129bff1139d1837790a50cac32236ec46c0e4b351d76270c",
+      "is_synthetic": true
+    },
+    {
+      "id": "doc_3e863d976d56eb45ca7d410173fd8b451d6fef7308cceb706afe6720cec78b7f",
+      "title": "3E863D976D56Eb45Ca7D410173Fd8B451D6Fef7308Cceb706Afe6720Cec78B7F",
+      "authority": "Sri Lanka Regulatory Authority",
+      "gazette_no": null,
+      "publication_date": null,
+      "source_url": null,
+      "file_path": "backend/data/raw_sources/3e863d976d56eb45ca7d410173fd8b451d6fef7308cceb706afe6720cec78b7f.pdf",
+      "sha256_hash": "3e863d976d56eb45ca7d410173fd8b451d6fef7308cceb706afe6720cec78b7f",
+      "is_synthetic": true
+    },
+    {
+      "id": "doc_3f75e3ac63af8670c6ddda34fa8a61d2869e7697d5c88dfaee34162f5036f6e1",
+      "title": "3F75E3Ac63Af8670C6Ddda34Fa8A61D2869E7697D5C88Dfaee34162F5036F6E1",
+      "authority": "Sri Lanka Regulatory Authority",
+      "gazette_no": null,
+      "publication_date": null,
+      "source_url": null,
+      "file_path": "backend/data/raw_sources/3f75e3ac63af8670c6ddda34fa8a61d2869e7697d5c88dfaee34162f5036f6e1.pdf",
+      "sha256_hash": "3f75e3ac63af8670c6ddda34fa8a61d2869e7697d5c88dfaee34162f5036f6e1",
+      "is_synthetic": true
+    },
+    {
+      "id": "doc_58a58c41bf7d133299fd0fc96a8057f321d0ebfc8d0292fb72ae9c77bc2be3d7",
+      "title": "58A58C41Bf7D133299Fd0Fc96A8057F321D0Ebfc8D0292Fb72Ae9C77Bc2Be3D7",
+      "authority": "Sri Lanka Regulatory Authority",
+      "gazette_no": null,
+      "publication_date": null,
+      "source_url": null,
+      "file_path": "backend/data/raw_sources/58a58c41bf7d133299fd0fc96a8057f321d0ebfc8d0292fb72ae9c77bc2be3d7.pdf",
+      "sha256_hash": "58a58c41bf7d133299fd0fc96a8057f321d0ebfc8d0292fb72ae9c77bc2be3d7",
+      "is_synthetic": true
+    },
+    {
+      "id": "doc_6530c833247216f50bf6761120432ef8395c53f2ac68966efbe177774b6828e0",
+      "title": "6530C833247216F50Bf6761120432Ef8395C53F2Ac68966Efbe177774B6828E0",
+      "authority": "Sri Lanka Regulatory Authority",
+      "gazette_no": null,
+      "publication_date": null,
+      "source_url": null,
+      "file_path": "backend/data/raw_sources/6530c833247216f50bf6761120432ef8395c53f2ac68966efbe177774b6828e0.pdf",
+      "sha256_hash": "6530c833247216f50bf6761120432ef8395c53f2ac68966efbe177774b6828e0",
+      "is_synthetic": true
+    },
+    {
+      "id": "doc_c244fce78aa38cfc17dbd9029caf602d50bd10bfdfd6fcb20bc215e0b8d47bb8",
+      "title": "C244Fce78Aa38Cfc17Dbd9029Caf602D50Bd10Bfdfd6Fcb20Bc215E0B8D47Bb8",
+      "authority": "Sri Lanka Regulatory Authority",
+      "gazette_no": null,
+      "publication_date": null,
+      "source_url": null,
+      "file_path": "backend/data/raw_sources/c244fce78aa38cfc17dbd9029caf602d50bd10bfdfd6fcb20bc215e0b8d47bb8.pdf",
+      "sha256_hash": "c244fce78aa38cfc17dbd9029caf602d50bd10bfdfd6fcb20bc215e0b8d47bb8",
+      "is_synthetic": true
+    },
+    {
+      "id": "doc_caa_mrp_2023",
+      "title": "Consumer Affairs Authority (Display of Maximum Retail Prices) Direction 2023",
+      "authority": "Consumer Affairs Authority (CAA)",
+      "gazette_no": "Gazette Extraordinary No. 2314/05",
+      "publication_date": "2023-01-10",
+      "source_url": null,
+      "file_path": "backend/data/raw_sources/doc_caa_mrp_2023.pdf",
+      "sha256_hash": "fixture_hash_doc_caa_mrp_202300000000000000000000000000000000000",
+      "is_synthetic": true
+    },
+    {
+      "id": "doc_cea_epl_2022",
+      "title": "National Environmental (Protection and Quality) Regulations (EPL Standards) 2022",
+      "authority": "Central Environmental Authority (CEA)",
+      "gazette_no": "Gazette Extraordinary No. 2265/30",
+      "publication_date": "2022-02-01",
+      "source_url": null,
+      "file_path": "backend/data/raw_sources/doc_cea_epl_2022.pdf",
+      "sha256_hash": "fixture_hash_doc_cea_epl_202200000000000000000000000000000000000",
+      "is_synthetic": true
+    },
+    {
+      "id": "doc_fcau_labelling_2024",
+      "title": "Food (Labelling and Advertising) Regulations 2024",
+      "authority": "Food Control Administration Unit (FCAU)",
+      "gazette_no": "Gazette Extraordinary No. 2380/14",
+      "publication_date": "2024-01-15",
+      "source_url": null,
+      "file_path": "backend/data/raw_sources/doc_fcau_labelling_2024.pdf",
+      "sha256_hash": "fixture_hash_doc_fcau_labelling_20240000000000000000000000000000",
+      "is_synthetic": true
+    },
+    {
+      "id": "doc_labelling_regulations_final_2026",
+      "title": "Food (Labelling and Advertising) Regulations (FAC Draft Final 11.02.2026)",
+      "authority": "Food Advisory Committee / Ministry of Health",
+      "gazette_no": null,
+      "publication_date": "2026-07-01",
+      "source_url": null,
+      "file_path": "backend/data/raw_sources/c70b5668131b76ff206897ef391cb3402bb4bf6be39a76ad1400d24c07330142.pdf",
+      "sha256_hash": "c70b5668131b76ff206897ef391cb3402bb4bf6be39a76ad1400d24c07330142",
+      "is_synthetic": true
+    },
+    {
+      "id": "doc_lec_03",
+      "title": "Lec 03",
+      "authority": "Sri Lanka Regulatory Authority",
+      "gazette_no": null,
+      "publication_date": null,
+      "source_url": null,
+      "file_path": "backend/data/raw_sources/b2cfaf0ae21c67ae28864038a0b21293eb4c0f888dbc984c331e975c5528c37f.pdf",
+      "sha256_hash": "b2cfaf0ae21c67ae28864038a0b21293eb4c0f888dbc984c331e975c5528c37f",
+      "is_synthetic": true
+    }
+  ],
+  "clauses": [
+    {
+      "clause_id": "CLAUSE-DOC_GAZETTE_2443_27-REGULATION-8",
+      "version_number": 1,
+      "document_id": "doc_gazette_2443_27",
+      "clause_number": "regulation 8",
+      "text": "in regulation 8 thereof-\n \n(a) \nin sub-regulation (1) thereof, by the substitution for the words \u201cX flavored\u201d of the words \u201cnatural/artificial X \nflavored\u201d; and",
+      "start_page": 2,
+      "end_page": 2,
+      "char_start": 2645,
+      "char_end": 2806,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_3F75E3AC63AF8670C6DDDA34FA8A61D2869E7697D5C88DFAEE34162F5036F6E1-REGULATION-50",
+      "version_number": 1,
+      "document_id": "doc_3f75e3ac63af8670c6ddda34fa8a61d2869e7697d5c88dfaee34162f5036f6e1",
+      "clause_number": "Regulation 50",
+      "text": "Regulation 50. Every commercial cold storage facility operating at temperature below minus 18\ndegrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "start_page": 1,
+      "end_page": 1,
+      "char_start": 29,
+      "char_end": 212,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": false,
+      "is_synthetic": true,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_58A58C41BF7D133299FD0FC96A8057F321D0EBFC8D0292FB72AE9C77BC2BE3D7-REGULATION-50",
+      "version_number": 1,
+      "document_id": "doc_58a58c41bf7d133299fd0fc96a8057f321d0ebfc8d0292fb72ae9c77bc2be3d7",
+      "clause_number": "Regulation 50",
+      "text": "Regulation 50. Every commercial cold storage facility operating at temperature below minus 18\ndegrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "start_page": 1,
+      "end_page": 1,
+      "char_start": 29,
+      "char_end": 212,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": false,
+      "is_synthetic": true,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_6530C833247216F50BF6761120432EF8395C53F2AC68966EFBE177774B6828E0-REGULATION-50",
+      "version_number": 1,
+      "document_id": "doc_6530c833247216f50bf6761120432ef8395c53f2ac68966efbe177774b6828e0",
+      "clause_number": "Regulation 50",
+      "text": "Regulation 50. Every commercial cold storage facility operating at temperature below minus 18\ndegrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "start_page": 1,
+      "end_page": 1,
+      "char_start": 29,
+      "char_end": 212,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": false,
+      "is_synthetic": true,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_C244FCE78AA38CFC17DBD9029CAF602D50BD10BFDFD6FCB20BC215E0B8D47BB8-REGULATION-50",
+      "version_number": 1,
+      "document_id": "doc_c244fce78aa38cfc17dbd9029caf602d50bd10bfdfd6fcb20bc215e0b8d47bb8",
+      "clause_number": "Regulation 50",
+      "text": "Regulation 50. Every commercial cold storage facility operating at temperature below minus 18\ndegrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "start_page": 1,
+      "end_page": 1,
+      "char_start": 29,
+      "char_end": 212,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": false,
+      "is_synthetic": true,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_FCAU_LABELLING_2024-SECTION-32",
+      "version_number": 1,
+      "document_id": "doc_fcau_labelling_2024",
+      "clause_number": "Section 32",
+      "text": "Regulations made by the Minister of Health under Section 32 of the Food Act, No. 26 of 1980.\n\nPART I - GENERAL LABELLING REQUIREMENTS",
+      "start_page": 1,
+      "end_page": 1,
+      "char_start": 29,
+      "char_end": 164,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": false,
+      "is_synthetic": true,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_LABELLING_REGULATIONS_FINAL_2026-CLAUSE-4.3",
+      "version_number": 1,
+      "document_id": "doc_labelling_regulations_final_2026",
+      "clause_number": "clause 4.3",
+      "text": "declaration shall follow immediately the declaration of the total fat in accordance with clause 4.3 \nof the Schedule III. \n \nThe following format should be used: \n \nTotal fat \u2026. g of which",
+      "start_page": 14,
+      "end_page": 14,
+      "char_start": 3076,
+      "char_end": 3266,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": false,
+      "is_synthetic": true,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_LABELLING_REGULATIONS_FINAL_2026-REGULATION-2",
+      "version_number": 1,
+      "document_id": "doc_labelling_regulations_final_2026",
+      "clause_number": "regulation 2",
+      "text": "regulation 2. \n \n(5)     A package or container of food may bear a Quick Response (QR) code or any other machine-readable code \nsolely to provide additional information, and such code shall not be used as a substitute for and shall not conflict",
+      "start_page": 1,
+      "end_page": 1,
+      "char_start": 242,
+      "char_end": 1514,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": false,
+      "is_synthetic": true,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_LABELLING_REGULATIONS_FINAL_2026-REGULATION-3",
+      "version_number": 1,
+      "document_id": "doc_labelling_regulations_final_2026",
+      "clause_number": "regulation 3",
+      "text": "under regulation 3(4) of these regulations, if the supplementary label contains information  in respect of date \nof manufacture, date of packing, date of expiry and other mandatory information, such supplementary label shall \nbe affixed securely in a manner that it does not distort, deface or obliterate the original date of manufacture, date of \npacking, date of expiry and other information required to be declared by the manufacturer or packer: \n \nProvided further that, where an imported package or container of food bears the date of manufacture and/ or the \ndate of packing and/ or the date of expiry only in coded form, including where such date is encoded within a \nbatch number, a code number or a decipherable code marking (including a Julian code/ QR code) printed, \npainted or displayed by the manufacturer or packer, the importer shall, for the purpose of compliance with these \nregulations, affix a supplementary label declaring the corresponding date(s) in the manner and format specified",
+      "start_page": 1,
+      "end_page": 1,
+      "char_start": 2596,
+      "char_end": 3602,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": false,
+      "is_synthetic": true,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_LABELLING_REGULATIONS_FINAL_2026-REGULATION-4",
+      "version_number": 1,
+      "document_id": "doc_labelling_regulations_final_2026",
+      "clause_number": "regulation 4",
+      "text": "with any declaration required to be made on the label under regulation 4; further, such code shall be printed, \npainted or affixed in a manner that does not distort, deface, erase or obliterate any information on the original \nlabel, and any information made available through such code shall not be false, misleading, deceptive or shall \nnot be in violation of any provision of these regulations.   \n \n4. \n(1)    The following declarations shall be made indelibly and legibly on the main panel- \n(a) \ncommon name of the product in bold type in all three languages or, in any two of the three languages \non the main panel and other language on any panel;  \nProvided that the common name may be substituted by any other name as set out in Schedule I \nhereto; \n(b) \ntrade name and brand name (if any) in any one or more of the three languages in a manner that shall \nnot be deceptive or mislead any person; and \n(c) \nthe net contents of the package or container expressed in SI units or by the international symbols \n\u2018g\u2019 or \u2018kg\u2019 in the case of solids, \u2018ml\u2019 or \u2018l\u2019 in the case of liquids and, if packaged in liquid medium, \nthe net drained weight expressed as \u2018g\u2019 or \u2018kg\u2019: \n \n(2) \n(a) \nThe following declarations shall be made indelibly and legibly on any panel in any one or more of the \nthree languages \u2013 \n \n(i) \na complete list of ingredients used in the food by their common names in descending order \nof ingoing weight (m/m) at the time of manufacture of the food including any permitted food \nadditive by its common name and INS number as prescribed by regulations made under the \nAct. However, processing aids that are not carried over to foods are exempted from \ndeclaration in the list of ingredients;  \n \n        Provided that, such exemption shall not apply to the following items: - \n(A) Cereals containing gluten; i.e., wheat, spelt, rye, barley, oats, or their \nhybridised strains and products of these; \n(B) Crustacea and products of these; \n(C) Eggs and egg products; \n(D) Fish and fish products; \n(E) Peanuts, soybeans and products of these; \n(F) Milk and milk products; (lactose included); and \n(G) Tree nuts and nut products. \n \n(ii)    (A)  the name and address of the manufacturer and distributor, and in the case of imported \nfood products, in addition the name and address of the importer;  \n \n                  (B) the name and address of the packer, if any; \n \n(iii)   the batch number or code number or a decipherable code marking; \n \n(iv)    the date of manufacture; \n \n(v)     in case where foods are imported in bulk and repacked, the date of manufacture and the date \nof repacking;",
+      "start_page": 2,
+      "end_page": 2,
+      "char_start": 523,
+      "char_end": 3135,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": false,
+      "is_synthetic": true,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_LABELLING_REGULATIONS_FINAL_2026-SECTION-1",
+      "version_number": 1,
+      "document_id": "doc_labelling_regulations_final_2026",
+      "clause_number": "section 1",
+      "text": "2.1 Where nutrient declaration is applied as per section 1 above, the declaration of the following \nshall be mandatory: \n \n2.1.1 Energy value;    \n2.1.2 The amounts of protein, total sugars (with naturally occurring and added sugar), \navailable carbohydrate (i.e. dietary carbohydrate excluding dietary fibre), dietary \nfibre, total fat, saturated fat, trans- fats and sodium; and \n2.1.3 The amount of any other nutrient for which a nutrition claim and/or health claim \nand/or reference is   made on the label. \n \n2.2 Where a claim is made regarding the amount and/or type of fatty acids or the amount of \ncholesterol, the amounts of saturated fatty acids, monounsaturated fatty acids and \npolyunsaturated fatty acids and cholesterol shall be declared, and the amount of trans- fatty",
+      "start_page": 13,
+      "end_page": 13,
+      "char_start": 955,
+      "char_end": 1740,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": false,
+      "is_synthetic": true,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_LABELLING_REGULATIONS_FINAL_2026-SECTION-2.1",
+      "version_number": 1,
+      "document_id": "doc_labelling_regulations_final_2026",
+      "clause_number": "section 2.1",
+      "text": "acid is required, in addition to the requirements of section 2.1 and in accordance with section \n4.6. \n \n2.3 In addition to the mandatory declaration under 2.1 and 2.2, vitamins and minerals may be \nlisted in accordance with the following criteria: \n \n2.3.1 Only vitamins and minerals for which recommended intakes have been established \nshall be declared; and  \n \n2.3.2 When nutrient declaration is applied, vitamins and minerals which are present in \namounts less than five per centum (5%) of the Nutrient Reference Value (NRV) as \nspecified in Schedule IV hereto or the Average Requirement (AR) or Adequate Intake (AI) \nvalues as specified in Schedule VIII hereto, per one hundred grams (100 g) or one hundred \nmilliliters (100 ml) or per serving as quantified on the label shall not be declared. \n \n3. Calculation of nutrients \n \n3.1 Calculation of energy \nThe amount of energy to be listed should be calculated by using the following conversion factors:",
+      "start_page": 13,
+      "end_page": 13,
+      "char_start": 1740,
+      "char_end": 2700,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": false,
+      "is_synthetic": true,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "FCAU-REG-04",
+      "version_number": 1,
+      "document_id": "doc_fcau_labelling_2024",
+      "clause_number": "Regulation 4",
+      "text": "Regulation 4. Every food manufacturing enterprise having a production capacity of 50 kg per day or more, and engaged in the production of prepackaged food products, shall ensure that each retail package carries a nutrition information panel in Sinhala, Tamil, and English.",
+      "start_page": 1,
+      "end_page": 1,
+      "char_start": 0,
+      "char_end": 272,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": false,
+      "is_synthetic": true,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_GAZETTE_2494_47-REGULATION-6",
+      "version_number": 1,
+      "document_id": "doc_gazette_2494_47",
+      "clause_number": "regulation 6",
+      "text": "regulation 6 subject to compliance with the preceding proviso to this sub regulation. The importer shall maintain\ndocumentary evidence of the method of conversion/interpretation of such coded date (issued or con\ue04frmed by the",
+      "start_page": 2,
+      "end_page": 2,
+      "char_start": 3360,
+      "char_end": 3584,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_291759ECEF9FC7C9129BFF1139D1837790A50CAC32236EC46C0E4B351D76270C-REGULATION-50",
+      "version_number": 1,
+      "document_id": "doc_291759ecef9fc7c9129bff1139d1837790a50cac32236ec46c0e4b351d76270c",
+      "clause_number": "Regulation 50",
+      "text": "Regulation 50. Every commercial cold storage facility operating at temperature below minus 18\ndegrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "start_page": 1,
+      "end_page": 1,
+      "char_start": 29,
+      "char_end": 212,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": false,
+      "is_synthetic": true,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CEA-SCHED-01-B12",
+      "version_number": 1,
+      "document_id": "doc_cea_epl_2022",
+      "clause_number": "Schedule 1 Part B Item 12",
+      "text": "Schedule 1 Part B Item 12. Any industrial food manufacturing activity employing 20 or more persons shall obtain an Environmental Protection Licence (EPL Category B) prior to commencing continuous operations.",
+      "start_page": 3,
+      "end_page": 3,
+      "char_start": 0,
+      "char_end": 207,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": false,
+      "is_synthetic": true,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_CAA_MRP_2023-SECTION-10",
+      "version_number": 1,
+      "document_id": "doc_caa_mrp_2023",
+      "clause_number": "Section 10",
+      "text": "Direction under Section 10(1) of the Consumer Affairs Authority Act, No. 09 of 2003.\n\nPART I - CONSUMER GOODS PRICING & TRANSCRIPTION",
+      "start_page": 1,
+      "end_page": 1,
+      "char_start": 47,
+      "char_end": 182,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": false,
+      "is_synthetic": true,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_CAA_MRP_2023-SECTION-14",
+      "version_number": 1,
+      "document_id": "doc_caa_mrp_2023",
+      "clause_number": "Section 14",
+      "text": "Section 14. Retailers possessing an annual turnover exceeding 10 million LKR shall maintain automated digital point of sale receipt records for all consumer transactions.",
+      "start_page": 1,
+      "end_page": 1,
+      "char_start": 379,
+      "char_end": 549,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": false,
+      "is_synthetic": true,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_CEA_EPL_2022-REGULATION-3",
+      "version_number": 1,
+      "document_id": "doc_cea_epl_2022",
+      "clause_number": "Regulation 3",
+      "text": "Regulation 3. An industrial activity categorized under Part A having wastewater discharge exceeding 10 cubic meters per day shall obtain an Environmental Protection License (EPL) prior to commencement of operations.",
+      "start_page": 1,
+      "end_page": 1,
+      "char_start": 230,
+      "char_end": 447,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": false,
+      "is_synthetic": true,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_CEA_EPL_2022-REGULATION-8",
+      "version_number": 1,
+      "document_id": "doc_cea_epl_2022",
+      "clause_number": "Regulation 8",
+      "text": "Regulation 8. Storage of hazardous industrial chemicals exceeding 500 liters shall be equipped with secondary containment bunding capable of holding 110 percent of the largest container capacity.",
+      "start_page": 1,
+      "end_page": 1,
+      "char_start": 447,
+      "char_end": 642,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": false,
+      "is_synthetic": true,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_CEA_EPL_2022-SECTION-32",
+      "version_number": 1,
+      "document_id": "doc_cea_epl_2022",
+      "clause_number": "Section 32",
+      "text": "Regulations made by the Minister of Environment under Section 32 of the National Environmental Act, No. 47 of 1980.\n\nPART I - PRESCRIBED ACTIVITIES AND ENVIRONMENTAL PROTECTION LICENSES",
+      "start_page": 1,
+      "end_page": 1,
+      "char_start": 43,
+      "char_end": 230,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": false,
+      "is_synthetic": true,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_FCAU_LABELLING_2024-REGULATION-15",
+      "version_number": 1,
+      "document_id": "doc_fcau_labelling_2024",
+      "clause_number": "Regulation 15",
+      "text": "Regulation 15. Every manufacturer or packager of food products containing synthetic food colorings shall declare the common chemical name and international numbering system code on the principal display panel.",
+      "start_page": 2,
+      "end_page": 2,
+      "char_start": 203,
+      "char_end": 412,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": false,
+      "is_synthetic": true,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_FCAU_LABELLING_2024-REGULATION-4",
+      "version_number": 1,
+      "document_id": "doc_fcau_labelling_2024",
+      "clause_number": "Regulation 4",
+      "text": "Regulation 4. Every food manufacturing enterprise having a production capacity of 50 kg per day or more shall ensure that each retail package carries a nutrition information panel displaying energy, protein, carbohydrate, and fat content.",
+      "start_page": 1,
+      "end_page": 1,
+      "char_start": 164,
+      "char_end": 404,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": false,
+      "is_synthetic": true,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_FCAU_LABELLING_2024-REGULATION-5",
+      "version_number": 1,
+      "document_id": "doc_fcau_labelling_2024",
+      "clause_number": "Regulation 5",
+      "text": "Regulation 5. The information required to be displayed on a package shall be printed in letters of not less than 1.5 millimetres in height and clearly legible against a contrasting background.",
+      "start_page": 1,
+      "end_page": 1,
+      "char_start": 404,
+      "char_end": 596,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": false,
+      "is_synthetic": true,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_FCAU_LABELLING_2024-REGULATION-9",
+      "version_number": 1,
+      "document_id": "doc_fcau_labelling_2024",
+      "clause_number": "Regulation 9",
+      "text": "Regulation 9. Novel food ingredients shall obtain prior ministerial approval before import, commercial distribution, or retail sale in Sri Lanka.",
+      "start_page": 2,
+      "end_page": 2,
+      "char_start": 56,
+      "char_end": 203,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": false,
+      "is_synthetic": true,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_3E863D976D56EB45CA7D410173FD8B451D6FEF7308CCEB706AFE6720CEC78B7F-REGULATION-50",
+      "version_number": 1,
+      "document_id": "doc_3e863d976d56eb45ca7d410173fd8b451d6fef7308cceb706afe6720cec78b7f",
+      "clause_number": "Regulation 50",
+      "text": "Regulation 50. Every commercial cold storage facility operating at temperature below minus 18\ndegrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "start_page": 1,
+      "end_page": 1,
+      "char_start": 29,
+      "char_end": 212,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": false,
+      "is_synthetic": true,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_15803FE0B14AABE0C79126EBE7C8834D8063B6ED8C2A9033C1201FF538BCD95B-REGULATION-5",
+      "version_number": 1,
+      "document_id": "doc_15803fe0b14aabe0c79126ebe7c8834d8063b6ed8c2a9033c1201ff538bcd95b",
+      "clause_number": "regulation 5",
+      "text": "in regulation 5 thereof, by the substitution for the \ue03fgures \u201c2024\u201d of the \ue03fgures \u201c2026\u201d;\n(3)",
+      "start_page": 2,
+      "end_page": 2,
+      "char_start": 1488,
+      "char_end": 1581,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_15803FE0B14AABE0C79126EBE7C8834D8063B6ED8C2A9033C1201FF538BCD95B-REGULATION-6",
+      "version_number": 1,
+      "document_id": "doc_15803fe0b14aabe0c79126ebe7c8834d8063b6ed8c2a9033c1201ff538bcd95b",
+      "clause_number": "regulation 6",
+      "text": "in regulation 6 thereof, by the insertion immediately after paragraph (g) thereof, of the following paragraph: -\n\u201c(ga) business to business food products;\u201d;\n(4)",
+      "start_page": 2,
+      "end_page": 2,
+      "char_start": 1581,
+      "char_end": 1742,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_15803FE0B14AABE0C79126EBE7C8834D8063B6ED8C2A9033C1201FF538BCD95B-REGULATION-8",
+      "version_number": 1,
+      "document_id": "doc_15803fe0b14aabe0c79126ebe7c8834d8063b6ed8c2a9033c1201ff538bcd95b",
+      "clause_number": "regulation 8",
+      "text": "in regulation 8 thereof, by the insertion immediately after the de\ue03fnition of the expression \u201camber\u201d of the following\nde\ue03fnition: -\n\u201cbusiness to business food products\u201d means food products which are not o\ue041ered for direct sale to the consumer for\ndirect consumption but which are only used for further food processing, preparation or resale;\u201d; and\n(5)\nby the repeal of the Schedule thereof and the substitution therefor of the following Schedule: -\n\u201cSCHEDULE\u201d",
+      "start_page": 2,
+      "end_page": 2,
+      "char_start": 1742,
+      "char_end": 2199,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_15803FE0B14AABE0C79126EBE7C8834D8063B6ED8C2A9033C1201FF538BCD95B-SECTION-32",
+      "version_number": 1,
+      "document_id": "doc_15803fe0b14aabe0c79126ebe7c8834d8063b6ed8c2a9033c1201ff538bcd95b",
+      "clause_number": "section 32",
+      "text": "REGULATIONS made by the Minister of Health and Mass Media under section 32 of the Food Act, No. 26 of 1980 in\nconsultation with the Food Advisory Committee.\nDr. Nalinda Jayatissa,\nMinister of Health and Mass Media.\nColombo,\n20th June, 2026.\nRegulations\nThe Food (Colour Coding for sugar levels-liquid) Regulations 2022 published in the Gazette Extraordinary, No. 2319/42 of\nFebruary 14, 2023, as amended from time to time, are hereby further amended as follows: -\n(1)",
+      "start_page": 1,
+      "end_page": 1,
+      "char_start": 299,
+      "char_end": 767,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_3F85F3EF96B7622BDD3E45D7CC642FD96FDBD83A9F84F35F048121EAB3E4016F-REGULATION-2005",
+      "version_number": 1,
+      "document_id": "doc_3f85f3ef96b7622bdd3e45d7cc642fd96fdbd83a9f84f35f048121eab3e4016f",
+      "clause_number": "Regulation 2005",
+      "text": "has been added, shall have a declaration as set out in the Food (Labelling and Advertising) Regulation 2005 published in the\nGazette Extraordinary No. 1376/9 of January 19, 2005 as amended from time to time or replaced.\n9. The Food (Preservatives) Regulations 1989 published in the Gazette Extraordinary No. 615/11 of 19th June\n1990 are hereby rescinded.\n10. In these Regulations -\n\u201cPreservative\u201d means a food additive, which prolongs the shelf-life of a food by protecting against\ndeterioration caused by microorganisms.\n\u201cCompounded food\u201d means food containing two or more ingredients.",
+      "start_page": 2,
+      "end_page": 2,
+      "char_start": 2490,
+      "char_end": 3077,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_GAZETTE_2494_47-REGULATION-3",
+      "version_number": 1,
+      "document_id": "doc_gazette_2494_47",
+      "clause_number": "regulation 3",
+      "text": "A person shall not import, transport, distribute, store, sell, offer for sale, expose or keep for sale or advertise, any food contained in a package or container, unless such package or container is labelled in accordance with these regulations:\n\nbusiness-to-business food products that are exempted from other labelling requirements in these regulations except the following mandatory labelling requirements- (i) common name (in either of the three languages); (ii) trade name (if applicable); (iii) net contents; (iv) date of manufacture; (v) date of expiry; (vi) batch number; (vii) manufacturer's name and address; (viii) distributor's name and address; (ix) country of origin in case of imported foods; and (x) a complete list of ingredients. Provided further that the statement \"Not for retail sale\" shall be printed on the label or affixed through a supplementary label of such business-to-business food products clearly and conspicuously in bold type and font size of not less than three millimetres (3 mm).",
+      "start_page": 3,
+      "end_page": 3,
+      "char_start": 826,
+      "char_end": 1226,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_15803FE0B14AABE0C79126EBE7C8834D8063B6ED8C2A9033C1201FF538BCD95B-REGULATION-3",
+      "version_number": 1,
+      "document_id": "doc_15803fe0b14aabe0c79126ebe7c8834d8063b6ed8c2a9033c1201ff538bcd95b",
+      "clause_number": "regulation 3",
+      "text": "in regulation 3 thereof, -\n(a)\nby the repeal of sub-regulation (1) thereof and the substitution therefore of the following sub-regulation:-\n\u201c(1) Where any food referred to in these regulations contains any amount of sugar speci\ue03fed in Column\nI of the Schedule hereto, the label of such container or the package which contains such food shall have the\ncorresponding logo (hereinafter referred to as \u201cthe logo\u201d) speci\ue03fed in Column III of the Schedule hereto in\nthe corresponding colour speci\ue03fed in Column II of the Schedule hereto:\n\u0dc1\u0dbd\u0d82\u0d9a\u0dcf\ue012\u0da2\u0dcf\u0dad\u0dcf\ue010\ue00e\u0d9a\u0dc3\u0db8\u0dcf\u0da2\u0dc0\u0dcf\ue00f\u0da2\u0db1\u0dbb\u0da2\u0dba\ue013\u0d9c\u0dd0\u0dc3\u0da7\u0db4\ue00d\ue022\n\u0d85\ue00c\ue015\u0dba\u001c\u0dc2\n\u0d85\u0d82\u0d9a2494/06 - 2026 \ue00a\ue011\u0db8\u0dc323 \u0dc0\u0dd0\ue011\u0d85\u0d9f\u0dc4\ue014\u0dc0\u0dcf\u0daf\u0dcf- 2026.06.23\nNo. 2494/06 - TUESDAY, JUNE 23, 2026",
+      "start_page": 1,
+      "end_page": 1,
+      "char_start": 767,
+      "char_end": 1423,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_3F85F3EF96B7622BDD3E45D7CC642FD96FDBD83A9F84F35F048121EAB3E4016F-SECTION-32",
+      "version_number": 1,
+      "document_id": "doc_3f85f3ef96b7622bdd3e45d7cc642fd96fdbd83a9f84f35f048121eab3e4016f",
+      "clause_number": "Section 32",
+      "text": "REGULATIONS made by the Minister of Health, Nutrition and Indigenous Medicine, in terms of Section 32 of the Food\nAct, No. 26 of 1980 in consultation with the Food Advisory Committee.\nDR. RAJITHA SENARATHNE,\nMinister of Health, Nutrition and Indigenous Medicine.\nColombo,\n12th February, 2019.\nRegulations\n1.  These Regulations may be cited as the Food (Preservatives) Regulation, 2019, and shall come into operation\nfrom 01.01.2020.\n2.  No person shall manufacture, import, store, transport, sell, offer for sale, distribute, use or advertise -\n(a) any food preservative other than the preservatives specified in Schedule I hereto ;\n(b) any food which has in or upon it any preservative, other than those specified in Schedule II hereto.\n1A -  PG  4409  \u20142517  (03/2019)",
+      "start_page": 1,
+      "end_page": 1,
+      "char_start": 1055,
+      "char_end": 1826,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_B78479B6B08D12E11FD27CFC39677D5A284BC147BF16A777EAFB495B86F4135A-REGULATION--4",
+      "version_number": 1,
+      "document_id": "doc_b78479b6b08d12e11fd27cfc39677d5a284bc147bf16a777eafb495b86f4135a",
+      "clause_number": "Regulation  4",
+      "text": "Regulation  4 and 5\nSCHEDULE   II\nPermitted Solvents\nThe following solvents are permitted to be used in flavouring substances :\n1. Diacetin (glycerine diacetate, glyceryl diacetate, glycerol diacetate)\n2. Diethyl ether\n3. Ethyl acetate\n4. Ethyl alcohol\n5. Glycerol\n6. Isopropyl alcohol\n7. Propylene glycol\n8. Triacetin (glycerine triacetate, glyceryl triacetate, glycerol triacetate)\n9. Water",
+      "start_page": 5,
+      "end_page": 5,
+      "char_start": 199,
+      "char_end": 592,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_B78479B6B08D12E11FD27CFC39677D5A284BC147BF16A777EAFB495B86F4135A-REGULATION--7",
+      "version_number": 1,
+      "document_id": "doc_b78479b6b08d12e11fd27cfc39677d5a284bc147bf16a777eafb495b86f4135a",
+      "clause_number": "Regulation  7",
+      "text": "Regulation  7 (iii)\nSCHEDULE   III\nFoods in which flavour enhancers are prohibited\n1. Milk and Milk Products\n2. Ice cream and frozen desserts\n3. Fats and oils\n4. Margarine and Fat Spreads\n5. Fresh, surface treated, peeled or cut fruits and vegetables\n6. Mushrooms and their products\n7. Fruit wines\n8. All fruit and vegetable products except fruit powders, vegetable powders, instant fruit and vegetable chutney\nmix (dry)\n9. Vinegar\n10. Food grains, pulses, oil seeds and ground/powdered food grains\n11. Whole, broken or flaked grains, including rice\n12. Edible flours and starches\n13. Sago\n14. Pastas and noodles (only dried products)\n15. Malt based foods and milk based foods\n16. Bakery Products\n17. Fresh meat, poultry and game, whole pieces or cuts or comminuted\n18. Fresh fish and molluscs, crustaceans and echinoderms\n19. White sugar, brown sugar and sucrose, fructose, glucose (dextrose), xylose, sugar solutions and syrups, also\n(partially) inverted sugars, jaggery, treacle, sugar toppings, other sugars and syrups, bee honey\n20. Sugar confectionery\n21. Ice - candies\n22. Culinary herbs, spices, condiment powder and curry powder except special curry mixtures and flavouring mixtures\nin sachets\n23. Black tea, green tea, coffee, herbal extracts and cereal beverages\n24. Baking powder\n25. Cocoa butter and Cocoa products\n02\u2013585\nPRINTED AT THE DEPARTMENT OF GOVERNMENT PRINTING,  SRI LANKA.",
+      "start_page": 5,
+      "end_page": 5,
+      "char_start": 592,
+      "char_end": 1989,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_B78479B6B08D12E11FD27CFC39677D5A284BC147BF16A777EAFB495B86F4135A-REGULATION-3",
+      "version_number": 1,
+      "document_id": "doc_b78479b6b08d12e11fd27cfc39677d5a284bc147bf16a777eafb495b86f4135a",
+      "clause_number": "Regulation 3",
+      "text": "Regulation 3\nSCHEDULE - I\nFlavouring substances prohibited to be used in food\n(1) Aloin\n(2) Berberine\n(3) Beta-Azarone and cinnamyl anthracillate\n(4) Cade oil\n(5) Calamus oil\n(6) Cocaine\n(7) Coumarin\n(8) Diethylene glycol\n(9) Diethylene glycol monoethyl ether\n(10) Estragole\n(11) Eugenyl methyl ether\n(12) Hypericine\n(13) Nitrobenzene\n(14) Pyroligenous acid\n(15) Saffrole and Isosaffrole\n(16) Santonin\n(17) Sasafras oil\n(18) Thujone, Isothujone, (       & \u03b2  thujone)\n(19) Tonka bean (Dipteryl adorat)\n(20) Any other flavouring substance that is injurious or likely to be injurious to health.\n \n8",
+      "start_page": 4,
+      "end_page": 4,
+      "char_start": 1285,
+      "char_end": 1882,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_B78479B6B08D12E11FD27CFC39677D5A284BC147BF16A777EAFB495B86F4135A-REGULATION-9",
+      "version_number": 1,
+      "document_id": "doc_b78479b6b08d12e11fd27cfc39677d5a284bc147bf16a777eafb495b86f4135a",
+      "clause_number": "regulation 9",
+      "text": "dispensed in a container bearing a label in accordance with the requirements contained in regulation 9.\n3.\nNo person shall use any flavouring preparation containing any flavouring substance specified in Schedule I to\nthese regulations in any article of food.\n4.\nNo person shall import, manufacture, store, transport, sell or offer for sale, distribute, use or advertise any\nflavouring substance which is contained in a solvent other than a solvent specified in Schedule II hereto.\n5.\nThe solvents permitted to be used in flavouring substances as referred to in Schedule II hereto other than\nwater, shall conform to the British or United States Pharmacopoeia Standards.\n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n 3 \u2013 PG 001548\n This Gazette Extraordinary can be downloaded from www. documents.gov.lk",
+      "start_page": 1,
+      "end_page": 1,
+      "char_start": 1669,
+      "char_end": 3052,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_GAZETTE_2443_27-ITEM-6",
+      "version_number": 1,
+      "document_id": "doc_gazette_2443_27",
+      "clause_number": "item 6",
+      "text": "(f)\t by the repeal of item 6 thereof and the substitution therefor of the following panel: -\n\u201c6. Format for Nutrition Information Panel to appear on product label\nTypical Values\nPer 100g (in case of solids)\nPer 100ml (in case of liquids)\nPer serving\nEnergy\nkJ\nkJ\nkcal\nkcal\nCarbohydrates\ng\ng\nDietary Fiber\ng\ng\nTotal sugar\ng\ng\nProtein\ng\ng\nTotal Fat\ng\ng\nSaturated fatty acids\ng\ng\nTrans-fatty acids\ng\ng\nSodium (Na)\nmg\nmg\nServing size is ......            g or ml\nNumber of servings per pack... \u201d.\n\t(10)\t\nin Schedule V thereof-",
+      "start_page": 5,
+      "end_page": 5,
+      "char_start": 2233,
+      "char_end": 2758,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_B78479B6B08D12E11FD27CFC39677D5A284BC147BF16A777EAFB495B86F4135A-SECTION-32",
+      "version_number": 1,
+      "document_id": "doc_b78479b6b08d12e11fd27cfc39677d5a284bc147bf16a777eafb495b86f4135a",
+      "clause_number": "Section 32",
+      "text": "REGULATIONS made by the Minister of Health under Section 32 of the Food Act, No. 26 of 1980 in consultaion with the\nFood Advisory Committee.\nMAITHTHRIPALA SIRISENA,\nMinister of Health.\nColombo,\n17th January 2013.\nRegulations\n1.\nThese regulations may be cited as the Food (Flavouring Substances and Flavour Enhancers) Regulations 2013\nand shall come into force from 01st July 2014.\n2.\n(1) No person shall import, manufacture, store, transport, sell or offer for sale, distribute, use or advertise any\nflavouring substance or flavour enhancer for use in food unless such flavouring substance or flavour enhancer has been\ncertified to be safe and suitable for use in food by the relevant authority in the country of origin or manufacture.\n(2) No person shall import, manufacture, store, transport, sell or offer for sale, distribute, use or advertise as an\ningredient for the preparation of food any permitted flavouring substance or flavour enhancer (including any permitted flavouring\nsubstance or flavour enhancer mixed with any other substance) unless such flavouring substance or flavour enhancer was",
+      "start_page": 1,
+      "end_page": 1,
+      "char_start": 566,
+      "char_end": 1669,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_FCAU_LABELLING_ADVERTISING_EN-REGULATION-1",
+      "version_number": 1,
+      "document_id": "doc_fcau_labelling_advertising_en",
+      "clause_number": "regulation 1",
+      "text": "By repealing regulation 1(ii) of the aforementioned regulations, the following regulations shall be substituted:\n1.",
+      "start_page": 1,
+      "end_page": 1,
+      "char_start": 865,
+      "char_end": 981,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_FCAU_LABELLING_ADVERTISING_EN-REGULATION-15",
+      "version_number": 1,
+      "document_id": "doc_fcau_labelling_advertising_en",
+      "clause_number": "Regulation 15",
+      "text": "(ii) Regulations 2 to 13(15) and Regulation 15 together with Schedules I to IX shall come into operation on 1st\nJanuary 2026.\nEOG 06 - 0320\nPRINTED AT THE DEPARTMENT OF GOVERNMENT PRINTING, SRI LANKA.\n1A- PG 7175 - 2004 (06/2025)\nThis Gazette Extraordinary can be downloaded from www.documents.gov.lk",
+      "start_page": 1,
+      "end_page": 1,
+      "char_start": 981,
+      "char_end": 1282,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_FCAU_LABELLING_ADVERTISING_EN-SECTION-32",
+      "version_number": 1,
+      "document_id": "doc_fcau_labelling_advertising_en",
+      "clause_number": "Section 32",
+      "text": "Section 32 of the Food Act, No. 26 of 1980.\nDr. Nalinda Jayatissa,\nMinister of Health and Mass Media.\nColombo,\n28th June, 2025.\nThe Food (Labelling andAdvertising) Regulations, 2022 Published in Gazette Extraordinary, No. 2319/40 dated 14th\nFebruary 2023, as amended by Gazette Extraordinary, No. 2364/24 dated 27th December 2023 and Gazette Extraordinary\nNo. 2416/51` dated 28th December 2024, are hereby further amended.\n1.",
+      "start_page": 1,
+      "end_page": 1,
+      "char_start": 439,
+      "char_end": 865,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_GAZETTE_2443_27-ITEM-1.1",
+      "version_number": 1,
+      "document_id": "doc_gazette_2443_27",
+      "clause_number": "item 1.1",
+      "text": "\u201cNotwithstanding the provisions of item 1.1, following foods are exempted from the requirement of the \nmandatory nutrition declaration:\n\t\n\u2022\t\nUnprocessed products that comprise a single ingredient including raw agricultural products \nsuch as wheat, rice, cereals pulses, fruits and vegetables or products that comprise a single \ningredient;\n\t\n\u2022\t\nBottled or packaged drinking water;\n\t\n\u2022\t\nA spice or mixtures thereof;\n\t\n\u2022\t\nSalt;\n\t\n\u2022\t\nTabletop sweeteners;\n \n\u2022 \nCoffee extracts, whole or milled coffee beans and whole or milled decaffeinated coffee beans, \ncoffee, decaffeinated coffee, soluble coffee powder without any other ingredients;\n \n\u2022 \nTea including decaffeinated tea, instant or soluble tea or tea extract, decaffeinated instant or \nsoluble tea or tea extract which do not contain other added ingredients than flavorings which do \nnot modify the nutritional value of the tea;\n \n\u2022 \nNatural vinegars and artificial vinegars without any other added ingredients;\n\t\n\u2022\t\nFlavorings;\n\t\n\u2022\t\nFood additives;\n\t\n\u2022\t\nProcessing aids;\n\t\n\u2022\t\nFood enzymes;\n\t\n\u2022\t\nGelatine;\n\t\n\u2022\t\nYeast;\n\t\n\u2022\t\nFood in packaging or containers with a total surface area equivalent to or less than 100 cm2; and\n\t\n\u2022\t\nFood manufacturered by cottage industries.\u201d;",
+      "start_page": 4,
+      "end_page": 4,
+      "char_start": 1565,
+      "char_end": 2788,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_GAZETTE_2443_27-ITEM-1.1.3",
+      "version_number": 1,
+      "document_id": "doc_gazette_2443_27",
+      "clause_number": "item 1.1.3",
+      "text": "(a)\t by the insertion of the following item immediately after the sub-item 1.1.3 thereof: -",
+      "start_page": 4,
+      "end_page": 4,
+      "char_start": 1473,
+      "char_end": 1565,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_GAZETTE_2443_27-ITEM-1.2",
+      "version_number": 1,
+      "document_id": "doc_gazette_2443_27",
+      "clause_number": "item 1.2",
+      "text": "(b)\t by the repeal of item 1.2 thereof and the substitution therefor of the following:\n\t\n\u201c1.2\t Nutrient declaration may be voluntary for all other foods except foods mentioned in sub items 1.1.1, 1.1.2 \nand 1.1.3. It shall be mandatory for all food products other than food products referred in immediately",
+      "start_page": 5,
+      "end_page": 5,
+      "char_start": 201,
+      "char_end": 509,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_GAZETTE_2443_27-ITEM-2.3.2",
+      "version_number": 1,
+      "document_id": "doc_gazette_2443_27",
+      "clause_number": "item 2.3.2",
+      "text": "(d)\t by the repeal of item 2.3.2 thereof and the substitution therefor of the following: -\n\t\n\t \u201c2.3.2 When nutrient declaration is applied, vitamins and minerals which are present in amounts less than \nfive per centum (5%) of the Nutrient Reference Value (NRV) as specified in Schedule V hereto or the \nAverage Requirement (AR) or Adequate Intake (AI) values as specified in Schedule IX hereto, per one \nhundred grams (100 g) or one hundred milliliters (100 ml) or per serving as quantified on the label shall \nnot be declared.\u201d;",
+      "start_page": 5,
+      "end_page": 5,
+      "char_start": 694,
+      "char_end": 1228,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_GAZETTE_2443_27-ITEM-4.4",
+      "version_number": 1,
+      "document_id": "doc_gazette_2443_27",
+      "clause_number": "item 4.4",
+      "text": "(e)\t by the repeal of item 4.4 thereof and the substitution therefor of the following:\n\t\n\t \u201c4.4. Numerical information on vitamins and minerals shall be expressed in metric units or as a percentage \nof the Nutrient Reference Value as specified in Schedule V hereto or Average Requirement values \n(AR) or Adequate Indicate Values (AI) as specified in Schedule IX hereto per one hundred grams \n(100 g) or per one hundred milliliters (100 ml) or per package if the package contains only a \nsingle portion. In addition, this information shall be given per serving as quantified on the label or \nper portion, provided that the number of portions contained in the package is stated. In addition, \ninformation on protein and additional nutrients may also be expressed as percentages of the Nutrient \nReference Value where an NRV has been established or Reference Intake as specified in Schedule V \nhereto or Average Requirement values (AR) or Adequate Intake values (AI) as specified in Schedule \nIX hereto.\u201d;",
+      "start_page": 5,
+      "end_page": 5,
+      "char_start": 1228,
+      "char_end": 2233,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_GAZETTE_2443_27-REGULATION-12",
+      "version_number": 1,
+      "document_id": "doc_gazette_2443_27",
+      "clause_number": "regulation 12",
+      "text": "in regulation 12 thereof-\n\t\n(a)\t in sub-regulation (5) thereof-\n\t\n(i)\t by the insertion of the following proviso immediately after paragraph (c) thereof: -\n\t\n\t \u2003 \u2003 \u2003 \u201cProvided that, if a product is manufactured and marketed exclusively for infants or young \nchildren or pregnant or lactating mothers, in the absence of a specific standard for such groups, the \nrelevant Average Requirement Values (AR) or Adequate Intake Values (AI) as specified in Schedule IX \nhereto may be adopted if it is clearly stated on the label.\u201d; and\n\t\n(ii)\t by the repeal of paragraph (d) thereof;\n\t\n(b)\t in paragraph (a) of sub regulation (8) thereof, by the substitution for the words \u201cchilling or freezing; and\u201d of \nthe words \u201cchilling or freezing or drying without significant alteration of the original composition other than \nmoisture; and\u201d\n\t\n(c)\t in sub-regulation (10) thereof-\n\t\n(i)\t by the repeal of paragraph (a) thereof and substitution therefor of the following: -\n \n \u201c(a) (i) No label or advertisement relating to any food shall indicate that it is a fortified food unless such \nfood has been added with one or more nutrients, whether or not it was normally present in that food, \nprovided that the intended purpose for such addition is to prevent or correct a demonstrated deficiency \nof one or more of such nutrients in the population; and\n \n(ii) If the fortification level of a nutrient exceeds one third (1/3) of the Nutrient Reference Value (NRV) \nas specified in Schedule V hereto or Average Requirement Values (AR) or Adequate Intake Values \n(AI) as specified in Schedule IX hereto, prior written approval shall be obtained from the Chief \nFood Authority, before such products are marketed;\u201d; and\n\t\n(ii)\t by the repeal of paragraph (d) thereof and the substitution therefor of the following: -\n \n \u201c(d) if the nutrient to be added is to maintain the nutrition at profile at preprocessing level, after processing \nor the nutrient added to the food does not exceed one third (1/3) of the Nutrient Reference Values (NRVs) \nspecified in Schedule V hereto or Average Requirement values (AR) or Adequate Intake Values (AI) \nas specified in Schedule IX hereto, the prior written approval of the Chief Food Authority may not be \nrequired;\u201d;\n\t (7)",
+      "start_page": 3,
+      "end_page": 3,
+      "char_start": 1045,
+      "char_end": 3283,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_GAZETTE_2443_27-REGULATION-13",
+      "version_number": 1,
+      "document_id": "doc_gazette_2443_27",
+      "clause_number": "regulation 13",
+      "text": "in regulation 13 thereof by the repeal of sub-regulations (1), (2), (3), (4), (5), (6), (7), (8), (9), (10), (11), (12), (13) \nand (15) thereof;",
+      "start_page": 3,
+      "end_page": 3,
+      "char_start": 3283,
+      "char_end": 3428,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_GAZETTE_2443_27-REGULATION-14",
+      "version_number": 1,
+      "document_id": "doc_gazette_2443_27",
+      "clause_number": "regulation 14",
+      "text": "in regulation 14 thereof-\n \n(a) by the insertion immediately after the definition of the expression \u201cbioactive components\u201d, of the following new \ndefinition: -\n\t\n\t \u201cBusiness-to-business food products\u201d means food products that are-\n \n(a) not offered for direct sale to the consumer; and\n\t\n(b)\t only used for further food processing or preparation;\n \n(b) by the insertion immediately after the definition of the expression \u201ccommon name\u201d, of the following new \ndefinition: -\n\t\n\t \u201cCottage industry\u2019 means a small-scale manufacturing business carried out within a household;\u201d;\n \n(c) by the insertion immediately after the definition of the expression \u201cmain panel\u201d, of the following new \ndefinition: -\n\t\n\t \u201cMilk-based product\u201d means products exclusively derived from milk to which other substances necessary for \nits manufacture may have been added, and it shall contain not less than eighty per centum by mass \n(80% m/m) of milk and not less than two point eight per centum by mass (2.8% m/m) total fat.\nProvided that such substances added do not replace in part or in whole any milk constituent, and milk-\nbased products intended for young children shall contain not less than ninety per centum by mass \n(90% m/m) of milk constituents;\u201d;\n\t (9)\t\nin Schedule IV thereof-",
+      "start_page": 4,
+      "end_page": 4,
+      "char_start": 206,
+      "char_end": 1473,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_GAZETTE_2443_27-REGULATION-2",
+      "version_number": 1,
+      "document_id": "doc_gazette_2443_27",
+      "clause_number": "regulation 2",
+      "text": "In regulation 2 thereof, by the repeal of the proviso to that regulation and the substitution therefor of the following: -\n\u201cProvided that these regulations shall not apply to-\n\t\n(a)\t Other than the bulk pack for retail sale, any other packs for sale if the food is of a nature, quality, \norigin, or brand requested by the purchaser and is weighed, counted, or measured in the presence of the \npurchaser; and",
+      "start_page": 1,
+      "end_page": 1,
+      "char_start": 934,
+      "char_end": 1342,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_GAZETTE_2443_27-REGULATION-4",
+      "version_number": 1,
+      "document_id": "doc_gazette_2443_27",
+      "clause_number": "regulation 4",
+      "text": "in regulation 4 thereof-\n\t\n(a)\t\nIn sub-regulation (1) thereof-\n\t\n(i)\t by the repeal of paragraph (a) thereof and the substitution therefor of the following: -\n\t\n\u201c(a)\t common name of the product in bold type in all three languages or, in any two of the three languages \non the main panel and the other language on any panel;\u201d and\n\t\n(ii)\t by the repeal of paragraph (b) thereof and the substitution therefor of the following: -\n\t\n\u201c(b)\t trade name and brand name (if any) in any one or more of the three languages in a manner that shall \nnot be deceptive or mislead any person; and\u201d;\n\t\n(b)\t\nIn sub-regulation (2) (a) thereof-\n\t\n\t After subparagraph of subsection (i) thereof, by the addition of the following: -\n\t\n\t Provided that, such exemption shall not apply to the following items: -\n\t\n(A)\t Cereals containing gluten; i.e., wheat, spelt, rye, barley, oats, or their hybridised strains \nand products of these;\n\t\n(B)\t Crustacea and products of these;\n\t\n(C)\t Eggs and egg products;\n \n(D) Fish and fish products;\n\t\n(E)\t Peanuts, soybeans and products of these;\n\t\n(F)\t Milk and milk products; (lactose included);\n\t\n(G)\t Tree nuts and nut products.\n\t\n(c)\t\nby the repeal of subparagraph (v) of paragraph (a) thereof; and\n\t\n(d)\t\nIn subparagraph (viii) of paragraph (a) thereof, by the substitution for the words \u201cnot less than 1.5 millimeters\u201d \nof the words \u201cnot less than 1 millimeter;\u201d.\n\t (3)",
+      "start_page": 2,
+      "end_page": 2,
+      "char_start": 902,
+      "char_end": 2291,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_GAZETTE_2443_27-REGULATION-5",
+      "version_number": 1,
+      "document_id": "doc_gazette_2443_27",
+      "clause_number": "regulation 5",
+      "text": "in regulation 5 thereof, by the repeal of paragraph (e) thereof and the substitution therefor of the following: -\n\t\n\u201c(e)\t\nthe declarations, other than the declarations of regulation (4)(1), the date of manufacture, the date of expiry and \nnutrition labelling shall be conspicuously printed in letters of not less than 1.5 millimeters in height.\u201d.\n\t (4)",
+      "start_page": 2,
+      "end_page": 2,
+      "char_start": 2291,
+      "char_end": 2645,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_GAZETTE_2443_27-REGULATION-9",
+      "version_number": 1,
+      "document_id": "doc_gazette_2443_27",
+      "clause_number": "regulation 9",
+      "text": "in regulation 9 thereof-\n\t\n(a)\t\nin sub regulation (3) thereof, by the repeal of paragraph (b) thereof and the substitution therefor of the following \nparagraph: -\n\t\n\u201c(b)\t\nSweeteners can be used partially in place of sugar, where there is at least thirty per centum energy reduction \ncompared to a similar or the original product and a declaration of \u201cenergy reduced\u201d may be made on the \nlabel,\u201d;\n\t\n(b)\t\nby the insertion of the following proviso immediately after sub-regulation (5) thereof: -\n\t\n\u2003 \t\u2002 \u201cProvided that dairy ingredients, bee honey, bee wax, added micronutrients, food additives and processing \naids may be exempted from this requirement.\u201d\n\t (6)",
+      "start_page": 3,
+      "end_page": 3,
+      "char_start": 386,
+      "char_end": 1045,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_GAZETTE_2443_27-SECTION-32",
+      "version_number": 1,
+      "document_id": "doc_gazette_2443_27",
+      "clause_number": "Section 32",
+      "text": "Section 32 of the Food Act, No. 26 of 1980.\t\n\t\n\t\n\t\nDr. Nalinda Jayatissa,\n\t\n\t\n\t\nMinister of Health and Mass Media.\nColombo,\n25th June, 2025.\nREGULATIONS\nThe Food (Labelling and Advertising) Regulations 2022, published in Gazette Extraordinary, No. 2319/40 of February 14, \n2023, as amended from time to time, are hereby further amended as follows:\n\t (1)",
+      "start_page": 1,
+      "end_page": 1,
+      "char_start": 579,
+      "char_end": 934,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_GAZETTE_2494_47-REGULATION-4",
+      "version_number": 1,
+      "document_id": "doc_gazette_2494_47",
+      "clause_number": "regulation 4",
+      "text": "of regulation 4 shall not be less than one half of the height of the letters used for the common name on the main\npanel of that package or container subject to a minimum height of three millimetres (3 mm).\n(c) the letters, numericals and symbols on the label should be readable and visible to the naked eye and identi\ue04fable\nin contrast to their background colour.",
+      "start_page": 5,
+      "end_page": 5,
+      "char_start": 490,
+      "char_end": 853,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_GAZETTE_2494_47-REGULATION-5",
+      "version_number": 1,
+      "document_id": "doc_gazette_2494_47",
+      "clause_number": "regulation 5",
+      "text": "declaration required to be made on the label under regulation 5. Such code shall be printed, painted or a\ue056xed in a\nmanner that does not distort, deface, erase or obliterate any information on the original label, and any information\nmade available through such code shall not be false, misleading, deceptive or shall not be in violation of any\nprovision of these regulations.\n5. (1)\nThe following declarations shall be made indelibly and legibly on the main panel-\n(a) common name of the product in bold type in all three languages or in any two of the three languages on the\nmain panel and the other language on any panel;\nProvided that the common name may be substituted by any other name as set out in Schedule I hereto;\n(b) trade name and brand name (if any), in any one or more of the three languages in a manner that shall not be\ndeceptive or mislead any person; and\n(c) the net contents of the package or container expressed in SI units (Syst\u00e8me International d'Unit\u00e9s) or by the\ninternational symbols \u2018g\u2019 or \u2018kg\u2019 in the case of solids, \u2018ml\u2019 or \u2018l\u2019 in the case of liquids and, if packaged in\nliquid medium, the net drained weight expressed as \u2018g\u2019 or \u2018kg\u2019.\n(2)\n(a)\nThe following declarations shall be made indelibly and legibly on any panel in any one or more of the three\nlanguages \u2013\n(i)\na complete list of ingredients used in the food by their common names in descending order of ingoing\nweight (m/m) at the time of manufacture of the food including any permitted food additive by its\ncommon name and INS number as prescribed by regulations made under the Act.\nHowever, processing aids that are not carried over to foods are exempted from declaration in the list\nof ingredients:\nProvided that, such exemption shall not apply to the processing aids which contain following items-\n(A) cereals containing gluten; that is wheat, spelt, rye, barley, oats or their hybridized strains\nand its products;\n(B) crustacea and its products;\n(C) eggs and egg products;\n(D) \ue04fsh and \ue04fsh products;\n(E) peanuts, soybeans and its products;\n(F) milk and milk products; (lactose included); and\n(G) tree nuts and nut products;",
+      "start_page": 3,
+      "end_page": 3,
+      "char_start": 820,
+      "char_end": 2932,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_GAZETTE_2494_47-SECTION-1",
+      "version_number": 1,
+      "document_id": "doc_gazette_2494_47",
+      "clause_number": "section 1",
+      "text": "Where nutrient declaration is applied as per section 1 above, the declaration of the following shall be mandatory:\n2.1.1\nEnergy value;\n2.1.2\nThe amounts of protein, total sugars (with naturally occurring and added sugar), available carbohydrate\n(i.e. dietary carbohydrate excluding dietary \ue04fbre), dietary \ue04fbre, total fat, saturated fat, trans- fats and\nsodium; and\n2.1.3\nThe amount of any other nutrient for which a nutrition claim and/or health claim and/or reference is made\non the label.\n2.2\nWhere a claim is made regarding the amount and/or type of fatty acids or the amount of cholesterol, the amounts of\nsaturated fatty acids, monounsaturated fatty acids and polyunsaturated fatty acids and cholesterol shall be declared,",
+      "start_page": 15,
+      "end_page": 15,
+      "char_start": 1070,
+      "char_end": 1798,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_GAZETTE_2494_47-SECTION-2.1",
+      "version_number": 1,
+      "document_id": "doc_gazette_2494_47",
+      "clause_number": "Section 2.1",
+      "text": "and the amount of trans- fatty acid is required, in addition to the requirements of Section 2.1 and in accordance",
+      "start_page": 15,
+      "end_page": 15,
+      "char_start": 1798,
+      "char_end": 1912,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_GAZETTE_2494_47-SECTION-32",
+      "version_number": 1,
+      "document_id": "doc_gazette_2494_47",
+      "clause_number": "section 32",
+      "text": "section 32 of the Food Act, No. 26 of 1980.\nDr. Nalinda Jayatissa,\nMinister of Health and Mass Media.\nColombo,\n26th June, 2026.\nREGULATIONS\n1.\nThese regulations may be cited as Food (Labelling and Advertising) Regulations 2026 and shall come into operation\non 01st July 2026.\n2.\nThese regulations shall not apply to food products manufactured prior to the date of coming into operation of these\nregulations.\n3.\nA person shall not import, transport, distribute, store, sell, o\ue055er for sale, expose or keep for sale or advertise, any food\ncontained in a package or container, unless such package or container is labelled in accordance with these regulations:\n\u0dc1\u0dbd\u0d82\u0d9a\u0dcf\ue013\u0da2\u0dcf\u0dad\u0dcf\ue011\ue00f\u0d9a\u0dc3\u0db8\u0dcf\u0da2\u0dc0\u0dcf\ue010\u0da2\u0db1\u0dbb\u0da2\u0dba\ue014\u0d9c\u0dd0\u0dc3\u0da7\u0db4\ue00e\ue022\n\u0d85\ue00d\ue015\u0dba\u001c\u0dc2\n\u0d85\u0d82\u0d9a2494/47 - 2026 \ue00b\ue012\u0db8\u0dc326 \u0dc0\u0dd0\ue012\ue017\ue00a\u0dbb\u0dcf\u0daf\u0dcf- 2026.06.26\nNo. 2494/47 - FRIDAY, JUNE 26, 2026",
+      "start_page": 1,
+      "end_page": 1,
+      "char_start": 418,
+      "char_end": 1198,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_GAZETTE_2494_47-SECTION-4.3",
+      "version_number": 1,
+      "document_id": "doc_gazette_2494_47",
+      "clause_number": "Section 4.3",
+      "text": "immediately the declaration of the total fat in accordance with Section 4.3 of this schedule.\nThe following format should be used:\nTotal Fat \u2026. g of which\nsaturated fatty acids\n.... g\ntrans- fatty acids\n.... g\nmonounsaturated fatty acids\n.... g\npolyunsaturated fatty acids\n.... g\nCholesterol\n... mg\n5.\nTolerances and compliance\n5.1\nTolerance limits shall be set in relation to public health concerns, shelf-life, accuracy of analysis, processing\nvariability and inherent liability and variability of the nutrient in the product, and, according to whether the nutrient\nhas been added or is naturally occurring in the product.\n5.2\nThe values used in nutrient declaration shall be weighed average values derived from data speci\ue04fcally obtained\nfrom analysis of products which are representative of the product being labelled.\n6.\nFormat for Nutrition Information Labelling Panel to appear on product label\nPer 100 g (in case of solids)\nPer 100 ml (in case of liquids)\nPer serving\nEnergy\nkJ\nkJ\nkcal\nkcal\nTotal Carbohydrates\ng\ng\nDietary Fibre\ng\ng\nTotal sugar\ng\ng\nProtein\ng\ng\nTotal Fat\ng\ng\nSaturated fatty acids\ng\ng\nTrans- fatty acids*\ng\ng\nSodium (Na)\nmg\nmg\nServing size is \u2026\u2026\u2026..g or ml\nNumber of servings per pack\u2026\u2026\u2026..\n*If the food product is free from total fat, declaration of trans-fatty acids is not mandatory.\nSCHEDULE III",
+      "start_page": 17,
+      "end_page": 17,
+      "char_start": 320,
+      "char_end": 1641,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_GAZETTE_2494_47-SECTION-4.6",
+      "version_number": 1,
+      "document_id": "doc_gazette_2494_47",
+      "clause_number": "Section 4.6",
+      "text": "with Section 4.6.\n2.3\nIn addition to the mandatory declaration under 2.1 and 2.2, vitamins and minerals may be listed in accordance\nwith the following criteria:\n2.3.1\nOnly vitamins and minerals for which recommended intakes have been established shall be declared; and\n2.3.2\nWhen nutrient declaration is applied, vitamins and minerals which are present in amounts less than \ue04fve\nper centum (5%) of the Nutrient Reference Value (NRV) as speci\ue04fed in Schedule IV hereto or theAverage\nRequirement (AR) orAdequate Intake (AI) values speci\ue04fed in Schedule VII hereto, per one hundred grams\n(100g) or one hundred millilitres (100 ml) or per serving as quanti\ue04fed on the label shall not be declared.\n3.\nCalculation of Nutrients:\n3.1\nCalculation of energy",
+      "start_page": 15,
+      "end_page": 15,
+      "char_start": 1912,
+      "char_end": 2656,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_GAZETTE_2496_03-SECTION-527",
+      "version_number": 1,
+      "document_id": "doc_gazette_2496_03",
+      "clause_number": "Section 527",
+      "text": "ORDERS under the Section 527 read with Section 477 of the Companies Act, No. 07 of 2007 and under the Section 19 of \nthe Societies Ordinance No. 16 of 1891 (Chapter 123) read with The Societies (Amendment) Ordinance No. 11 of 2005.\n\t\n\t\nWasantha Samarasinghe,\n\t\nMinister of Trade, Commerce,\n\t\nFood Security and Co-operative\n\t\nDevelopment.\nColombo,\n23 June, 2026.\nCompanies (Fees) Orders / Societies (Fees) Orders\n\u2003 \u2003 \u2003 Companies (Fees) Orders and Societies (Fees) Orders, published in extraordinary Gazette No. 2303/07 of October \n25, 2022 are hereby amended, as specified in the schedules to these orders.",
+      "start_page": 1,
+      "end_page": 1,
+      "char_start": 471,
+      "char_end": 1077,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": true,
+      "is_synthetic": false,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_LABELLING_REGULATIONS_FINAL_2026-REGULATION-12",
+      "version_number": 1,
+      "document_id": "doc_labelling_regulations_final_2026",
+      "clause_number": "Regulation 12",
+      "text": "SCHEDULE  IV             Regulation 12(5)(a), 12(6)(b) and (c), 12 \n(10) (a)(ii), 12(10)(d) \n \nNutrient Reference Values (NRVs) are of two types: \n \nNutrient Reference Values- Requirements (NRVs-R) and \nNutrient Reference Values-Non-Communicable Disease (NRVs-NCD) \n \n \nNRVs-R per day \n \nProtein (g) \n50 \nVitamin A (\u03bcg) * \n800 \nVitamin D (\u03bcg) \n5 \nVitamin C (mg) \n100",
+      "start_page": 15,
+      "end_page": 15,
+      "char_start": 1443,
+      "char_end": 1811,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": false,
+      "is_synthetic": true,
+      "has_embedding": true
+    },
+    {
+      "clause_id": "CLAUSE-DOC_LABELLING_REGULATIONS_FINAL_2026-REGULATION-5",
+      "version_number": 1,
+      "document_id": "doc_labelling_regulations_final_2026",
+      "clause_number": "regulation 5",
+      "text": "in regulation 5, subject to compliance with the preceding proviso to this regulation 3(4). The importer shall \nmaintain documentary evidence of the method of conversion/ interpretation of such coded date (issued or \nconfirmed by the manufacturer/ packer or the brand owner) and shall produce such evidence to the Chief Food",
+      "start_page": 1,
+      "end_page": 1,
+      "char_start": 3602,
+      "char_end": 3927,
+      "valid_from": null,
+      "valid_to": null,
+      "transition_until": null,
+      "superseded_by_clause_id": null,
+      "is_compilable": true,
+      "embedding_verified": false,
+      "is_synthetic": true,
+      "has_embedding": true
+    }
+  ],
+  "rules": [
+    {
+      "rule_id": "RULE-CEA-REG-8",
+      "clause_id": "CLAUSE-DOC_CEA_EPL_2022-REGULATION-8",
+      "clause_version": 1,
+      "outcome_type": "STANDARD",
+      "review_status": "APPROVED",
+      "applies_if": {
+        "all": [
+          {
+            "field": "hazardous_chemicals_storage_liters",
+            "op": "gt",
+            "value": 500
+          }
+        ]
+      },
+      "exceptions": [],
+      "obligation": {
+        "type": "safety",
+        "text": "Construct secondary containment bunding for hazardous chemicals",
+        "impact_categories": [
+          "facility_safety",
+          "capital_expenditure"
+        ]
+      },
+      "validity": {
+        "published": "2022-02-01",
+        "commences": "2022-05-01"
+      },
+      "source": {
+        "clause": "Regulation 8",
+        "instrument": "National Environmental (Protection and Quality) Regulations 2022",
+        "quote_span": "Storage of hazardous industrial chemicals exceeding 500 liters shall be equipped with secondary containment bunding"
+      },
+      "is_gold_rule": false,
+      "is_synthetic": true
+    },
+    {
+      "rule_id": "RULE-FCAU-2494-47-REG-3",
+      "clause_id": "CLAUSE-DOC_GAZETTE_2494_47-REGULATION-3",
+      "clause_version": 1,
+      "outcome_type": "STANDARD",
+      "review_status": "APPROVED",
+      "applies_if": {
+        "all": [
+          {
+            "field": "activity",
+            "op": "in",
+            "value": [
+              "food_manufacturing",
+              "catering",
+              "retail_trade",
+              "distribution",
+              "import",
+              "storage"
+            ]
+          },
+          {
+            "field": "products.prepackaged",
+            "op": "eq",
+            "value": true
+          }
+        ]
+      },
+      "exceptions": [
+        {
+          "field": "packaged_in_presence_of_purchaser",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "field": "market.b2b_only",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "obligation": {
+        "type": "labelling",
+        "text": "Food contained in a package or container must be labelled in accordance with the Food (Labelling and Advertising) Regulations 2026.",
+        "impact_categories": [
+          "labelling",
+          "packaging",
+          "retail_distribution"
+        ]
+      },
+      "validity": {
+        "published": "2026-06-26",
+        "commences": "2026-07-01"
+      },
+      "source": {
+        "clause": "Regulation 3",
+        "instrument": "Sri Lanka Gazette Extraordinary No. 2494/47: Food (Labelling and Advertising) Regulations 2026",
+        "authority": "Minister of Health and Mass Media / Food Advisory Committee",
+        "gazette_no": "Gazette Extraordinary No. 2494/47",
+        "page": 1,
+        "quote_span": "A person shall not import, transport, distribute, store, sell, offer for sale, expose or keep for sale or advertise, any food contained in a package or container, unless such package or container is labelled in accordance with these regulations:"
+      },
+      "is_gold_rule": false,
+      "is_synthetic": false
+    },
+    {
+      "rule_id": "RULE-FCAU-2494-47-REG-3-B2B",
+      "clause_id": "CLAUSE-DOC_GAZETTE_2494_47-REGULATION-3",
+      "clause_version": 1,
+      "outcome_type": "STANDARD",
+      "review_status": "APPROVED",
+      "applies_if": {
+        "all": [
+          {
+            "field": "activity",
+            "op": "in",
+            "value": [
+              "food_manufacturing",
+              "distribution",
+              "import",
+              "storage"
+            ]
+          },
+          {
+            "field": "products.prepackaged",
+            "op": "eq",
+            "value": true
+          },
+          {
+            "field": "market.b2b_only",
+            "op": "eq",
+            "value": true
+          }
+        ]
+      },
+      "exceptions": [],
+      "obligation": {
+        "type": "labelling",
+        "text": "Business-to-business food products must display 10 mandatory disclosures (common name in either of the three languages, trade name if applicable, net contents, date of manufacture, date of expiry, batch number, manufacturer's name and address, distributor's name and address, country of origin in case of imported foods, complete list of ingredients) and must display 'Not for retail sale' printed on label or affixed through supplementary label in bold type with font size not less than 3 mm.",
+        "disclosures": [
+          "common_name",
+          "trade_name",
+          "net_contents",
+          "date_of_manufacture",
+          "date_of_expiry",
+          "batch_number",
+          "manufacturer_details",
+          "distributor_details",
+          "country_of_origin",
+          "ingredients_list",
+          "not_for_retail_sale_statement"
+        ],
+        "impact_categories": [
+          "labelling",
+          "packaging",
+          "b2b_compliance"
+        ]
+      },
+      "validity": {
+        "published": "2026-06-26",
+        "commences": "2026-07-01"
+      },
+      "source": {
+        "clause": "Regulation 3 Proviso (b)",
+        "instrument": "Sri Lanka Gazette Extraordinary No. 2494/47: Food (Labelling and Advertising) Regulations 2026",
+        "authority": "Minister of Health and Mass Media / Food Advisory Committee",
+        "gazette_no": "Gazette Extraordinary No. 2494/47",
+        "page": 2,
+        "quote_span": "business-to-business food products that are exempted from other labelling requirements in these regulations except the following mandatory labelling requirements- (i) common name (in either of the three languages); (ii) trade name (if applicable); (iii) net contents; (iv) date of manufacture; (v) date of expiry; (vi) batch number; (vii) manufacturer's name and address; (viii) distributor's name and address; (ix) country of origin in case of imported foods; and (x) a complete list of ingredients. Provided further that the statement \"Not for retail sale\" shall be printed on the label or affixed through a supplementary label of such business-to-business food products clearly and conspicuously in bold type and font size of not less than three millimetres (3 mm)."
+      },
+      "is_gold_rule": false,
+      "is_synthetic": false
+    },
+    {
+      "rule_id": "RULE-CAA-SEC-10",
+      "clause_id": "CLAUSE-DOC_CAA_MRP_2023-SECTION-10",
+      "clause_version": 1,
+      "outcome_type": "STANDARD",
+      "review_status": "APPROVED",
+      "applies_if": {
+        "all": [
+          {
+            "field": "activity",
+            "op": "eq",
+            "value": "retail_trade"
+          },
+          {
+            "field": "trades_essential_commodities",
+            "op": "eq",
+            "value": true
+          }
+        ]
+      },
+      "exceptions": [],
+      "obligation": {
+        "type": "pricing",
+        "text": "Conspicuously display Maximum Retail Price (MRP)",
+        "impact_categories": [
+          "consumer_transparency",
+          "point_of_sale"
+        ]
+      },
+      "validity": {
+        "published": "2023-01-10",
+        "commences": "2023-03-01"
+      },
+      "source": {
+        "clause": "Section 10",
+        "instrument": "Consumer Affairs Authority (Display of Maximum Retail Prices) Direction 2023",
+        "quote_span": "trading in essential consumer commodities shall conspicuously display the Maximum Retail Price (MRP)"
+      },
+      "is_gold_rule": false,
+      "is_synthetic": true
+    },
+    {
+      "rule_id": "RULE-CAA-SEC-14",
+      "clause_id": "CLAUSE-DOC_CAA_MRP_2023-SECTION-14",
+      "clause_version": 1,
+      "outcome_type": "STANDARD",
+      "review_status": "APPROVED",
+      "applies_if": {
+        "all": [
+          {
+            "field": "activity",
+            "op": "eq",
+            "value": "retail_trade"
+          },
+          {
+            "field": "annual_turnover_lkr",
+            "op": "gt",
+            "value": 10000000
+          }
+        ]
+      },
+      "exceptions": [],
+      "obligation": {
+        "type": "recordkeeping",
+        "text": "Maintain automated digital point of sale receipt records",
+        "impact_categories": [
+          "recordkeeping",
+          "it_systems"
+        ]
+      },
+      "validity": {
+        "published": "2023-01-10",
+        "commences": "2023-03-01"
+      },
+      "source": {
+        "clause": "Section 14",
+        "instrument": "Consumer Affairs Authority (Display of Maximum Retail Prices) Direction 2023",
+        "quote_span": "annual turnover exceeding 10 million LKR shall maintain automated digital point of sale receipt records"
+      },
+      "is_gold_rule": false,
+      "is_synthetic": true
+    },
+    {
+      "rule_id": "RULE-CEA-EPL-001",
+      "clause_id": "CEA-SCHED-01-B12",
+      "clause_version": 1,
+      "outcome_type": "STANDARD",
+      "review_status": "APPROVED",
+      "applies_if": {
+        "all": [
+          {
+            "field": "activity",
+            "op": "eq",
+            "value": "food_manufacturing"
+          },
+          {
+            "field": "employee_count",
+            "op": "gte",
+            "value": 20
+          }
+        ]
+      },
+      "exceptions": [],
+      "obligation": {
+        "type": "licensing",
+        "text": "Obtain and renew Environmental Protection Licence (Category B) with effluent standards compliance.",
+        "impact_categories": [
+          "licensing",
+          "process"
+        ]
+      },
+      "validity": {
+        "published": "2008-01-25",
+        "commences": "2008-02-01"
+      },
+      "source": {
+        "clause": "Schedule 1 Part B Item 12",
+        "instrument": "National Environmental (Protection and Quality) Regulations",
+        "authority": "Central Environmental Authority (CEA)",
+        "gazette_no": "1533/16",
+        "page": 3,
+        "quote_span": "Schedule 1 Part B Item 12. Any industrial food manufacturing activity employing 20 or more persons shall obtain an Environmental Protection Licence (EPL Category B) prior to commencing continuous operations."
+      },
+      "is_gold_rule": false,
+      "is_synthetic": true
+    },
+    {
+      "rule_id": "RULE-CEA-REG-3",
+      "clause_id": "CLAUSE-DOC_CEA_EPL_2022-REGULATION-3",
+      "clause_version": 1,
+      "outcome_type": "STANDARD",
+      "review_status": "APPROVED",
+      "applies_if": {
+        "all": [
+          {
+            "field": "industry_category",
+            "op": "eq",
+            "value": "Part A"
+          },
+          {
+            "field": "wastewater_discharge_m3_per_day",
+            "op": "gt",
+            "value": 10
+          }
+        ]
+      },
+      "exceptions": [],
+      "obligation": {
+        "type": "licensing",
+        "text": "Obtain Environmental Protection License (EPL)",
+        "impact_categories": [
+          "licensing",
+          "operational_compliance"
+        ]
+      },
+      "validity": {
+        "published": "2022-02-01",
+        "commences": "2022-05-01"
+      },
+      "source": {
+        "clause": "Regulation 3",
+        "instrument": "National Environmental (Protection and Quality) Regulations 2022",
+        "quote_span": "categorized under Part A having wastewater discharge exceeding 10 cubic meters per day shall obtain an Environmental Protection License"
+      },
+      "is_gold_rule": false,
+      "is_synthetic": true
+    },
+    {
+      "rule_id": "RULE-FCAU-001",
+      "clause_id": "FCAU-REG-04",
+      "clause_version": 1,
+      "outcome_type": "STANDARD",
+      "review_status": "APPROVED",
+      "applies_if": {
+        "all": [
+          {
+            "field": "activity",
+            "op": "eq",
+            "value": "food_manufacturing"
+          },
+          {
+            "field": "products.prepackaged",
+            "op": "eq",
+            "value": true
+          },
+          {
+            "field": "production_capacity.kg_per_day",
+            "op": "gte",
+            "value": 50
+          }
+        ]
+      },
+      "exceptions": [],
+      "obligation": {
+        "type": "labelling",
+        "text": "Ensure retail packages carry nutritional panel in Sinhala, Tamil, and English.",
+        "impact_categories": [
+          "packaging",
+          "labelling"
+        ]
+      },
+      "validity": {
+        "published": "2024-01-01",
+        "commences": "2024-06-01",
+        "transition_until": "2024-12-31"
+      },
+      "source": {
+        "clause": "Regulation 4",
+        "instrument": "Food (Labelling and Advertising) Regulations",
+        "authority": "Food Control Administration Unit (FCAU)",
+        "gazette_no": "2024/01",
+        "page": 1,
+        "quote_span": "Regulation 4. Every food manufacturing enterprise having a production capacity of 50 kg per day or more, and engaged in the production of prepackaged food products, shall ensure that each retail package carries a nutrition information panel in Sinhala, Tamil, and English."
+      },
+      "is_gold_rule": false,
+      "is_synthetic": true
+    },
+    {
+      "rule_id": "RULE-FCAU-REAL-2026-REG-2",
+      "clause_id": "CLAUSE-DOC_LABELLING_REGULATIONS_FINAL_2026-REGULATION-2",
+      "clause_version": 1,
+      "outcome_type": "STANDARD",
+      "review_status": "APPROVED",
+      "applies_if": {
+        "all": [
+          {
+            "field": "activity",
+            "op": "in",
+            "value": [
+              "food_manufacturing",
+              "catering",
+              "retail_trade"
+            ]
+          },
+          {
+            "field": "products.prepackaged",
+            "op": "eq",
+            "value": true
+          }
+        ]
+      },
+      "exceptions": [
+        {
+          "field": "packaged_in_presence_of_purchaser",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "field": "market.b2b_only",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "obligation": {
+        "type": "labelling",
+        "text": "Food contained in a package or container must be labelled in accordance with the Food (Labelling and Advertising) Regulations 2026.",
+        "impact_categories": [
+          "labelling",
+          "packaging"
+        ]
+      },
+      "validity": {
+        "published": "2026-07-01",
+        "commences": "2026-07-01"
+      },
+      "source": {
+        "clause": "Regulation 2",
+        "instrument": "Food (Labelling and Advertising) Regulations 2026",
+        "authority": "Food Advisory Committee / Ministry of Health",
+        "gazette_no": "Gazette Extraordinary No. 2494/47",
+        "page": 1,
+        "quote_span": "A person shall not import, transport, distribute, store, sell, offer for sale, expose or keep for sale or advertise, any \nfood contained in a package or container, unless such package or container is labelled in accordance with these \nregulations:"
+      },
+      "is_gold_rule": false,
+      "is_synthetic": true
+    },
+    {
+      "rule_id": "RULE-FCAU-REG-15",
+      "clause_id": "CLAUSE-DOC_FCAU_LABELLING_2024-REGULATION-15",
+      "clause_version": 1,
+      "outcome_type": "STANDARD",
+      "review_status": "APPROVED",
+      "applies_if": {
+        "all": [
+          {
+            "field": "uses_synthetic_colorings",
+            "op": "eq",
+            "value": true
+          }
+        ]
+      },
+      "exceptions": [],
+      "obligation": {
+        "type": "labelling",
+        "text": "Declare chemical name and INS code for synthetic colorings",
+        "impact_categories": [
+          "labelling"
+        ]
+      },
+      "validity": {
+        "published": "2024-01-15",
+        "commences": "2024-06-01"
+      },
+      "source": {
+        "clause": "Regulation 15",
+        "instrument": "Food (Labelling and Advertising) Regulations 2024",
+        "quote_span": "containing synthetic food colorings shall declare the common chemical name and international numbering system code"
+      },
+      "is_gold_rule": false,
+      "is_synthetic": true
+    },
+    {
+      "rule_id": "RULE-FCAU-REG-4",
+      "clause_id": "CLAUSE-DOC_FCAU_LABELLING_2024-REGULATION-4",
+      "clause_version": 1,
+      "outcome_type": "STANDARD",
+      "review_status": "APPROVED",
+      "applies_if": {
+        "all": [
+          {
+            "field": "activity",
+            "op": "eq",
+            "value": "food_manufacturing"
+          },
+          {
+            "field": "production_capacity.kg_per_day",
+            "op": "gte",
+            "value": 50
+          }
+        ]
+      },
+      "exceptions": [],
+      "obligation": {
+        "type": "labelling",
+        "text": "Display nutrition information panel",
+        "impact_categories": [
+          "labelling",
+          "packaging"
+        ]
+      },
+      "validity": {
+        "published": "2024-01-15",
+        "commences": "2024-06-01"
+      },
+      "source": {
+        "clause": "Regulation 4",
+        "instrument": "Food (Labelling and Advertising) Regulations 2024",
+        "quote_span": "production capacity of 50 kg per day or more shall ensure that each retail package carries a nutrition information panel"
+      },
+      "is_gold_rule": false,
+      "is_synthetic": true
+    }
+  ],
+  "audits": [
+    {
+      "id": 1,
+      "rule_id": "RULE-FCAU-REG-4",
+      "reviewer_id": "exp_adjudicator_01",
+      "reviewer_role": "EXPERT_ADJUDICATOR",
+      "decision": "APPROVED",
+      "rationale": "Verified against gazette source text with deterministic logic.",
+      "reviewed_at": "2026-10-19T11:44:36.061521+00:00"
+    },
+    {
+      "id": 2,
+      "rule_id": "RULE-FCAU-REG-15",
+      "reviewer_id": "exp_adjudicator_01",
+      "reviewer_role": "EXPERT_ADJUDICATOR",
+      "decision": "APPROVED",
+      "rationale": "Verified against gazette source text with deterministic logic.",
+      "reviewed_at": "2026-10-19T11:44:36.065387+00:00"
+    },
+    {
+      "id": 3,
+      "rule_id": "RULE-CEA-REG-3",
+      "reviewer_id": "exp_adjudicator_01",
+      "reviewer_role": "EXPERT_ADJUDICATOR",
+      "decision": "APPROVED",
+      "rationale": "Verified against gazette source text with deterministic logic.",
+      "reviewed_at": "2026-10-19T11:44:36.161459+00:00"
+    },
+    {
+      "id": 4,
+      "rule_id": "RULE-CEA-REG-8",
+      "reviewer_id": "exp_adjudicator_01",
+      "reviewer_role": "EXPERT_ADJUDICATOR",
+      "decision": "APPROVED",
+      "rationale": "Verified against gazette source text with deterministic logic.",
+      "reviewed_at": "2026-10-19T11:44:36.164607+00:00"
+    },
+    {
+      "id": 5,
+      "rule_id": "RULE-CAA-SEC-10",
+      "reviewer_id": "exp_adjudicator_01",
+      "reviewer_role": "EXPERT_ADJUDICATOR",
+      "decision": "APPROVED",
+      "rationale": "Verified against gazette source text with deterministic logic.",
+      "reviewed_at": "2026-10-19T11:44:36.232501+00:00"
+    },
+    {
+      "id": 6,
+      "rule_id": "RULE-CAA-SEC-14",
+      "reviewer_id": "exp_adjudicator_01",
+      "reviewer_role": "EXPERT_ADJUDICATOR",
+      "decision": "APPROVED",
+      "rationale": "Verified against gazette source text with deterministic logic.",
+      "reviewed_at": "2026-10-19T11:44:36.309262+00:00"
+    },
+    {
+      "id": 7,
+      "rule_id": "RULE-FCAU-001",
+      "reviewer_id": "exp_adjudicator_01",
+      "reviewer_role": "EXPERT_ADJUDICATOR",
+      "decision": "APPROVED",
+      "rationale": "Verified against gazette source text with deterministic logic.",
+      "reviewed_at": "2026-10-19T11:44:36.309271+00:00"
+    },
+    {
+      "id": 8,
+      "rule_id": "RULE-CEA-EPL-001",
+      "reviewer_id": "exp_adjudicator_01",
+      "reviewer_role": "EXPERT_ADJUDICATOR",
+      "decision": "APPROVED",
+      "rationale": "Verified against gazette source text with deterministic logic.",
+      "reviewed_at": "2026-10-19T11:44:36.309273+00:00"
+    },
+    {
+      "id": 9,
+      "rule_id": "RULE-FCAU-REAL-2026-REG-2",
+      "reviewer_id": "researcher_engineer_01",
+      "reviewer_role": "PRIMARY_ANNOTATOR",
+      "decision": "APPROVED",
+      "rationale": "Verified against Page 1 of official Food (Labelling and Advertising) Regulations 2026. Universal packaged food mandate accurately captured with purchaser-presence and B2B exceptions. Note: Independent legal expert adjudication is pending.",
+      "reviewed_at": "2026-10-22T18:07:15.458908+00:00"
+    },
+    {
+      "id": 10,
+      "rule_id": "RULE-FCAU-2494-47-REG-3",
+      "reviewer_id": "researcher_engineer_01",
+      "reviewer_role": "PRIMARY_ANNOTATOR",
+      "decision": "APPROVED",
+      "rationale": "Verified against Pages 1-2 of official Sri Lanka Gazette Extraordinary No. 2494/47. Regulation 3 general retail packaged food mandate captured with purchaser-presence and B2B exceptions. Note: Independent legal expert adjudication is pending.",
+      "reviewed_at": "2026-10-25T08:02:30.062189+00:00"
+    },
+    {
+      "id": 11,
+      "rule_id": "RULE-FCAU-2494-47-REG-3-B2B",
+      "reviewer_id": "researcher_engineer_01",
+      "reviewer_role": "PRIMARY_ANNOTATOR",
+      "decision": "APPROVED",
+      "rationale": "Verified against Page 2 of official Sri Lanka Gazette Extraordinary No. 2494/47. Regulation 3 Proviso (b) 10 mandatory disclosures and 'Not for retail sale' marking requirement captured. Note: Independent legal expert adjudication is pending.",
+      "reviewed_at": "2026-10-25T08:02:30.083741+00:00"
+    }
+  ]
+}
