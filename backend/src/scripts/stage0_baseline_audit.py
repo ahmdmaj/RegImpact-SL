@@ -77,7 +77,7 @@ def main():
         audits = db.query(HumanReviewAuditORM).all()
         print(f"\nTotal HumanReviewAuditORM: {len(audits)}")
         for a in audits:
-            print(f"Audit: Rule {a.rule_id} | Decision: {a.decision} | Reviewer: {a.reviewer_id} ({a.reviewer_role}) | Timestamp: {a.timestamp}")
+            print(f"Audit: Rule {a.rule_id} | Decision: {a.decision} | Reviewer: {a.reviewer_id} ({a.reviewer_role}) | Timestamp: {a.reviewed_at}")
 
         # Benchmark scenarios
         scenarios_path = Path("backend/data/benchmark/scenarios.jsonl")
@@ -86,9 +86,10 @@ def main():
             print(f"\nTotal benchmark scenarios in scenarios.jsonl: {len(scenarios)}")
             types = {}
             for s in scenarios:
-                t = s.get("type", "unknown")
+                t = s.get("scenario_type") or s.get("type", "unknown")
                 types[t] = types.get(t, 0) + 1
             print("Scenario types:", types)
+
 
 if __name__ == "__main__":
     main()
