@@ -69,11 +69,20 @@ This matrix establishes the compliance status of the RegImpact-SL codebase again
    - **Clause Eligibility Register:** Established comprehensive register (`docs/CLAUSE_ELIGIBILITY_AND_EXPANSION_REGISTER.md`) showing 44 operative clauses in DB + 3 derived from 1688/28 = 47 distinct eligible clauses available for Option A expansion (far exceeding $\ge 25$ target).
    - **Shortlist & Benchmark Allocation:** Shortlisted top 10 candidate clauses with provisional JSON rule specifications. Designed allocation architecture to scale from 30 provisional scenarios to 100 scenarios across 25 clauses (35 direct, 25 non-applicable, 20 minimal pairs, 8 missing-data, 6 provisos/exceptions, 2 temporal, 4 invariance).
    - **Evaluation Readiness:** Calculated exact LLM API requirement (400 calls for baselines B0–B3; System P and ablations run locally with 0 LLM calls). 58/58 regression tests passing. Zero live DB writes or benchmark mutations executed.
-7. **Prioritized Action Plan (Next Steps)**:
+7. **Phase 4.2 Controlled Ingestion of Verified Gazette 1688/28 Clauses (COMPLETED)**:
+   - **Preflight Source & Database Audit:** SHA-256 verified `food_amendment_colouring_substances_regulations_2011_en.pdf` (81,054 bytes; hash `3cd9948d2c334d08a11dd5bc9cc1f1a1ec053d6e819ea30f205687dda7c342c7`). Synchronized document metadata in `source_documents` (`extraction_status = SUCCESS`) and stored page text in `document_pages`.
+   - **Candidate Clause Mapping & Controlled Ingestion:** Ingested 3 candidate clauses from Gazette 1688/28 into PostgreSQL `clauses` table:
+     1. `CLAUSE-DOC_3CD9948D2C334D08A11DD5BC9CC1F1A1EC053D6E819EA30F205687DDA7C342C7-REGULATION-5-IV` (Regulation 5(iv), Page 1, Seafood colouring prohibition).
+     2. `CLAUSE-DOC_3CD9948D2C334D08A11DD5BC9CC1F1A1EC053D6E819EA30F205687DDA7C342C7-SCHEDULE-I-TABLE-I` (Schedule I Table I, Page 1, Permitted synthetic dyes positive list).
+     3. `CLAUSE-DOC_3CD9948D2C334D08A11DD5BC9CC1F1A1EC053D6E819EA30F205687DDA7C342C7-SCHEDULE-I-TABLE-II` (Schedule I Table II, Page 2, Other permitted colouring substances positive list).
+   - **Embedding Pipeline:** Dense 768-dim embeddings generated locally offline using `BAAI/bge-base-en-v1.5` (`sentence-transformers`). Confirmed unit normalization and pgvector cosine search integration. Zero external API calls made.
+   - **Reconciliation & Integrity Counts:** Database re-read confirmed exactly 88 clauses (62 authentic = 59 baseline + 3 new; 26 quarantined synthetic). Rules remained strictly untouched at 21 (12 authentic: 2 approved, 10 pending review; 0 gold). Scenarios untouched at 30 (0 gold).
+   - **Regression Testing:** 78 passed across 8 test suites (58 multi-phase regression tests + 20 vector/retrieval integration tests, 0 failed, 0 errors).
+   - **Comprehensive Report:** Documented in [docs/PHASE_4_2_GAZETTE_1688_28_INGESTION_REPORT.md](file:///c:/Users/HP/Desktop/PROJECTS/RegImpact-SL/docs/PHASE_4_2_GAZETTE_1688_28_INGESTION_REPORT.md).
+8. **Prioritized Action Plan (Next Steps)**:
    - Perform primary human review on the 10 candidate rules via `/admin/reviews` using the corrected [Candidate Rule Human-Review Register](file:///c:/Users/HP/Desktop/PROJECTS/RegImpact-SL/docs/CANDIDATE_RULE_HUMAN_REVIEW_REGISTER.md).
-   - Ingest verified Gazette 1688/28 clauses into `clauses` table with local BGE embeddings (Phase 4.2).
-   - Compile and verify rules for the top 10 shortlisted clauses to expand compiled clause count from 8 to 18.
-   - Construct 70 paired benchmark scenarios across expanded clauses to reach the proposal target of 100 scenarios.
+   - Compile and verify rules for the shortlisted candidate clauses (including Gazette 1688/28 Regulation 5(iv)) to expand compiled clause count from 8 toward 18–25 (Phase 4.3).
+   - Construct 70 paired benchmark scenarios across expanded clauses to reach the proposal target of 100 scenarios (Phase 4.4).
    - External dependencies: recruit independent second annotator (for $\kappa \ge 0.80$), recruit legal expert panel (for `is_gold_rule=True`), and supply funded API credentials for B0–B3 comparative execution.
 
 

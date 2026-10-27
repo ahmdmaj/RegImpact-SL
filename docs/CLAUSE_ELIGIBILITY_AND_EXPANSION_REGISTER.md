@@ -85,3 +85,25 @@
 | `CLAUSE-DOC_GAZETTE_2494_47-SECTION-1` | Gazette Extraordinary No. 2494/47 | section 1 | pp. 15-15 | YES | YES | NO | N/A | Uncompiled | YES | Eligible candidate for compilation |
 | `CLAUSE-DOC_GAZETTE_2494_47-SECTION-32` | Gazette Extraordinary No. 2494/47 | section 32 | pp. 1-1 | YES | NO (Stub) | NO | N/A | Uncompiled | NO | Inoperative statutory preamble / minister empowering formula under Section 32. |
 | `CLAUSE-DOC_GAZETTE_2496_03-SECTION-527` | The Sri Lanka Gazette Ext | Section 527 | pp. 1-1 | **NO (OUT)** | NO (Stub) | NO | N/A | Uncompiled | NO | Out of scope: Companies Act No. 7 of 2007 fees order (corporate fees, non-Food Control). |
+
+---
+
+## 3. Phase 4.2 Controlled Ingestion & Audit Addendum (2026-10-27)
+
+### Audit Clarification on Phase 4.1 Scripted Flags
+During the Phase 4.2 preflight audit, it was determined that the Phase 4.1 export script (`scratch/clause_audit_register.json`) assigned boolean fields (`rule_verified`, `source_inspected`, `text_matches_source`, and `is_promulgated`) via blanket script heuristics (`True` for all authentic clauses; `rule_verified = has_rule`). While all 8 physical source PDFs exist on disk and were SHA-256 verified, individual sentence-by-sentence manual visual comparison had only been completed for compiled rules and shortlisted candidates. Blanket assertions of line-by-line manual verification across all 59 baseline clauses are hereby clarified to reflect this heuristic assignment.
+
+### Ingestion of Gazette Extraordinary No. 1688/28 Clauses
+Following 100% manual visual verification of 300 DPI raster page scans against raw WinRT OCR text, the 3 candidate clauses from Gazette 1688/28 were ingested into the PostgreSQL `clauses` table with genuine 768-dim unit-normalized local BGE v1.5 embeddings:
+1. `CLAUSE-DOC_3CD9948D2C334D08A11DD5BC9CC1F1A1EC053D6E819EA30F205687DDA7C342C7-REGULATION-5-IV` (Regulation 5(iv), Page 1, Negative prohibition on added colours in raw fish, molluscs, crustaceans, and echinoderms).
+2. `CLAUSE-DOC_3CD9948D2C334D08A11DD5BC9CC1F1A1EC053D6E819EA30F205687DDA7C342C7-SCHEDULE-I-TABLE-I` (Schedule I Table I, Page 1, Exhaustive positive list of 10 permitted synthetic dyes across Red, Yellow, Blue, Green groups; 8 INS numbers).
+3. `CLAUSE-DOC_3CD9948D2C334D08A11DD5BC9CC1F1A1EC053D6E819EA30F205687DDA7C342C7-SCHEDULE-I-TABLE-II` (Schedule I Table II, Page 2, Exhaustive positive list of 21 permitted natural/mineral colouring substances).
+
+### Updated Summary of Authentic Corpus Capacity (Post-Phase 4.2)
+- **Total Authentic Clauses in PostgreSQL:** **62** (59 baseline + 3 ingested).
+- **Substantive Operative Food Control Clauses:** **47** (44 baseline + 3 ingested).
+- **Ineligible Stubs & Out-of-Scope:** **15** (unchanged).
+- **Clauses with Compiled Rules:** **8** (unchanged; 0 rules added or modified in Phase 4.2).
+- **Uncompiled Substantive Candidates:** **39** (36 baseline + 3 Gazette 1688/28 clauses).
+- **Option A Target Progress:** 47 operative clauses available vs. $\ge 25$ required (188% of target capacity).
+
