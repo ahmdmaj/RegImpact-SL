@@ -37,6 +37,7 @@ from backend.src.db.models import (
     is_synthetic_document,
 )
 from backend.src.extraction.embedding_client import BaseEmbeddingClient, MockEmbeddingClient, get_embedding_client
+from backend.src.extraction.llm_client import LLMClientError
 
 logger = logging.getLogger(__name__)
 
@@ -110,12 +111,95 @@ class BaseRetrievalEngine(ABC):
 
 
 # ---------------------------------------------------------------------------
+# Query Construction and Tokenization Utilities
+# ---------------------------------------------------------------------------
+
+def normalize_query_text(text: Optional[str]) -> List[str]:
+    """Convert snake_case and delimiter-separated identifiers into distinct search tokens."""
+    if not text:
+        return []
+    cleaned = re.sub(r"[_\-/\\]+", " ", str(text))
+    return re.findall(r"[^\W_]+", cleaned.lower())
+
+
+def build_retrieval_query(profile: Optional[Any]) -> str:
+    """Construct an enriched, deduplicated search query from user business profile fields.
+
+    Extracts:
+    - Activity (normalized from snake_case, e.g., 'food_manufacturing' -> 'food manufacturing')
+    - Industry (e.g., 'food_and_beverage' -> 'food and beverage')
+    - Product categories and product names
+    - Prepackaged flag ('prepackaged')
+    - Market channel ('b2b' if b2b_only is True)
+    """
+    if not profile:
+        return "food manufacturing"
+
+    if isinstance(profile, dict):
+        activity = profile.get("activity")
+        industry = profile.get("industry")
+        products = profile.get("products") or []
+        market = profile.get("market") or {}
+    else:
+        activity = getattr(profile, "activity", None)
+        industry = getattr(profile, "industry", None)
+        products = getattr(profile, "products", None) or []
+        market = getattr(profile, "market", None)
+
+    tokens: List[str] = []
+    seen: Set[str] = set()
+
+    def add_tokens(raw: Optional[str]) -> None:
+        for t in normalize_query_text(raw):
+            if t not in seen:
+                seen.add(t)
+                tokens.append(t)
+
+    # 1. Primary activity & industry
+    add_tokens(activity)
+    add_tokens(industry)
+
+    # 2. Products (categories, names, packaging)
+    has_prepackaged = False
+    for prod in products:
+        if isinstance(prod, dict):
+            p_cat = prod.get("category") or prod.get("product_category")
+            p_name = prod.get("name") or prod.get("product_name")
+            p_prepkg = prod.get("prepackaged")
+        else:
+            p_cat = getattr(prod, "category", None) or getattr(prod, "product_category", None)
+            p_name = getattr(prod, "name", None) or getattr(prod, "product_name", None)
+            p_prepkg = getattr(prod, "prepackaged", None)
+
+        add_tokens(p_cat)
+        add_tokens(p_name)
+        if p_prepkg is True:
+            has_prepackaged = True
+
+    if has_prepackaged:
+        add_tokens("prepackaged")
+
+    # 3. Market constraints
+    if isinstance(market, dict):
+        if market.get("b2b_only") is True:
+            add_tokens("b2b")
+    elif market is not None:
+        if getattr(market, "b2b_only", None) is True:
+            add_tokens("b2b")
+
+    query_str = " ".join(tokens).strip()
+    return query_str or "food manufacturing"
+
+
+# ---------------------------------------------------------------------------
 # BM25 Lexical Retrieval Engine
 # ---------------------------------------------------------------------------
 
 def _tokenize(text: str) -> List[str]:
-    """Tokenize and normalize text into word tokens."""
-    return re.findall(r"\w+", text.lower())
+    """Tokenize and normalize text into word tokens, treating underscores and hyphens as word separators."""
+    cleaned = text.replace("_", " ").replace("-", " ")
+    return re.findall(r"[^\W_]+", cleaned.lower())
+
 
 
 class BM25RetrievalEngine(BaseRetrievalEngine):

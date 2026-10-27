@@ -513,27 +513,27 @@ def get_embedding_client(
     provider: Optional[str] = None,
     api_key: Optional[str] = None,
     model: Optional[str] = None,
+    dimension: Optional[int] = None,
     allow_mock_fallback: bool = True,
 ) -> BaseEmbeddingClient:
     """Instantiate an embedding client matching environment configuration."""
     resolved_provider = (
         provider
         or os.environ.get("EMBEDDING_PROVIDER")
-        or os.environ.get("LLM_PROVIDER")
         or ""
     ).strip().lower()
 
+    # Explicit BM25-only / disabled mode
+    if resolved_provider in ("none", "bm25", "disabled"):
+        raise ValueError(
+            f"Intentional BM25-only retrieval mode configured (EMBEDDING_PROVIDER={resolved_provider!r})."
+        )
+
     if not resolved_provider:
-        if os.environ.get("GEMINI_API_KEY"):
-            resolved_provider = "gemini"
-        elif os.environ.get("OPENAI_API_KEY"):
-            resolved_provider = "openai"
-        elif allow_mock_fallback:
+        if allow_mock_fallback:
             resolved_provider = "mock"
         else:
-            raise LLMAuthenticationError(
-                "No live embedding credentials configured (GEMINI_API_KEY or OPENAI_API_KEY missing), and allow_mock_fallback=False."
-            )
+            resolved_provider = "sentence-transformers"
 
     if resolved_provider == "openai":
         try:
@@ -541,7 +541,7 @@ def get_embedding_client(
         except LLMAuthenticationError:
             if allow_mock_fallback:
                 logger.warning("No OpenAI key found; falling back to MockEmbeddingClient.")
-                return MockEmbeddingClient()
+                return MockEmbeddingClient(dimension=dimension or 1536)
             raise
 
     elif resolved_provider == "gemini":
@@ -550,16 +550,16 @@ def get_embedding_client(
         except LLMAuthenticationError:
             if allow_mock_fallback:
                 logger.warning("No Gemini key found; falling back to MockEmbeddingClient.")
-                return MockEmbeddingClient()
+                return MockEmbeddingClient(dimension=dimension or 768)
             raise
 
     elif resolved_provider in ("sentence-transformers", "sentence_transformers", "local"):
         try:
-            return SentenceTransformerEmbeddingClient(model=model)
+            return SentenceTransformerEmbeddingClient(model=model, dimension=dimension)
         except Exception:
             if allow_mock_fallback:
                 logger.warning("SentenceTransformer failed to initialize; falling back to MockEmbeddingClient.")
-                return MockEmbeddingClient()
+                return MockEmbeddingClient(dimension=dimension or 768)
             raise
 
     elif resolved_provider == "mock":
@@ -567,9 +567,10 @@ def get_embedding_client(
             raise LLMAuthenticationError(
                 "Mock embedding provider requested or configured, but allow_mock_fallback=False."
             )
-        return MockEmbeddingClient()
+        return MockEmbeddingClient(dimension=dimension or 768)
 
     else:
         if allow_mock_fallback:
-            return MockEmbeddingClient()
+            return MockEmbeddingClient(dimension=dimension or 768)
         raise ValueError(f"Unsupported EMBEDDING_PROVIDER: {resolved_provider!r}")
+
