@@ -62,12 +62,19 @@ This matrix establishes the compliance status of the RegImpact-SL codebase again
    - Fully amended `docs/CANDIDATE_RULE_HUMAN_REVIEW_REGISTER.md` for `RULE-FLAVOUR-INFANT-PROHIBITION` (Reg 7(ii), p. 2), `RULE-FLAVOUR-LABEL-DECLARATION` (Reg 8(2)(d), p. 2), and `RULE-PRESERVATIVE-JAM-JELLY-LIMIT` (Sched II Item 3.1(h), p. 5, plus low-sugar proviso notes against Item 3.1(i)).
    - Implemented focused 6-test suite in `backend/tests/test_phase_3_8_source_verification.py` (100% passing). Multi-phase regression verified passing (52 passed).
    - Zero database mutation executed without authorization. Itemized database update authorization request documented in [docs/PHASE_3_8_BOUNDED_RULE_CORRECTION_AND_SOURCE_VERIFICATION_REPORT.md](file:///c:/Users/HP/Desktop/PROJECTS/RegImpact-SL/docs/PHASE_3_8_BOUNDED_RULE_CORRECTION_AND_SOURCE_VERIFICATION_REPORT.md).
-6. **Prioritized Action Plan (Next Steps)**:
-   - Obtain project owner authorization and execute itemized database field updates for Rules 6, 8, and 10.
+6. **Phase 4.1 Corpus Eligibility & Expansion Verification (COMPLETED)**:
+   - **Corpus Reconciliation:** Audited all 19 documents, 85 clauses (59 authentic, 26 quarantined), 21 rules (12 authentic: 2 approved, 10 pending review). Verified that 12 authentic rules reference 8 distinct clauses. Categorized all 59 authentic clauses: 44 substantive operative clauses in Food Control + 15 non-substantive stubs / out-of-scope provisions.
+   - **Gazette 2496/03 Resolution:** Physical inspection of `2496-03_E.pdf` proved it is an order under Section 527 of the Companies Act No. 7 of 2007 (corporate registration fees), completely outside Food Act No. 26 of 1980. Phase 4.0's mention of "Formaldehyde in Fish" was disproved; Gazette 2496/03 is formally quarantined and excluded from Food Control clause counts.
+   - **Gazette 1688/28 OCR Completion:** Rendered 300 DPI raster page scans of `food_amendment_colouring_substances_regulations_2011_en.pdf` (SHA-256 `3cd9948d2c33...`), executed Windows WinRT OCR (`en-GB`), and visually audited 100% against page images. Produced derived artifacts in `backend/data/derived/ocr_1688_28/`, cataloging permitted synthetic dyes (Table I), natural colourings (Table II), and Regulation 5(iv) seafood colouring prohibition (yielding 3 clean candidate clauses).
+   - **Clause Eligibility Register:** Established comprehensive register (`docs/CLAUSE_ELIGIBILITY_AND_EXPANSION_REGISTER.md`) showing 44 operative clauses in DB + 3 derived from 1688/28 = 47 distinct eligible clauses available for Option A expansion (far exceeding $\ge 25$ target).
+   - **Shortlist & Benchmark Allocation:** Shortlisted top 10 candidate clauses with provisional JSON rule specifications. Designed allocation architecture to scale from 30 provisional scenarios to 100 scenarios across 25 clauses (35 direct, 25 non-applicable, 20 minimal pairs, 8 missing-data, 6 provisos/exceptions, 2 temporal, 4 invariance).
+   - **Evaluation Readiness:** Calculated exact LLM API requirement (400 calls for baselines B0–B3; System P and ablations run locally with 0 LLM calls). 58/58 regression tests passing. Zero live DB writes or benchmark mutations executed.
+7. **Prioritized Action Plan (Next Steps)**:
    - Perform primary human review on the 10 candidate rules via `/admin/reviews` using the corrected [Candidate Rule Human-Review Register](file:///c:/Users/HP/Desktop/PROJECTS/RegImpact-SL/docs/CANDIDATE_RULE_HUMAN_REVIEW_REGISTER.md).
-   - Run Tesseract OCR on Gazette 1688/28 (Colouring 2011) and visually verify against the page scans.
-   - Compile rules for 19 additional clauses from the 49 uncompiled authentic clauses in PostgreSQL to reach the locked Option A target of 25 distinct clauses.
-   - Construct and pair 70 additional scenarios across the 25 clauses to reach the locked Option A minimum target of 100 scenarios.
+   - Ingest verified Gazette 1688/28 clauses into `clauses` table with local BGE embeddings (Phase 4.2).
+   - Compile and verify rules for the top 10 shortlisted clauses to expand compiled clause count from 8 to 18.
+   - Construct 70 paired benchmark scenarios across expanded clauses to reach the proposal target of 100 scenarios.
    - External dependencies: recruit independent second annotator (for $\kappa \ge 0.80$), recruit legal expert panel (for `is_gold_rule=True`), and supply funded API credentials for B0–B3 comparative execution.
+
 
 
