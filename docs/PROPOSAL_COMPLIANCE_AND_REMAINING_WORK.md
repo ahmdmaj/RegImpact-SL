@@ -79,9 +79,17 @@ This matrix establishes the compliance status of the RegImpact-SL codebase again
    - **Reconciliation & Integrity Counts:** Database re-read confirmed exactly 88 clauses (62 authentic = 59 baseline + 3 new; 26 quarantined synthetic). Rules remained strictly untouched at 21 (12 authentic: 2 approved, 10 pending review; 0 gold). Scenarios untouched at 30 (0 gold).
    - **Regression Testing:** 78 passed across 8 test suites (58 multi-phase regression tests + 20 vector/retrieval integration tests, 0 failed, 0 errors).
    - **Comprehensive Report:** Documented in [docs/PHASE_4_2_GAZETTE_1688_28_INGESTION_REPORT.md](file:///c:/Users/HP/Desktop/PROJECTS/RegImpact-SL/docs/PHASE_4_2_GAZETTE_1688_28_INGESTION_REPORT.md).
-8. **Prioritized Action Plan (Next Steps)**:
-   - Perform primary human review on the 10 candidate rules via `/admin/reviews` using the corrected [Candidate Rule Human-Review Register](file:///c:/Users/HP/Desktop/PROJECTS/RegImpact-SL/docs/CANDIDATE_RULE_HUMAN_REVIEW_REGISTER.md).
-   - Compile and verify rules for the shortlisted candidate clauses (including Gazette 1688/28 Regulation 5(iv)) to expand compiled clause count from 8 toward 18–25 (Phase 4.3).
+8. **Phase 4.3 Single-Rule Compilation and Deterministic Verification (COMPLETED)**:
+   - **Candidate Rule Provenance:** Successfully compiled and persisted `RULE-COLOURING-SEAFOOD-PROHIBITION` linked to `CLAUSE-DOC_3CD9948D2C334D08A11DD5BC9CC1F1A1EC053D6E819EA30F205687DDA7C342C7-REGULATION-5-IV` (Gazette 1688/28 Regulation 5(iv), Page 1).
+   - **Deterministic Verification:** Validated via `RuleVerifier` against verbatim clause text with zero schema, literal, or grounding issues (`is_valid=True`).
+   - **Rule State & Non-Gold Preservation:** Stored as `review_status="PENDING_REVIEW"`, `is_gold_rule=False`, `is_synthetic=False`, `outcome_type="STANDARD"`.
+   - **Focused Test Suite:** Created `backend/tests/test_phase_4_3_single_rule.py` (7 tests, 100% passing) verifying clear positive, clear negative, missing data abstention (`CONDITIONAL_MISSING_DATA`), applicability vs. compliance distinction, provenance, idempotency, and regression stability.
+   - **Multi-Suite Regression:** 68 passed across 7 test suites (`test_integrity_gate.py`, `test_phase_3_4_benchmark.py`, `test_phase_3_8_source_verification.py`, `test_phase_3_9_jam_modeling.py`, `test_postgres_vector_integration.py`, `test_retrieval.py`, and `test_phase_4_3_single_rule.py`).
+   - **Database Re-Read:** Exactly 22 rules in PostgreSQL (13 authentic: 2 approved, 11 pending review; 9 quarantined synthetic; 0 gold).
+   - **Comprehensive Report:** Documented in [docs/PHASE_4_3_SINGLE_RULE_COMPILATION_REPORT.md](file:///c:/Users/HP/Desktop/PROJECTS/RegImpact-SL/docs/PHASE_4_3_SINGLE_RULE_COMPILATION_REPORT.md).
+9. **Prioritized Action Plan (Next Steps)**:
+   - Perform primary human review on the 11 candidate rules via `/admin/reviews` using [Candidate Rule Human-Review Register](file:///c:/Users/HP/Desktop/PROJECTS/RegImpact-SL/docs/CANDIDATE_RULE_HUMAN_REVIEW_REGISTER.md).
+   - Continue bounded compilation of top shortlisted candidate clauses (expanding compiled clause count from 9 toward 18–25).
    - Construct 70 paired benchmark scenarios across expanded clauses to reach the proposal target of 100 scenarios (Phase 4.4).
    - External dependencies: recruit independent second annotator (for $\kappa \ge 0.80$), recruit legal expert panel (for `is_gold_rule=True`), and supply funded API credentials for B0–B3 comparative execution.
 

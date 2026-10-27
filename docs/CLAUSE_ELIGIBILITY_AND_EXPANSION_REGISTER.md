@@ -107,3 +107,21 @@ Following 100% manual visual verification of 300 DPI raster page scans against r
 - **Uncompiled Substantive Candidates:** **39** (36 baseline + 3 Gazette 1688/28 clauses).
 - **Option A Target Progress:** 47 operative clauses available vs. $\ge 25$ required (188% of target capacity).
 
+---
+
+## 4. Phase 4.3 Single-Rule Compilation Addendum (2026-10-27)
+
+### Single-Rule Compilation for Gazette 1688/28 Regulation 5(iv)
+Following verified ingestion in Phase 4.2, `CLAUSE-DOC_3CD9948D2C334D08A11DD5BC9CC1F1A1EC053D6E819EA30F205687DDA7C342C7-REGULATION-5-IV` was compiled into authentic candidate rule:
+- **Rule ID:** `RULE-COLOURING-SEAFOOD-PROHIBITION`
+- **Operative Provision:** Regulation 5(iv) of Gazette 1688/28 amending Food (Colouring Substances) Regulations 2006.
+- **Obligation Type:** Negative prohibition (`prohibition`) prohibiting the addition of colouring substances to fish, molluscs, crustaceans, and echinoderms.
+- **Review Status:** `PENDING_REVIEW` (`is_gold_rule=False`, `is_synthetic=False`).
+- **Deterministic Verification:** Validated via `RuleVerifier` with 0 issues (`is_valid=True`).
+
+### Updated Summary of Compiled Rules & Clauses (Post-Phase 4.3)
+- **Total Authentic Clauses in PostgreSQL:** **62** (47 substantive operative + 15 stubs/out-of-scope).
+- **Clauses with Compiled Rules:** **9** (8 baseline + 1 newly compiled clause).
+- **Total Authentic Rules in PostgreSQL:** **13** (2 approved, 11 pending review; 0 gold).
+- **Uncompiled Substantive Candidates:** **38** (ready for bounded compilation toward the $\ge 18–25$ clause target).
+
