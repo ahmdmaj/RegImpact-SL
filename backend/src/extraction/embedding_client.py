@@ -348,7 +348,7 @@ class SentenceTransformerEmbeddingClient(BaseEmbeddingClient):
             ) from exc
 
         self._model_name = model or os.environ.get("EMBEDDING_MODEL") or self.DEFAULT_MODEL
-        self._dimension = int(os.environ.get("EMBEDDING_DIMENSION", dimension or self.DEFAULT_DIMENSION))
+        self._dimension = int(dimension if dimension is not None else (os.environ.get("EMBEDDING_DIMENSION") or self.DEFAULT_DIMENSION))
         self._device = device or os.environ.get("TORCH_DEVICE")
 
         try:

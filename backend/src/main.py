@@ -37,6 +37,7 @@ from backend.src.engine.impact_mapper import BusinessImpact, map_impact
 from backend.src.engine.retrieval import (
     HybridRetrievalEngine,
     RetrievalResult,
+    build_retrieval_query,
     cross_reference_coverage_gaps,
 )
 from backend.src.engine.review import (
@@ -478,7 +479,7 @@ def run_analysis(
     # Mode 2: Open-Inquiry Pipeline (System P: Retrieval + Coverage Gaps)
     # -------------------------------------------------------------------------
     else:
-        query = f"{profile.activity or ''} {profile.industry or ''}".strip() or "food manufacturing"
+        query = build_retrieval_query(profile)
         include_synth = getattr(request, "include_synthetic", False) or (
             profile.business_id == "BIZ-SL-ACCEPTANCE-001"
         )

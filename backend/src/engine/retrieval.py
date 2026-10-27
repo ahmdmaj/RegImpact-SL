@@ -389,13 +389,24 @@ class DenseRetrievalEngine(BaseRetrievalEngine):
         self.db = db
         self.allow_unverified = allow_unverified
         self.target_dimension = target_dimension
-        if embedding_client is not None:
+        provider_env = os.environ.get("EMBEDDING_PROVIDER", "").strip().lower()
+        self.is_intentional_bm25 = provider_env in ("none", "bm25", "disabled")
+        self.init_error: Optional[Exception] = None
+
+        if self.is_intentional_bm25:
+            self.embedding_client = None
+        elif embedding_client is not None:
             self.embedding_client = embedding_client
         else:
+            allow_mock = allow_unverified or (provider_env == "mock")
             try:
-                self.embedding_client = get_embedding_client(allow_mock_fallback=False)
-            except Exception:
+                self.embedding_client = get_embedding_client(
+                    dimension=target_dimension,
+                    allow_mock_fallback=allow_mock,
+                )
+            except Exception as exc:
                 self.embedding_client = None
+                self.init_error = exc
 
     def _get_expected_dimension(self) -> int:
         """Resolve expected embedding dimension from explicit target, postgres dialect, or client."""
@@ -472,6 +483,15 @@ class DenseRetrievalEngine(BaseRetrievalEngine):
         top_k: int = 10,
         filters: Optional[Dict[str, Any]] = None,
     ) -> List[RetrievalResult]:
+        if self.is_intentional_bm25:
+            logger.debug("Intentional BM25-only retrieval mode; dense retrieval returns empty.")
+            return []
+
+        if self.init_error is not None:
+            raise LLMClientError(
+                f"Dense retrieval cannot execute: configured embedding model failed to load: {self.init_error}"
+            ) from self.init_error
+
         if self.embedding_client is None:
             logger.debug("No embedding client configured; dense retrieval returns empty.")
             return []
@@ -495,18 +515,13 @@ class DenseRetrievalEngine(BaseRetrievalEngine):
             embed_fn = getattr(self.embedding_client, "embed_query", self.embedding_client.embed_text)
             query_vec = embed_fn(query)
             if len(query_vec) != expected_dim:
-                logger.warning(
-                    "Query embedding dimension mismatch (%d != %d); dense retrieval unavailable.",
-                    len(query_vec),
-                    expected_dim,
+                raise ValueError(
+                    f"Query embedding dimension mismatch ({len(query_vec)} != {expected_dim}); dense retrieval unavailable."
                 )
-                return []
             if any(not math.isfinite(x) for x in query_vec):
-                logger.warning("Query embedding contained non-finite values; dense retrieval unavailable.")
-                return []
+                raise ValueError("Query embedding contained non-finite values; dense retrieval unavailable.")
         except Exception as exc:
-            logger.warning("Embedding client failed (%s); dense retrieval unavailable.", exc)
-            return []
+            raise LLMClientError(f"Embedding client failed during query embedding: {exc}") from exc
 
         # Detect database dialect: when PostgreSQL with pgvector is active, execute native distance query
         is_postgres = False
@@ -765,7 +780,12 @@ class HybridRetrievalEngine(BaseRetrievalEngine):
         dense_active = len(dense_results) > 0
         bm25_active = len(bm25_results) > 0
 
-        if dense_active and bm25_active:
+        if getattr(self.dense_engine, "is_intentional_bm25", False):
+            actual_method = "bm25_only"
+            fallback_reason = (
+                "Intentional BM25-only retrieval mode configured (EMBEDDING_PROVIDER is disabled/bm25)."
+            )
+        elif dense_active and bm25_active:
             actual_method = "hybrid_rrf"
             fallback_reason = None
         elif bm25_active and not dense_active:

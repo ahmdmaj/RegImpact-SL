@@ -297,7 +297,8 @@ def test_expert_adjudication_and_gold_status_integrity(live_db):
     """Ensure no unadjudicated rule is marked as gold or expert-approved."""
     # All candidate rules must be PENDING_REVIEW and is_gold_rule=False
     candidate_rules = live_db.query(RuleORM).filter(RuleORM.review_status == "PENDING_REVIEW").all()
-    assert len(candidate_rules) == 10
+    # Exactly 11 candidate rules (10 from Phase 3.3 segmentation + 1 from Phase 4.3 RULE-COLOURING-SEAFOOD-PROHIBITION)
+    assert len(candidate_rules) == 11, f"Expected 11 candidate rules, found {len(candidate_rules)}"
     for r in candidate_rules:
         assert r.is_gold_rule is False
         assert r.is_synthetic is False
