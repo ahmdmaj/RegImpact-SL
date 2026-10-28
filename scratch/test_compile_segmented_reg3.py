@@ -52,3 +52,9 @@ if res.rule:
     print(f"Quote Span: {r.source.quote_span[:100]}...")
     print(f"Quote In Raw Text: {r.source.quote_span in reg3_text}")
     print(f"Validity: {r.validity.model_dump()}")
+else:
+    print(f"Discrepancies: {res.discrepancies}")
+    if res.verification_report:
+        print(f"Report Valid: {res.verification_report.is_valid}")
+        print(f"Report Status: {res.verification_report.status}")
+        print(f"Report Errors: {res.verification_report.errors}")
