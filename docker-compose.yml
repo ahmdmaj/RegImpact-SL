@@ -47,6 +47,7 @@ services:
     volumes:
       - ./backend/data:/app/backend/data
       - ./backend/src:/app/backend/src
+      - ./backend/tests:/app/backend/tests
       - ./backend/.env:/app/backend/.env:ro
     networks:
       - regimpact-net
