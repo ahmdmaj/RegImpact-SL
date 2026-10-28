@@ -1,4 +1,5 @@
 import sys
+sys.path.insert(0, ".")
 from pathlib import Path
 
 if sys.platform == "win32":
