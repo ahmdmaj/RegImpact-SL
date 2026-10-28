@@ -20,7 +20,9 @@ from backend.src.extraction.explanation import (
 from backend.src.extraction.ingestion import (
     DocumentIngestionService,
     IngestionResult,
+    extract_document_preamble,
     segment_clauses_from_page,
+    segment_document_clauses,
 )
 
 from backend.src.extraction.llm_client import (

@@ -49,7 +49,9 @@ from backend.src.extraction.embedding_client import get_embedding_client
 from backend.src.extraction.explanation import ExplanationGenerator
 from backend.src.extraction.ingestion import (
     DocumentIngestionService,
+    extract_document_preamble,
     segment_clauses_from_page,
+    segment_document_clauses,
 )
 from backend.src.extraction.llm_client import get_llm_client
 from backend.src.models.domain import (
@@ -275,11 +277,20 @@ async def lifespan(app: FastAPI):
 
     # Initialize live LLM client on application startup
     try:
+        try:
+            from dotenv import load_dotenv
+            for _env_p in [Path("backend/.env"), Path(".env")]:
+                if _env_p.exists():
+                    load_dotenv(_env_p, override=False)
+        except Exception:
+            pass
+
         app.state.llm_client = get_llm_client(allow_mock_fallback=False)
         app.state.explanation_generator = ExplanationGenerator(llm_client=app.state.llm_client)
         logger.info(
-            "Initialized live LLM client on FastAPI app state: %s",
+            "Initialized live LLM client on FastAPI app state: %s (model=%s)",
             type(app.state.llm_client).__name__,
+            getattr(app.state.llm_client, "model", "default"),
         )
     except Exception as exc:
         logger.warning(
