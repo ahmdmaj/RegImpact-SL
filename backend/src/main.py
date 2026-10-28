@@ -927,6 +927,27 @@ async def upload_document(
         .all()
     )
 
+    # Extract authoritative preamble metadata from document pages
+    preamble_meta = extract_document_preamble(pages)
+    resolved_title = title or preamble_meta.get("instrument") or doc_title
+    resolved_authority = authority or preamble_meta.get("authority") or doc_authority
+    resolved_gazette_no = gazette_no or preamble_meta.get("gazette_no") or ""
+    resolved_published = publication_date or preamble_meta.get("published") or ""
+    resolved_commences = preamble_meta.get("commences") or ""
+
+    # Update SourceDocumentORM with resolved metadata if empty
+    src_doc = db.query(SourceDocumentORM).filter_by(id=doc_id).first()
+    if src_doc:
+        if not src_doc.title or src_doc.title == target_file.stem.replace("_", " ").title():
+            src_doc.title = resolved_title
+        if not src_doc.authority or src_doc.authority == "Sri Lanka Regulatory Authority":
+            src_doc.authority = resolved_authority
+        if not src_doc.gazette_no and resolved_gazette_no:
+            src_doc.gazette_no = resolved_gazette_no
+        if not src_doc.publication_date and resolved_published:
+            src_doc.publication_date = resolved_published
+        db.flush()
+
     emb_client = getattr(app.state, "embedding_client", None)
     if emb_client is None:
         try:
@@ -936,34 +957,38 @@ async def upload_document(
     clauses_created = 0
     created_clause_objects: List[ClauseORM] = []
 
-    for page in pages:
-        segmented = segment_clauses_from_page(page.raw_text, page.page_number)
-        for seg in segmented:
-            clause_pk = f"CLAUSE-{doc_id.upper()}-{seg.clause_number.replace(' ', '-').upper()}"
-            existing = db.query(ClauseORM).filter_by(clause_id=clause_pk).first()
-            if not existing:
-                is_live_emb = emb_client is not None and not isinstance(emb_client, MockEmbeddingClient)
-                emb = emb_client.embed_text(seg.text) if emb_client else None
-                clause_orm = ClauseORM(
-                    clause_id=clause_pk,
-                    version_number=1,
-                    document_id=doc_id,
-                    clause_number=seg.clause_number,
-                    text=seg.text,
-                    start_page=seg.start_page,
-                    end_page=seg.end_page,
-                    char_start=seg.char_start,
-                    char_end=seg.char_end,
-                    is_compilable=True,
-                    embedding=emb,
-                    embedding_verified=bool(emb and is_live_emb),
-                )
-                db.add(clause_orm)
-                db.flush()
-                clauses_created += 1
-                created_clause_objects.append(clause_orm)
-            else:
-                created_clause_objects.append(existing)
+    # Segment clauses across entire document with page boundary stitching
+    candidate_segments = segment_document_clauses(pages)
+    if not candidate_segments:
+        for page in pages:
+            candidate_segments.extend(segment_clauses_from_page(page.raw_text, page.page_number))
+
+    for seg in candidate_segments:
+        clause_pk = f"CLAUSE-{doc_id.upper()}-{seg.clause_number.replace(' ', '-').upper()}"
+        existing = db.query(ClauseORM).filter_by(clause_id=clause_pk).first()
+        if not existing:
+            is_live_emb = emb_client is not None and not isinstance(emb_client, MockEmbeddingClient)
+            emb = emb_client.embed_text(seg.text) if emb_client else None
+            clause_orm = ClauseORM(
+                clause_id=clause_pk,
+                version_number=1,
+                document_id=doc_id,
+                clause_number=seg.clause_number,
+                text=seg.text,
+                start_page=seg.start_page,
+                end_page=seg.end_page,
+                char_start=seg.char_start,
+                char_end=seg.char_end,
+                is_compilable=True,
+                embedding=emb,
+                embedding_verified=bool(emb and is_live_emb),
+            )
+            db.add(clause_orm)
+            db.flush()
+            clauses_created += 1
+            created_clause_objects.append(clause_orm)
+        else:
+            created_clause_objects.append(existing)
 
     llm_client = getattr(app.state, "llm_client", None)
     if llm_client is None:
@@ -988,10 +1013,13 @@ async def upload_document(
                     raw_text=clause.text,
                     source_metadata={
                         "clause": clause.clause_number,
-                        "instrument": doc_title,
-                        "authority": doc_authority,
+                        "instrument": resolved_title,
+                        "authority": resolved_authority,
                         "doc_id": doc_id,
                         "page": clause.start_page,
+                        "gazette_no": resolved_gazette_no,
+                        "published": resolved_published,
+                        "commences": resolved_commences,
                     },
                 )
                 if comp_res.rule:
