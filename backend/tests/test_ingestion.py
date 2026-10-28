@@ -56,7 +56,9 @@ from backend.src.extraction.ingestion import (
     DocumentIngestionService,
     _sha256_of_bytes,
     _sha256_of_text,
+    extract_document_preamble,
     segment_clauses_from_page,
+    segment_document_clauses,
 )
 from backend.src.models.domain import (
     AppliesIf,
@@ -782,3 +784,67 @@ def test_repo_004_human_review_audit_persisted(db_session, sample_rule):
     rule_orm = db_session.get(RuleORM, "TEST-RULE-001")
     assert len(rule_orm.audit_log) == 1
     assert rule_orm.audit_log[0].decision == "APPROVED"
+
+
+# ===========================================================================
+# SEG-004: Multi-page gazette clause stitching
+# ===========================================================================
+
+def test_seg_004_document_level_segmentation():
+    """segment_document_clauses must stitch clauses across pages and strip headers/footers."""
+    page_1 = (
+        "Part I : Sec. (I) - GAZETTE EXTRAORDINARY OF THE DEMOCRATIC SOCIALIST REPUBLIC - 26.06.2026\n"
+        "1A\n"
+        "REGULATIONS\n"
+        "1.\n"
+        "These regulations may be cited as Food (Labelling and Advertising) Regulations 2026.\n"
+        "2.\n"
+        "These regulations shall not apply to food products manufactured prior to the date of operation.\n"
+        "3.\n"
+        "A person shall not import, transport, distribute, store, sell, or advertise any packaged food unless labelled:"
+    )
+    page_2 = (
+        "Part I : Sec. (I) - GAZETTE EXTRAORDINARY OF THE DEMOCRATIC SOCIALIST REPUBLIC - 26.06.2026\n"
+        "2A\n"
+        "Provided that these regulations shall not apply to business-to-business products subject to mandatory clauses.\n"
+        "4. (1)\n"
+        "The package or container shall bear a conspicuous declaration of ingredients and allergens."
+    )
+
+    clauses = segment_document_clauses([page_1, page_2])
+    assert len(clauses) >= 4
+    names = [c.clause_number for c in clauses]
+    assert "Regulation 1" in names
+    assert "Regulation 2" in names
+    assert "Regulation 3" in names
+    assert "Regulation 4(1)" in names
+
+    # Verify Regulation 3 spans page 1 to page 2 and includes the proviso from page 2
+    reg3 = next(c for c in clauses if c.clause_number == "Regulation 3")
+    assert reg3.start_page == 1
+    assert reg3.end_page == 2
+    assert "business-to-business" in reg3.text
+    assert "Part I : Sec." not in reg3.text
+
+
+# ===========================================================================
+# SEG-005: Extract document preamble metadata
+# ===========================================================================
+
+def test_seg_005_extract_document_preamble():
+    """extract_document_preamble must extract gazette number, dates, and title."""
+    sample_text = (
+        "No. 2494/47 - FRIDAY, JUNE 26, 2026\n"
+        "FOOD ACT, No. 26 OF 1980\n"
+        "REGULATIONS made by the Minister of Health and Mass Media under section 32 of the Food Act.\n"
+        "Colombo, 26th June, 2026.\n"
+        "REGULATIONS\n"
+        "1. These regulations may be cited as Food (Labelling and Advertising) Regulations 2026 "
+        "and shall come into operation on 01st July 2026."
+    )
+    meta = extract_document_preamble([sample_text])
+    assert "2494/47" in (meta["gazette_no"] or "")
+    assert meta["published"] == "2026-06-26"
+    assert meta["commences"] == "2026-07-01"
+    assert "Food (Labelling and Advertising) Regulations 2026" in (meta["instrument"] or "")
+    assert "Minister of Health" in (meta["authority"] or "")
