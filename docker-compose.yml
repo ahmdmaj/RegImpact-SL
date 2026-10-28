@@ -23,6 +23,7 @@ services:
     build:
       context: .
       dockerfile: backend/Dockerfile
+    image: regimpact-sl-backend:latest
     container_name: regimpact-backend
     restart: unless-stopped
     depends_on:

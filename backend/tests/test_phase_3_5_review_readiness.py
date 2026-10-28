@@ -453,17 +453,17 @@ def test_p35_gate_11_live_production_truthfulness(live_db: Session):
     """P35-GATE-11: Verify truthful database state without fabricated reviews.
 
     Verifies:
-      1. Exactly 12 authentic rules exist (2 APPROVED by primary annotator, 10 PENDING_REVIEW).
+      1. Exactly 13 authentic rules exist (2 APPROVED by primary annotator, 11 PENDING_REVIEW including Phase 4.3 compilation).
       2. Exactly 0 authentic rules have is_gold_rule=True.
       3. Exactly 0 authentic rules have SECONDARY_ANNOTATOR or EXPERT_ADJUDICATOR audits.
-      4. Exactly 10 candidate rules have zero human review audits.
+      4. Exactly 11 candidate rules have zero human review audits.
     """
     authentic_rules = (
         live_db.query(RuleORM)
         .filter(RuleORM.is_synthetic == False)  # noqa: E712
         .all()
     )
-    assert len(authentic_rules) == 12, f"Expected 12 authentic rules, found {len(authentic_rules)}"
+    assert len(authentic_rules) == 13, f"Expected 13 authentic rules, found {len(authentic_rules)}"
 
     gold_rules = [r for r in authentic_rules if r.is_gold_rule]
     assert len(gold_rules) == 0, f"Found unexpected gold rules in production: {[r.rule_id for r in gold_rules]}"
@@ -471,7 +471,7 @@ def test_p35_gate_11_live_production_truthfulness(live_db: Session):
     approved = [r for r in authentic_rules if r.review_status == "APPROVED"]
     pending = [r for r in authentic_rules if r.review_status == "PENDING_REVIEW"]
     assert len(approved) == 2
-    assert len(pending) == 10
+    assert len(pending) == 11
 
     # Check audits
     rule_ids = {r.rule_id for r in authentic_rules}
