@@ -308,3 +308,288 @@ def test_digit_boundary_safety(valid_rule: Rule):
     assert report.is_valid is False
     literal_issues = [i for i in report.issues if i.stage == "literal_check"]
     assert any("numeric threshold '50'" in i.message.lower() for i in literal_issues)
+
+
+# ---------------------------------------------------------------------------
+# Context-Aware Verification Tests (Commencement-Date & Separate Evidence)
+# ---------------------------------------------------------------------------
+
+@pytest.fixture
+def substantive_clause_context():
+    """Substantive obligation clause text without embedded commencement date."""
+    clause_text = (
+        "Regulation 4. Every food manufacturing enterprise having a production capacity of 50 kg per day or more, "
+        "and engaged in the production of prepackaged food products, shall ensure that each retail package carries "
+        "a nutrition information panel in Sinhala, Tamil, and English."
+    )
+    reg1_text = (
+        "1. These regulations may be cited as the Food (Labelling and Packaging) Regulations 2024 "
+        "and shall come into operation on 01st July 2026."
+    )
+    metadata = {
+        "instrument": "Food (Labelling and Packaging) Regulations 2024",
+        "authority": "FCAU",
+        "gazette_no": "2024/01",
+        "clause": "Regulation 4",
+        "page": 1,
+        "published": "2024-01-01",
+        "commences": "2026-07-01",
+        "regulation_1_text": reg1_text,
+        "context_evidence": {
+            "regulation_1": reg1_text,
+            "commences": "2026-07-01",
+            "published": "2024-01-01",
+        },
+    }
+    return clause_text, reg1_text, metadata
+
+
+def test_context_aware_commencement_supported(substantive_clause_context):
+    """Exit Condition: A candidate rule with substantive obligation in Clause 4 and commencement in Reg 1 passes."""
+    clause_text, reg1_text, metadata = substantive_clause_context
+
+    candidate_rule = Rule(
+        rule_id="RULE-FCAU-CONTEXT-001",
+        source=Source(
+            instrument="Food (Labelling and Packaging) Regulations 2024",
+            authority="FCAU",
+            gazette_no="2024/01",
+            clause="Regulation 4",
+            page=1,
+            quote_span="Every food manufacturing enterprise having a production capacity of 50 kg per day or more, and engaged in the production of prepackaged food products, shall ensure that each retail package carries a nutrition information panel in Sinhala, Tamil, and English.",
+            obligation_quote="Every food manufacturing enterprise having a production capacity of 50 kg per day or more, and engaged in the production of prepackaged food products, shall ensure that each retail package carries a nutrition information panel in Sinhala, Tamil, and English.",
+            commencement_quote="shall come into operation on 01st July 2026",
+            commencement_clause="Regulation 1",
+            threshold_quotes={
+                "production_capacity.kg_per_day": "production capacity of 50 kg per day or more",
+            },
+        ),
+        validity=Validity(
+            published="2024-01-01",
+            commences="2026-07-01",
+            evidence_quote="shall come into operation on 01st July 2026",
+            evidence_source="Regulation 1",
+        ),
+        applies_if=AppliesIf(
+            all=[
+                Condition(field="production_capacity.kg_per_day", op="gte", value=50),
+            ]
+        ),
+        exceptions=[],
+        obligation=Obligation(
+            type="MANDATE",
+            text="Provide nutrition panel in Sinhala, Tamil, and English.",
+            impact_categories=["labelling"],
+        ),
+        verification=Verification(
+            status="PENDING_REVIEW",
+            extraction_model="test-model",
+            agreement=False,
+        ),
+    )
+
+    verifier = RuleVerifier()
+    report = verifier.verify(candidate_rule, source_text=clause_text, metadata=metadata)
+
+    assert report.is_valid is True
+    assert report.status == "verified"
+    error_issues = [i for i in report.issues if i.severity == "error"]
+    assert len(error_issues) == 0
+
+
+def test_context_aware_commencement_missing_evidence_rejected(substantive_clause_context):
+    """Exit Condition: A candidate rule claiming a commencement date with missing evidence is rejected."""
+    clause_text, _, _ = substantive_clause_context
+
+    # Metadata without commencement date and empty context evidence
+    metadata_empty_context = {
+        "instrument": "Food Regulations",
+        "authority": "FCAU",
+        "gazette_no": "2024/01",
+        "clause": "Regulation 4",
+        "page": 1,
+        "published": "2024-01-01",
+        "context_evidence": {},
+    }
+
+    candidate_rule = Rule(
+        rule_id="RULE-MISSING-EVID-001",
+        source=Source(
+            instrument="Food Regulations",
+            authority="FCAU",
+            gazette_no="2024/01",
+            clause="Regulation 4",
+            page=1,
+            quote_span="Every food manufacturing enterprise having a production capacity of 50 kg per day or more, and engaged in the production of prepackaged food products, shall ensure that each retail package carries a nutrition information panel in Sinhala, Tamil, and English.",
+            obligation_quote="Every food manufacturing enterprise having a production capacity of 50 kg per day or more, and engaged in the production of prepackaged food products, shall ensure that each retail package carries a nutrition information panel in Sinhala, Tamil, and English.",
+        ),
+        validity=Validity(
+            published="2024-01-01",
+            commences="2028-01-01",  # Hallucinated date with no contextual evidence
+        ),
+        applies_if=AppliesIf(
+            all=[
+                Condition(field="production_capacity.kg_per_day", op="gte", value=50),
+            ]
+        ),
+        exceptions=[],
+        obligation=Obligation(
+            type="MANDATE",
+            text="Provide nutrition panel.",
+            impact_categories=["labelling"],
+        ),
+        verification=Verification(
+            status="PENDING_REVIEW",
+            extraction_model="test-model",
+            agreement=False,
+        ),
+    )
+
+    verifier = RuleVerifier()
+    report = verifier.verify(candidate_rule, source_text=clause_text, metadata=metadata_empty_context)
+
+    assert report.is_valid is False
+    assert report.status == "rejected"
+    assert any("ungrounded" in i.message.lower() for i in report.issues)
+
+
+def test_context_aware_commencement_contradictory_evidence_rejected(substantive_clause_context):
+    """Exit Condition: A candidate rule claiming a date that contradicts documented evidence is rejected."""
+    clause_text, reg1_text, metadata = substantive_clause_context
+
+    candidate_rule = Rule(
+        rule_id="RULE-CONTRADICTION-001",
+        source=Source(
+            instrument="Food Regulations",
+            authority="FCAU",
+            gazette_no="2024/01",
+            clause="Regulation 4",
+            page=1,
+            quote_span="Every food manufacturing enterprise having a production capacity of 50 kg per day or more, and engaged in the production of prepackaged food products, shall ensure that each retail package carries a nutrition information panel in Sinhala, Tamil, and English.",
+            obligation_quote="Every food manufacturing enterprise having a production capacity of 50 kg per day or more, and engaged in the production of prepackaged food products, shall ensure that each retail package carries a nutrition information panel in Sinhala, Tamil, and English.",
+        ),
+        validity=Validity(
+            published="2024-01-01",
+            commences="2029-05-15",  # Directly contradicts 2026-07-01 in Reg 1 and metadata
+        ),
+        applies_if=AppliesIf(
+            all=[
+                Condition(field="production_capacity.kg_per_day", op="gte", value=50),
+            ]
+        ),
+        exceptions=[],
+        obligation=Obligation(
+            type="MANDATE",
+            text="Provide nutrition panel.",
+            impact_categories=["labelling"],
+        ),
+        verification=Verification(
+            status="PENDING_REVIEW",
+            extraction_model="test-model",
+            agreement=False,
+        ),
+    )
+
+    verifier = RuleVerifier()
+    report = verifier.verify(candidate_rule, source_text=clause_text, metadata=metadata)
+
+    assert report.is_valid is False
+    assert report.status == "rejected"
+    contradiction_issues = [
+        i for i in report.issues
+        if "contradictory commencement date" in i.message.lower()
+    ]
+    assert len(contradiction_issues) > 0
+
+
+def test_separate_commencement_quote_hallucination_rejected(substantive_clause_context):
+    """Exit Condition: A candidate providing a hallucinated commencement quote is rejected."""
+    clause_text, _, metadata = substantive_clause_context
+
+    candidate_rule = Rule(
+        rule_id="RULE-FAKE-QUOTE-001",
+        source=Source(
+            instrument="Food Regulations",
+            authority="FCAU",
+            gazette_no="2024/01",
+            clause="Regulation 4",
+            page=1,
+            quote_span="Every food manufacturing enterprise having a production capacity of 50 kg per day or more, and engaged in the production of prepackaged food products, shall ensure that each retail package carries a nutrition information panel in Sinhala, Tamil, and English.",
+            obligation_quote="Every food manufacturing enterprise having a production capacity of 50 kg per day or more, and engaged in the production of prepackaged food products, shall ensure that each retail package carries a nutrition information panel in Sinhala, Tamil, and English.",
+            commencement_quote="The President hereby orders these regulations to take effect on 15th August 2030",  # Fake
+        ),
+        validity=Validity(
+            published="2024-01-01",
+            commences="2026-07-01",
+        ),
+        applies_if=AppliesIf(
+            all=[
+                Condition(field="production_capacity.kg_per_day", op="gte", value=50),
+            ]
+        ),
+        exceptions=[],
+        obligation=Obligation(
+            type="MANDATE",
+            text="Provide nutrition panel.",
+            impact_categories=["labelling"],
+        ),
+        verification=Verification(
+            status="PENDING_REVIEW",
+            extraction_model="test-model",
+            agreement=False,
+        ),
+    )
+
+    verifier = RuleVerifier()
+    report = verifier.verify(candidate_rule, source_text=clause_text, metadata=metadata)
+
+    assert report.is_valid is False
+    assert report.status == "rejected"
+    assert any("commencement_quote" in i.message and "does not exist verbatim" in i.message for i in report.issues)
+
+
+def test_separate_threshold_quotes_grounding_failure(substantive_clause_context):
+    """Exit Condition: A candidate providing an ungrounded threshold quote is rejected."""
+    clause_text, _, metadata = substantive_clause_context
+
+    candidate_rule = Rule(
+        rule_id="RULE-BAD-THRESH-001",
+        source=Source(
+            instrument="Food Regulations",
+            authority="FCAU",
+            gazette_no="2024/01",
+            clause="Regulation 4",
+            page=1,
+            quote_span="Every food manufacturing enterprise having a production capacity of 50 kg per day or more, and engaged in the production of prepackaged food products, shall ensure that each retail package carries a nutrition information panel in Sinhala, Tamil, and English.",
+            threshold_quotes={
+                "production_capacity.kg_per_day": "production capacity of 999 kg per day or more",  # 999 not in text
+            },
+        ),
+        validity=Validity(
+            published="2024-01-01",
+            commences="2026-07-01",
+        ),
+        applies_if=AppliesIf(
+            all=[
+                Condition(field="production_capacity.kg_per_day", op="gte", value=50),
+            ]
+        ),
+        exceptions=[],
+        obligation=Obligation(
+            type="MANDATE",
+            text="Provide nutrition panel.",
+            impact_categories=["labelling"],
+        ),
+        verification=Verification(
+            status="PENDING_REVIEW",
+            extraction_model="test-model",
+            agreement=False,
+        ),
+    )
+
+    verifier = RuleVerifier()
+    report = verifier.verify(candidate_rule, source_text=clause_text, metadata=metadata)
+
+    assert report.is_valid is False
+    assert report.status == "rejected"
+    assert any("threshold_quote for 'production_capacity.kg_per_day'" in i.message for i in report.issues)

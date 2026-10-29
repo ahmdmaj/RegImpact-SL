@@ -193,3 +193,157 @@ def test_compile_clause_non_compilable(sample_clause_context):
 def json_copy(data: dict) -> dict:
     import json
     return json.loads(json.dumps(data))
+
+
+# ---------------------------------------------------------------------------
+# Context-Aware Rule Compilation Tests
+# ---------------------------------------------------------------------------
+
+@pytest.fixture
+def context_aware_compilation_setup():
+    """Setup for substantive clause with separate Regulation 1 contextual evidence."""
+    clause_text = (
+        "Regulation 3. Every importer of pre-packaged sugar confectionery shall ensure that the "
+        "total sugar content does not exceed 12.0g per 100g of product."
+    )
+    reg1_text = (
+        "1. These regulations may be cited as the Food (Sugar Confectionery) Regulations 2024 "
+        "and shall come into operation on 01st July 2026."
+    )
+    metadata = {
+        "instrument": "Food (Sugar Confectionery) Regulations 2024",
+        "authority": "FCAU",
+        "gazette_no": "2496/03",
+        "clause": "Regulation 3",
+        "page": 2,
+        "published": "2024-05-15",
+        "commences": "2026-07-01",
+        "regulation_1_text": reg1_text,
+        "context_evidence": {
+            "regulation_1": reg1_text,
+            "commences": "2026-07-01",
+            "published": "2024-05-15",
+        },
+    }
+    candidate_dict = {
+        "rule_id": "RULE-SUGAR-003",
+        "source": {
+            "instrument": "Food (Sugar Confectionery) Regulations 2024",
+            "authority": "FCAU",
+            "gazette_no": "2496/03",
+            "clause": "Regulation 3",
+            "page": 2,
+            "quote_span": "Every importer of pre-packaged sugar confectionery shall ensure that the total sugar content does not exceed 12.0g per 100g of product.",
+            "obligation_quote": "Every importer of pre-packaged sugar confectionery shall ensure that the total sugar content does not exceed 12.0g per 100g of product.",
+            "commencement_quote": "shall come into operation on 01st July 2026",
+            "commencement_clause": "Regulation 1",
+            "threshold_quotes": {
+                "sugar_content.g_per_100g": "total sugar content does not exceed 12.0g per 100g",
+            },
+        },
+        "validity": {
+            "published": "2024-05-15",
+            "commences": "2026-07-01",
+            "evidence_quote": "shall come into operation on 01st July 2026",
+            "evidence_source": "Regulation 1",
+        },
+        "applies_if": {
+            "all": [
+                {"field": "sugar_content.g_per_100g", "op": "lte", "value": 12.0},
+            ],
+            "any": [],
+        },
+        "exceptions": [],
+        "obligation": {
+            "type": "MANDATE",
+            "text": "Total sugar content must not exceed 12.0g per 100g.",
+            "impact_categories": ["labelling", "composition"],
+        },
+        "verification": {
+            "status": "PENDING_REVIEW",
+            "extraction_model": "mock-llm-v1",
+            "agreement": False,
+        },
+    }
+    return clause_text, metadata, candidate_dict
+
+
+def test_context_aware_rule_compilation_success(context_aware_compilation_setup):
+    """Exit Condition: Genuinely generated candidate rule with separate evidence passes compilation."""
+    clause_text, metadata, candidate_dict = context_aware_compilation_setup
+
+    mock_llm = MagicMock(spec=LLMClient)
+    mock_llm.generate_rule.return_value = candidate_dict
+
+    compiler = RuleCompiler(llm_client=mock_llm, verifier=RuleVerifier())
+    rule = compiler.compile_clause(raw_text=clause_text, source_metadata=metadata, max_retries=1)
+
+    assert rule is not None
+    assert isinstance(rule, Rule)
+    assert rule.validity.commences == "2026-07-01"
+    assert rule.source.commencement_clause == "Regulation 1"
+    assert "total sugar content does not exceed 12.0g per 100g" in str(rule.source.threshold_quotes)
+
+
+def test_context_aware_compilation_rejection_contradictory_date(context_aware_compilation_setup):
+    """Exit Condition: Candidate rule claiming contradictory commencement date is rejected."""
+    clause_text, metadata, candidate_dict = context_aware_compilation_setup
+
+    contradictory_dict = json_copy(candidate_dict)
+    contradictory_dict["validity"]["commences"] = "2028-01-01"  # Contradicts 2026-07-01
+
+    mock_llm = MagicMock(spec=LLMClient)
+    mock_llm.generate_rule.return_value = contradictory_dict
+
+    compiler = RuleCompiler(llm_client=mock_llm, verifier=RuleVerifier())
+    rule = compiler.compile_clause(raw_text=clause_text, source_metadata=metadata, max_retries=1)
+
+    # Verification must fail on contradiction and compiler must return None
+    assert rule is None
+    assert mock_llm.generate_rule.call_count == 2  # initial attempt + 1 retry
+
+
+def test_context_aware_compilation_rejection_missing_evidence(context_aware_compilation_setup):
+    """Exit Condition: Candidate rule claiming date with missing evidence is rejected."""
+    clause_text, metadata, candidate_dict = context_aware_compilation_setup
+
+    # Remove contextual evidence so the claimed date is ungrounded
+    metadata_no_context = json_copy(metadata)
+    metadata_no_context["regulation_1_text"] = ""
+    metadata_no_context["context_evidence"] = {}
+    metadata_no_context["commences"] = None
+
+    ungrounded_dict = json_copy(candidate_dict)
+    ungrounded_dict["validity"]["commences"] = "2028-01-01"
+    ungrounded_dict["source"]["commencement_quote"] = None
+
+    mock_llm = MagicMock(spec=LLMClient)
+    mock_llm.generate_rule.return_value = ungrounded_dict
+
+    compiler = RuleCompiler(llm_client=mock_llm, verifier=RuleVerifier())
+    rule = compiler.compile_clause(raw_text=clause_text, source_metadata=metadata_no_context, max_retries=1)
+
+    assert rule is None
+
+
+def test_context_aware_dual_pass_agreement(context_aware_compilation_setup):
+    """Dual-pass cross-agreement succeeds on context-aware candidate rule."""
+    clause_text, metadata, candidate_dict = context_aware_compilation_setup
+
+    candidate_pass_b = json_copy(candidate_dict)
+    candidate_pass_b["rule_id"] = "RULE-SUGAR-003-B"
+
+    mock_llm = MagicMock(spec=LLMClient)
+    mock_llm.generate_rule.side_effect = [candidate_dict, candidate_pass_b]
+
+    compiler = RuleCompiler(llm_client=mock_llm, verifier=RuleVerifier())
+    result = compiler.compile_clause_with_agreement(
+        raw_text=clause_text,
+        source_metadata=metadata,
+        auto_approve=True,
+    )
+
+    assert result.cross_agreement is True
+    assert result.review_status == "APPROVED"
+    assert result.rule is not None
+    assert result.rule.validity.commences == "2026-07-01"

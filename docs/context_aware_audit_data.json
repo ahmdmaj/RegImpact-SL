@@ -1,0 +1,102 @@
+{
+  "llm_provider": "GeminiLLMClient",
+  "llm_model": "gemini-2.5-flash-lite",
+  "rule_compiled": {
+    "rule_id": "FSC2024-R3",
+    "source": {
+      "instrument": "Food (Sugar Confectionery) Regulations 2024",
+      "authority": "FCAU",
+      "gazette_no": "2496/03",
+      "clause": "Regulation 3",
+      "page": 2,
+      "quote_span": "Every manufacturer and importer of pre-packaged sugar confectionery shall ensure that the total sugar content does not exceed 12.0g per 100g of product, and shall display the sugar level on the principal display panel.",
+      "evidence": null,
+      "obligation_quote": "Every manufacturer and importer of pre-packaged sugar confectionery shall ensure that the total sugar content does not exceed 12.0g per 100g of product, and shall display the sugar level on the principal display panel.",
+      "commencement_quote": "1. These regulations may be cited as the Food (Sugar Confectionery) Regulations 2024 and shall come into operation on 01st July 2026.",
+      "commencement_clause": "Regulation 1",
+      "exceptions_quote": null,
+      "threshold_quotes": {
+        "total_sugar_content": "12.0g per 100g of product"
+      },
+      "published": "2024-05-15",
+      "commences": "2026-07-01",
+      "regulation_1_text": "1. These regulations may be cited as the Food (Sugar Confectionery) Regulations 2024 and shall come into operation on 01st July 2026.",
+      "context_evidence": {
+        "regulation_1": "1. These regulations may be cited as the Food (Sugar Confectionery) Regulations 2024 and shall come into operation on 01st July 2026.",
+        "commences": "2026-07-01",
+        "published": "2024-05-15"
+      }
+    },
+    "validity": {
+      "published": "2024-05-15",
+      "commences": "2026-07-01",
+      "transition_until": null,
+      "superseded_by": null,
+      "superseded_date": null,
+      "evidence_quote": "1. These regulations may be cited as the Food (Sugar Confectionery) Regulations 2024 and shall come into operation on 01st July 2026.",
+      "evidence_source": "Regulation 1"
+    },
+    "applies_if": {
+      "all": [
+        {
+          "field": "product_type",
+          "op": "eq",
+          "value": "pre-packaged sugar confectionery"
+        },
+        {
+          "field": "entity_type",
+          "op": "in",
+          "value": [
+            "manufacturer",
+            "importer"
+          ]
+        }
+      ],
+      "any": null
+    },
+    "exceptions": [],
+    "obligation": {
+      "type": "MANDATE",
+      "text": "Ensure that the total sugar content does not exceed 12.0g per 100g of product, and display the sugar level on the principal display panel.",
+      "impact_categories": [
+        "labelling",
+        "safety"
+      ],
+      "disclosures": null
+    },
+    "verification": {
+      "status": "PENDING_REVIEW",
+      "extraction_model": "llm",
+      "agreement": false,
+      "reason": null,
+      "justification": null
+    },
+    "is_synthetic": false
+  },
+  "test_1_supported": {
+    "is_valid": true,
+    "status": "verified"
+  },
+  "test_2_missing_evidence": {
+    "is_valid": false,
+    "status": "rejected",
+    "issues": [
+      "commencement_quote '1. These regulations may be cited as the Food (Sugar Confectionery) Regulations 2024 and shall come into operation on 01st July 2026.' does not exist verbatim within documented contextual evidence (Regulation 1, preamble, or source text).",
+      "Commencement date '2028-01-01' in validity.commences is ungrounded: does not appear in clause text and no supporting contextual evidence was provided."
+    ]
+  },
+  "test_3_contradictory_evidence": {
+    "is_valid": false,
+    "status": "rejected",
+    "issues": [
+      "Contradictory commencement date: rule claims '2029-05-15', but documented evidence specifies '2026-07-01'."
+    ]
+  },
+  "test_4_fake_obligation_quote": {
+    "is_valid": false,
+    "status": "rejected",
+    "issues": [
+      "quote_span does not exist verbatim within the provided source text."
+    ]
+  }
+}

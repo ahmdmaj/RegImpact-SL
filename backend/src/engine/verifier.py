@@ -227,7 +227,9 @@ def unit_in_text(unit_key: str, text: str) -> bool:
     norm_text = normalize_text(text).lower()
     variants = UNIT_EQUIVALENTS.get(unit_key.lower(), [unit_key.lower()])
     for v in variants:
-        if re.search(rf"\b{re.escape(v)}\b", norm_text):
+        # Match standalone word (\bkg\b) or attached to number/punct (12.0g, 50kg, 100ml)
+        pattern = rf"(?:(?<=[0-9\s\.\,/])|^){re.escape(v)}(?=[^a-zA-Z]|$)"
+        if re.search(pattern, norm_text):
             return True
     return False
 
