@@ -957,18 +957,31 @@ async def upload_document(
     clauses_created = 0
     created_clause_objects: List[ClauseORM] = []
 
-    # Segment clauses across entire document with page boundary stitching
-    candidate_segments = segment_document_clauses(pages)
+    # Segment clauses across entire document with layout-aware structural parsing
+    candidate_segments = segment_document_clauses(pages, pdf_path=target_file)
     if not candidate_segments:
         for page in pages:
             candidate_segments.extend(segment_clauses_from_page(page.raw_text, page.page_number))
 
     for seg in candidate_segments:
-        clause_pk = f"CLAUSE-{doc_id.upper()}-{seg.clause_number.replace(' ', '-').upper()}"
+        # Sanitize clause number for primary key format
+        clean_num = re.sub(r"[^A-Za-z0-9\-\_]", "-", seg.clause_number).strip("-")
+        clause_pk = f"CLAUSE-{doc_id.upper()}-{clean_num.upper()}"
         existing = db.query(ClauseORM).filter_by(clause_id=clause_pk).first()
         if not existing:
             is_live_emb = emb_client is not None and not isinstance(emb_client, MockEmbeddingClient)
             emb = emb_client.embed_text(seg.text) if emb_client else None
+            patch_data = {
+                "clause_type": seg.clause_type,
+                "sub_clauses_count": len(seg.sub_clauses),
+                "tables_count": len(seg.tables),
+                "provisos_count": len(seg.provisos),
+                "provisos": seg.provisos,
+                "sub_clauses": [
+                    {"identifier": sc.identifier, "sub_type": sc.sub_type, "text": sc.text[:120]}
+                    for sc in seg.sub_clauses
+                ],
+            }
             clause_orm = ClauseORM(
                 clause_id=clause_pk,
                 version_number=1,
@@ -979,6 +992,7 @@ async def upload_document(
                 end_page=seg.end_page,
                 char_start=seg.char_start,
                 char_end=seg.char_end,
+                applied_patches=patch_data,
                 is_compilable=True,
                 embedding=emb,
                 embedding_verified=bool(emb and is_live_emb),

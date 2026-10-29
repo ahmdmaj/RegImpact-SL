@@ -523,14 +523,39 @@ class DocumentIngestionService:
 # ---------------------------------------------------------------------------
 
 @dataclass
+class NestedSubClause:
+    """A nested subclause item within a clause (e.g. subregulation (1), paragraph (a), subparagraph (i), or proviso)."""
+    identifier: str
+    sub_type: str  # "subregulation", "paragraph", "subparagraph", "proviso"
+    text: str
+    page_number: int
+    char_start: int
+    char_end: int
+
+
+@dataclass
+class TableData:
+    """A structured tabular element extracted from a regulatory schedule or clause."""
+    headers: List[str]
+    rows: List[List[str]]
+    page_number: int = 1
+    bbox: Optional[Tuple[float, float, float, float]] = None
+
+
+@dataclass
 class SegmentedClause:
-    """A conservatively segmented candidate clause from a page."""
+    """A structurally segmented candidate clause with hierarchy, tables, provisos, and provenance."""
     clause_number: str
     text: str
     start_page: int
     end_page: int
     char_start: int
     char_end: int
+    clause_type: str = "regulation"  # "regulation", "amendment_directive", "schedule", "order"
+    parent_clause: Optional[str] = None
+    sub_clauses: List[NestedSubClause] = field(default_factory=list)
+    tables: List[TableData] = field(default_factory=list)
+    provisos: List[str] = field(default_factory=list)
 
 
 # Common Sri Lankan gazette noise patterns (running headers, footers, pagination)
@@ -546,7 +571,10 @@ _GAZETTE_HEADER_FOOTER_PATTERNS = [
     re.compile(r"^\s*PART I\s*:\s*SECTION \(I\).*", re.IGNORECASE),
     re.compile(r"^\s*Gover.*No.*", re.IGNORECASE),
     re.compile(r"^\s*1A\s*-\s*PG.*", re.IGNORECASE),
+    re.compile(r"^\s*1A\s*-\s*G.*", re.IGNORECASE),
     re.compile(r".*\d{4}/\d{2}\s*-\s*\d{4}.*", re.IGNORECASE),
+    re.compile(r"^\s*PRINTED AT THE DEPARTMENT OF GOVERNMENT PRINTING.*", re.IGNORECASE),
+    re.compile(r"^\s*EOG\s+\d{2}\s*-\s*\d{4}.*", re.IGNORECASE),
     re.compile(r"^\s*[\?\u2022\-\s]{5,}\s*$"),
 ]
 
@@ -574,11 +602,127 @@ _CLAUSE_PATTERNS = [
 ]
 
 
-def extract_document_preamble(pages: List[Any]) -> Dict[str, Any]:
+def extract_tables_from_doc(doc: Any) -> Dict[int, List[TableData]]:
+    """Extract structured tables by page number using PyMuPDF."""
+    tables_by_page: Dict[int, List[TableData]] = {}
+    try:
+        for p_idx in range(len(doc)):
+            p_num = p_idx + 1
+            page = doc[p_idx]
+            if not hasattr(page, "find_tables"):
+                continue
+            found = page.find_tables()
+            p_tables: List[TableData] = []
+            for t in getattr(found, "tables", []):
+                raw_data = t.extract()
+                if not raw_data:
+                    continue
+                headers = [str(c or "").strip().replace("\n", " ") for c in raw_data[0]]
+                rows = []
+                for r in raw_data[1:]:
+                    clean_r = [str(c or "").strip().replace("\n", " ") for c in r]
+                    if any(clean_r):
+                        rows.append(clean_r)
+                if headers or rows:
+                    p_tables.append(
+                        TableData(
+                            headers=headers,
+                            rows=rows,
+                            page_number=p_num,
+                            bbox=t.bbox,
+                        )
+                    )
+            if p_tables:
+                tables_by_page[p_num] = p_tables
+    except Exception as exc:
+        logger.warning("Table extraction error: %s", exc)
+    return tables_by_page
+
+
+def format_table_as_text(table: TableData) -> str:
+    """Format structured table as clean readable markdown text."""
+    lines = []
+    if any(table.headers):
+        lines.append("| " + " | ".join(table.headers) + " |")
+        lines.append("| " + " | ".join("---" for _ in table.headers) + " |")
+    for r in table.rows:
+        lines.append("| " + " | ".join(r) + " |")
+    return "\n".join(lines)
+
+
+def parse_nested_subclauses(text: str, page_num: int) -> Tuple[List[NestedSubClause], List[str]]:
+    """Extract nested subclauses ((1), (a), (i), provisos) within clause text."""
+    sub_clauses: List[NestedSubClause] = []
+    provisos: List[str] = []
+
+    proviso_pat = re.compile(
+        r"(Provided\s+(?:further\s+that|however\s*,?|that\s*,?)[^\.\;]+(?:[\.\;]|$))",
+        re.IGNORECASE | re.DOTALL,
+    )
+    for m in proviso_pat.finditer(text):
+        p_text = m.group(1).strip()
+        provisos.append(p_text)
+        sub_clauses.append(
+            NestedSubClause(
+                identifier="Proviso",
+                sub_type="proviso",
+                text=p_text,
+                page_number=page_num,
+                char_start=m.start(),
+                char_end=m.end(),
+            )
+        )
+
+    subreg_pat = re.compile(r"(?:^|\n)\s*(\(\d+\))\s+([^\n]+)", re.MULTILINE)
+    for m in subreg_pat.finditer(text):
+        sub_clauses.append(
+            NestedSubClause(
+                identifier=m.group(1),
+                sub_type="subregulation",
+                text=m.group(0).strip(),
+                page_number=page_num,
+                char_start=m.start(),
+                char_end=m.end(),
+            )
+        )
+
+    para_pat = re.compile(r"(?:^|\n)\s*(\([a-z]\))\s+([^\n]+)", re.MULTILINE)
+    for m in para_pat.finditer(text):
+        sub_clauses.append(
+            NestedSubClause(
+                identifier=m.group(1),
+                sub_type="paragraph",
+                text=m.group(0).strip(),
+                page_number=page_num,
+                char_start=m.start(),
+                char_end=m.end(),
+            )
+        )
+
+    subpara_pat = re.compile(r"(?:^|\n)\s*(\((?:i|ii|iii|iv|v|vi|vii|viii|ix|x)\))\s+([^\n]+)", re.IGNORECASE | re.MULTILINE)
+    for m in subpara_pat.finditer(text):
+        sub_clauses.append(
+            NestedSubClause(
+                identifier=m.group(1),
+                sub_type="subparagraph",
+                text=m.group(0).strip(),
+                page_number=page_num,
+                char_start=m.start(),
+                char_end=m.end(),
+            )
+        )
+
+    return sub_clauses, provisos
+
+
+def extract_document_preamble(
+    pages: List[Any],
+    pdf_path: Optional[str | Path] = None,
+) -> Dict[str, Any]:
     """Extract authoritative document-level metadata from initial gazette pages.
 
     Captures gazette number, publication date, authority, instrument title,
-    and statutory commencement date (commonly defined in Regulation 1).
+    enabling act, instrument type, and statutory commencement date.
     """
     full_text = ""
     for p in pages[:4]:
@@ -592,47 +736,73 @@ def extract_document_preamble(pages: List[Any]) -> Dict[str, Any]:
         "instrument": None,
         "authority": None,
         "enabling_act": None,
+        "instrument_type": "regulation",
     }
 
-    # Gazette No (e.g., 2494/47 or 1688/28)
-    m_gz = re.search(r"No\.?\s*(\d{4}/\d{1,2})", full_text, re.IGNORECASE)
-    if m_gz:
-        meta["gazette_no"] = f"Gazette Extraordinary No. {m_gz.group(1)}"
-
-    # Published date (e.g. 26th June, 2026 or 2026.06.26)
-    m_pub = re.search(
-        r"(\d{1,2})(?:st|nd|rd|th)?\s+(January|February|March|April|May|June|July|August|September|October|November|December),?\s+(\d{4})",
-        full_text,
-        re.IGNORECASE,
-    )
     months = {
         "january": "01", "february": "02", "march": "03", "april": "04",
         "may": "05", "june": "06", "july": "07", "august": "08",
         "september": "09", "october": "10", "november": "11", "december": "12"
     }
-    if m_pub:
-        day = int(m_pub.group(1))
-        month = months.get(m_pub.group(2).lower(), "01")
-        year = m_pub.group(3)
-        meta["published"] = f"{year}-{month}-{day:02d}"
 
-    # Authority (e.g. Minister of Health...)
+    # 1. Gazette masthead check (e.g. No. 2494/06 - TUESDAY, JUNE 23, 2026)
+    m_masthead = re.search(
+        r"No\.?\s*(\d{4}/\d{1,2})\s*-\s*([A-Za-z]+),\s*([A-Za-z]+)\s+(\d{1,2}),?\s*(\d{4})",
+        full_text,
+        re.IGNORECASE,
+    )
+    if m_masthead:
+        meta["gazette_no"] = f"Gazette Extraordinary No. {m_masthead.group(1)}"
+        m_day = int(m_masthead.group(4))
+        m_mon = months.get(m_masthead.group(3).lower(), "01")
+        m_yr = m_masthead.group(5)
+        meta["published"] = f"{m_yr}-{m_mon}-{m_day:02d}"
+    else:
+        m_gz = re.search(r"No\.?\s*(\d{4}/\d{1,2})", full_text, re.IGNORECASE)
+        if m_gz:
+            meta["gazette_no"] = f"Gazette Extraordinary No. {m_gz.group(1)}"
+
+        m_pub = re.search(
+            r"(\d{1,2})(?:st|nd|rd|th)?\s+(January|February|March|April|May|June|July|August|September|October|November|December),?\s+(\d{4})",
+            full_text,
+            re.IGNORECASE,
+        )
+        if m_pub:
+            day = int(m_pub.group(1))
+            month = months.get(m_pub.group(2).lower(), "01")
+            year = m_pub.group(3)
+            meta["published"] = f"{year}-{month}-{day:02d}"
+
+    # 2. Authority (e.g. Minister of Health and Mass Media...)
     m_auth = re.search(r"(Minister of [^\n\.,]+?)(?:\s+in consultation|\.|\,|$)", full_text, re.IGNORECASE)
     if m_auth:
         meta["authority"] = m_auth.group(1).strip()
     else:
         meta["authority"] = "Ministry of Health, Sri Lanka"
 
-    # Enabling act (e.g. Food Act, No. 26 of 1980)
-    m_act = re.search(r"(Food Act,\s*No\.\s*\d+\s*of\s*\d{4})", full_text, re.IGNORECASE)
+    # 3. Enabling act
+    m_act = re.search(r"((?:FOOD|COMPANIES)\s+ACT,?\s*No\.?\s*\d+\s*(?:o?f|OF)\s*\d{4}|CHAPTER\s+\d+\s*\([^\)]+\))", full_text, re.IGNORECASE)
     if m_act:
         meta["enabling_act"] = m_act.group(1).strip()
 
-    # Citation & commencement in Regulation 1
-    m_cit = re.search(r"cited as\s+([^\n\.]+(?:Regulations|Act|Order)\s+\d{4})", full_text, re.IGNORECASE)
+    # 4. Instrument typology
+    is_amendment = bool(re.search(r"hereby further amended as follows", full_text, re.IGNORECASE))
+    is_orders = bool(re.search(r"ORDERS\s+under|Companies \(Fees\) Orders", full_text, re.IGNORECASE))
+    if is_amendment:
+        meta["instrument_type"] = "amendment_regulation"
+    elif is_orders:
+        meta["instrument_type"] = "statutory_order"
+
+    # 5. Citation & title
+    m_cit = re.search(r"(?:cited as|Regulations\s*\n\s*The)\s+([^\n\.]+(?:Regulations|Act|Order|Orders)\s+\d{4})", full_text, re.IGNORECASE)
     if m_cit:
         meta["instrument"] = m_cit.group(1).strip()
+    else:
+        m_tit = re.search(r"([A-Za-z\s\(\)\-]+(?:Regulations|Orders|Order)\s+\d{4})", full_text)
+        if m_tit:
+            meta["instrument"] = m_tit.group(1).strip()
 
+    # 6. Statutory commencement date
     m_com = re.search(
         r"come into operation\s+on\s+(\d{1,2})(?:st|nd|rd|th)?\s+(January|February|March|April|May|June|July|August|September|October|November|December),?\s+(\d{4})",
         full_text,
@@ -650,123 +820,233 @@ def extract_document_preamble(pages: List[Any]) -> Dict[str, Any]:
 def segment_document_clauses(
     pages: List[Any],
     min_clause_length: int = 40,
+    pdf_path: Optional[str | Path] = None,
 ) -> List[SegmentedClause]:
-    """Segment a multi-page regulatory document into complete, stitched clauses.
+    """Segment a regulatory document into complete, structured, and stitched clauses.
 
-    Overcomes single-page segmentation boundary issues:
-    - Strips running headers, footers, and page numbers between pages.
-    - Accurately stitches clauses spanning multiple pages (e.g. Regulation 3 across pages 1 and 2).
-    - Uses monotonic regulation ordering to distinguish primary regulation headers
-      from mid-sentence cross-references.
-    - Retains full provenance across start_page and end_page.
+    Handles:
+    - Running headers, footers, and pagination filtering (layout bounding boxes when PDF path is available).
+    - Principal regulations (e.g. 1., 2., 3., 4.(1)).
+    - Amendment regulations with directives (e.g. (1) in regulation 3, (2)...).
+    - Statutory orders (e.g. Orders under Section..., Companies (Fees) Orders).
+    - Schedules and multi-column tables attached to clauses.
+    - Nested subclauses ((1), (a), (i)) and provisos (Provided that...).
+    - Continuous cross-page clause stitching preserving exact verbatim text, start_page, and end_page.
     """
-    reg_heading_pattern = re.compile(
-        r"^\s*(?:(?:Regulation\s+)?(\d{1,3})\.(?:\s*\(([0-9a-zA-Z]+)\))?|(SCHEDULE\s+[IVXLCDM\d]+))\s*$",
+    tables_by_page: Dict[int, List[TableData]] = {}
+    pages_lines: List[List[Tuple[str, int, float, float]]] = []
+    full_text_sample = ""
+
+    doc = None
+    if pdf_path and Path(pdf_path).exists():
+        try:
+            import pymupdf
+            doc = pymupdf.open(str(pdf_path))
+            tables_by_page = extract_tables_from_doc(doc)
+            for p_idx in range(len(doc)):
+                p_num = p_idx + 1
+                page = doc[p_idx]
+                p_height = page.rect.height
+                lines_on_page: List[Tuple[str, int, float, float]] = []
+
+                blocks = page.get_text("blocks")
+                for b in blocks:
+                    if b[6] != 0:  # Skip image blocks
+                        continue
+                    b_y0, b_y1 = b[1], b[3]
+                    block_text = b[4]
+
+                    # Filter top running header and bottom footer
+                    if b_y0 < 75 and is_gazette_noise(block_text):
+                        continue
+                    if b_y1 > (p_height - 60) and is_gazette_noise(block_text):
+                        continue
+
+                    for raw_line in block_text.split("\n"):
+                        s = raw_line.strip()
+                        if not s or is_gazette_noise(s):
+                            continue
+                        lines_on_page.append((raw_line, p_num, b_y0, b_y1))
+
+                pages_lines.append(lines_on_page)
+                if p_num <= 2:
+                    full_text_sample += "\n" + page.get_text("text")
+        except Exception as exc:
+            logger.warning("Layout extraction failed with PyMuPDF; falling back to text lines: %s", exc)
+            pages_lines = []
+            full_text_sample = ""
+
+    if not pages_lines:
+        for p_idx, p in enumerate(pages):
+            p_num = getattr(p, "page_number", p_idx + 1)
+            raw = getattr(p, "raw_text", None) or getattr(p, "text", None) or str(p)
+            lines_on_page = []
+            for raw_line in raw.split("\n"):
+                s = raw_line.strip()
+                if not s or is_gazette_noise(s):
+                    continue
+                lines_on_page.append((raw_line, p_num, 0.0, 0.0))
+            pages_lines.append(lines_on_page)
+            if p_num <= 2:
+                full_text_sample += "\n" + raw
+
+    all_lines: List[Tuple[str, int, float, float]] = []
+    for pl in pages_lines:
+        for line_tup in pl:
+            all_lines.append(line_tup)
+
+    is_amendment = bool(re.search(r"hereby further amended as follows", full_text_sample, re.IGNORECASE))
+    is_orders = bool(re.search(r"ORDERS\s+under|Companies \(Fees\) Orders", full_text_sample, re.IGNORECASE))
+
+    principal_heading = re.compile(
+        r"^\s*(?:(?:Regulation\s+)?(\d{1,3})\.(?:\s*\(([0-9a-zA-Z]+)\))?|(SCHEDULE\s+[IVXLCDM\d]*))\s*$",
         re.IGNORECASE,
     )
-    reg_inline_pattern = re.compile(
-        r"^\s*(?:(?:Regulation\s+)?(\d{1,3})\.(?:\s*\(([0-9a-zA-Z]+)\))?|(SCHEDULE\s+[IVXLCDM\d]+))\s+([A-Z].*)",
+    principal_inline = re.compile(
+        r"^\s*(?:(?:Regulation\s+)?(\d{1,3})\.(?:\s*\(([0-9a-zA-Z]+)\))?|(SCHEDULE\s+[IVXLCDM\d]*))\s+([A-Z].*)",
         re.IGNORECASE,
     )
-
-    doc_lines: List[Tuple[int, str]] = []
-    in_regulations = False
-
-    for p_idx, p in enumerate(pages):
-        p_num = getattr(p, "page_number", p_idx + 1)
-        raw = getattr(p, "raw_text", None) or getattr(p, "text", None) or str(p)
-        for line in raw.split("\n"):
-            if is_gazette_noise(line):
-                continue
-            s = line.strip()
-            if s.upper() == "REGULATIONS":
-                in_regulations = True
-                continue
-            if in_regulations:
-                doc_lines.append((p_num, line))
+    amend_directive = re.compile(r"^\s*\((\d{1,2})\)\s*$", re.IGNORECASE)
+    amend_directive_inline = re.compile(r"^\s*\((\d{1,2})\)\s+([A-Za-z].*)", re.IGNORECASE)
+    amend_target = re.compile(r"in\s+(regulation\s+\d+|sub-regulation\s+\d+|the\s+Schedule)", re.IGNORECASE)
+    schedule_head = re.compile(r'^\s*["“]?(SCHEDULE\s*[IVXLCDM\d]*)["”]?\s*$', re.IGNORECASE)
 
     clauses: List[SegmentedClause] = []
-    current_clause: Optional[Dict[str, Any]] = None
+    current_clause_dict: Optional[Dict[str, Any]] = None
+    in_substantive_body = False
     last_reg_num = 0
-    in_schedules = False
 
-    for idx, (p_num, line) in enumerate(doc_lines):
-        s = line.strip()
-        prev_line = doc_lines[idx - 1][1].strip() if idx > 0 else ""
+    def finalize_clause(c_dict: Dict[str, Any], end_p: int, end_y: float) -> None:
+        raw_c_text = "\n".join(c_dict["lines"]).strip()
+        c_start_page = c_dict["start_page"]
+        c_start_y = c_dict["start_y"]
+        c_type = c_dict["clause_type"]
 
-        m_head = reg_heading_pattern.match(s)
-        m_inline = reg_inline_pattern.match(s)
-        match = m_head or m_inline
+        # Attach tables matching this clause page range or schedule
+        matched_tables: List[TableData] = []
+        for p_i in range(c_start_page, end_p + 1):
+            if p_i in tables_by_page:
+                for tb in tables_by_page[p_i]:
+                    t_y0 = tb.bbox[1] if tb.bbox else 0.0
+                    if c_type == "schedule" or "Schedule" in c_dict["name"]:
+                        matched_tables.append(tb)
+                        raw_c_text += "\n\n" + format_table_as_text(tb)
+                    elif p_i == c_start_page and t_y0 >= (c_start_y - 10) and (p_i < end_p or t_y0 <= (end_y + 10)):
+                        matched_tables.append(tb)
+                        raw_c_text += "\n\n" + format_table_as_text(tb)
+
+        if len(raw_c_text) < min_clause_length:
+            return
+
+        subclauses, provisos = parse_nested_subclauses(raw_c_text, c_start_page)
+
+        clauses.append(
+            SegmentedClause(
+                clause_number=c_dict["name"],
+                text=raw_c_text,
+                start_page=c_start_page,
+                end_page=end_p,
+                char_start=0,
+                char_end=len(raw_c_text),
+                clause_type=c_type,
+                sub_clauses=subclauses,
+                tables=matched_tables,
+                provisos=provisos,
+            )
+        )
+
+    for idx, (line_str, p_num, y0, y1) in enumerate(all_lines):
+        s = line_str.strip()
+        prev_line = all_lines[idx - 1][0].strip() if idx > 0 else ""
+
+        # Check for division marker
+        if s.upper() in ("REGULATIONS", "ORDERS", "ORDER"):
+            in_substantive_body = True
+            continue
 
         is_heading = False
-        name = None
+        clause_name = None
+        clause_type = "regulation"
         inline_body = ""
 
-        if match:
-            reg_num_str = match.group(1)
-            sub_num = match.group(2)
-            sched_num = match.group(3)
+        # Schedule heading check
+        m_sched = schedule_head.match(s)
+        if m_sched:
+            is_heading = True
+            in_substantive_body = True
+            clause_name = m_sched.group(1).upper()
+            clause_type = "schedule"
 
-            if sched_num:
-                in_schedules = True
+        elif not in_substantive_body:
+            if is_amendment and (amend_directive.match(s) or amend_directive_inline.match(s)):
+                in_substantive_body = True
+            elif not is_amendment and (principal_heading.match(s) or principal_inline.match(s)):
+                in_substantive_body = True
+            elif is_orders and ("are hereby amended" in s or (s.endswith("Orders") and len(s) < 80)):
+                in_substantive_body = True
                 is_heading = True
-                name = sched_num.upper()
-            elif reg_num_str and not in_schedules:
-                reg_num = int(reg_num_str)
-                continuing_prepositions = ("under", "to", "of", "in", "the", "and", "or", "with", "that", "from", "for")
-                is_cont = any(prev_line.lower().endswith(f" {prep}") or prev_line.lower() == prep for prep in continuing_prepositions)
+                clause_name = s if s.endswith("Orders") else "Order 1"
+                clause_type = "order"
+                inline_body = s if not s.endswith("Orders") else ""
+            else:
+                continue
 
-                if (reg_num == last_reg_num + 1 or (last_reg_num == 0 and reg_num == 1)) and not is_cont:
+        if not is_heading:
+            if is_amendment:
+                m_ad = amend_directive.match(s)
+                m_adi = amend_directive_inline.match(s)
+                match_amend = m_ad or m_adi
+                if match_amend:
+                    dir_num = match_amend.group(1)
                     is_heading = True
-                    last_reg_num = reg_num
-                    if sub_num:
-                        name = f"Regulation {reg_num}({sub_num})"
-                    else:
-                        name = f"Regulation {reg_num}"
-            elif reg_num_str and in_schedules:
-                is_heading = True
-                name = f"Item {reg_num_str}"
+                    clause_type = "amendment_directive"
+                    next_few = " ".join([l[0].strip() for l in all_lines[idx:idx + 3]])
+                    m_tgt = amend_target.search(next_few)
+                    tgt_info = f" ({m_tgt.group(1).title()})" if m_tgt else ""
+                    clause_name = f"Directive ({dir_num}){tgt_info}"
+                    inline_body = match_amend.group(2) if m_adi else ""
+            else:
+                m_ph = principal_heading.match(s)
+                m_pi = principal_inline.match(s)
+                match_princ = m_ph or m_pi
+                if match_princ:
+                    r_num_str = match_princ.group(1)
+                    sub_num = match_princ.group(2)
+                    sched_kw = match_princ.group(3)
 
-            if is_heading:
-                inline_body = match.group(4) if m_inline else ""
+                    if sched_kw:
+                        is_heading = True
+                        clause_name = sched_kw.upper()
+                        clause_type = "schedule"
+                    elif r_num_str:
+                        r_num = int(r_num_str)
+                        continuing_prepositions = ("under", "to", "of", "in", "the", "and", "or", "with", "that", "from", "for")
+                        is_cont = any(prev_line.lower().endswith(f" {prep}") or prev_line.lower() == prep for prep in continuing_prepositions)
+                        if (r_num == last_reg_num + 1 or (last_reg_num == 0 and r_num == 1)) and not is_cont:
+                            is_heading = True
+                            last_reg_num = r_num
+                            clause_name = f"Regulation {r_num}({sub_num})" if sub_num else f"Regulation {r_num}"
+                            clause_type = "regulation"
+                            inline_body = match_princ.group(4) if m_pi else ""
 
         if is_heading:
-            if current_clause and current_clause["lines"]:
-                clause_text = "\n".join(current_clause["lines"]).strip()
-                if len(clause_text) >= min_clause_length:
-                    clauses.append(
-                        SegmentedClause(
-                            clause_number=current_clause["name"],
-                            text=clause_text,
-                            start_page=current_clause["start_page"],
-                            end_page=p_num,
-                            char_start=0,
-                            char_end=len(clause_text),
-                        )
-                    )
+            if current_clause_dict and current_clause_dict["lines"]:
+                finalize_clause(current_clause_dict, p_num, y0)
 
-            current_clause = {
-                "name": name,
+            current_clause_dict = {
+                "name": clause_name,
+                "clause_type": clause_type,
                 "start_page": p_num,
-                "lines": [inline_body] if inline_body else []
+                "start_y": y0,
+                "lines": [inline_body] if inline_body else [],
             }
-        elif current_clause is not None:
-            current_clause["lines"].append(line)
+        elif current_clause_dict is not None:
+            current_clause_dict["lines"].append(line_str)
 
-    if current_clause and current_clause["lines"]:
-        last_page = doc_lines[-1][0] if doc_lines else 1
-        clause_text = "\n".join(current_clause["lines"]).strip()
-        if len(clause_text) >= min_clause_length:
-            clauses.append(
-                SegmentedClause(
-                    clause_number=current_clause["name"],
-                    text=clause_text,
-                    start_page=current_clause["start_page"],
-                    end_page=last_page,
-                    char_start=0,
-                    char_end=len(clause_text),
-                )
-            )
+    if current_clause_dict and current_clause_dict["lines"]:
+        last_page = all_lines[-1][1] if all_lines else 1
+        last_y = 1000.0
+        finalize_clause(current_clause_dict, last_page, last_y)
 
     return clauses
 
@@ -781,6 +1061,7 @@ def segment_clauses_from_page(
     Strategy:
     - Scan page text for lines matching known clause-header patterns.
     - Treat the text from one header to the next as one clause.
+    - Extract nested subclauses and provisos.
     - Clauses shorter than *min_clause_length* characters are skipped.
     """
     if not raw_text.strip():
@@ -818,6 +1099,8 @@ def segment_clauses_from_page(
         if len(clause_text) < min_clause_length:
             continue
 
+        subclauses, provisos = parse_nested_subclauses(clause_text, page_number)
+
         results.append(
             SegmentedClause(
                 clause_number=clause_number,
@@ -826,6 +1109,8 @@ def segment_clauses_from_page(
                 end_page=page_number,
                 char_start=char_start,
                 char_end=char_end,
+                sub_clauses=subclauses,
+                provisos=provisos,
             )
         )
 
