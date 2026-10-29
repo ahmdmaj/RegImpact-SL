@@ -203,15 +203,12 @@ Sugar
 - **Instrument Title:** `None`
 - **Instrument Typology:** `statutory_order`
 
-### 2. Segmented Clause Candidates Summary (5 clauses)
+### 2. Segmented Clause Candidates Summary (2 clauses)
 
 | # | Clause / Directive Name | Typology | Page Range | Length (chars) | Nested Subs | Provisos | Tables | Grounded in Source |
 |---|---|---|---|---|---|---|---|---|
 | 1 | `Companies (Fees) Orders / Societies (Fees) Orders` | `order` | Pages 1–2 | 187 | 0 | 0 | 0 | VERIFIED |
-| 2 | `SCHEDULE` | `schedule` | Pages 2–2 | 4,042 | 0 | 0 | 1 | VERIFIED |
-| 3 | `Regulation 13` | `regulation` | Pages 2–2 | 157 | 0 | 0 | 0 | VERIFIED |
-| 4 | `Regulation 14` | `regulation` | Pages 2–2 | 51 | 0 | 0 | 0 | VERIFIED |
-| 5 | `Regulation 15` | `regulation` | Pages 2–2 | 985 | 0 | 0 | 0 | VERIFIED |
+| 2 | `SCHEDULE` | `schedule` | Pages 2–2 | 5,250 | 0 | 0 | 1 | VERIFIED |
 
 ### 3. Reviewer Verification Detail per Clause Candidate
 
@@ -233,7 +230,7 @@ Companies (Fees) Orders and Societies (Fees) Orders, published in extraordinary 
 
 - **Clause Type:** `schedule`
 - **Source Pages:** Page 2 to Page 2
-- **Character Length:** 4,042 characters
+- **Character Length:** 5,250 characters
 - **First Grounding Phrase:** `No.`
 - **Provenance Status:** Verified present in PDF pages 2–2.
 - **Extracted Tabular Schedules (1):**
@@ -264,58 +261,6 @@ For registration of mortgage, charges and debentures
 6
 For registration of an annual return
 7...
-```
-
-#### [3] `Regulation 13`
-
-- **Clause Type:** `regulation`
-- **Source Pages:** Page 2 to Page 2
-- **Character Length:** 157 characters
-- **First Grounding Phrase:** `For registration of amount to be credited to a ban`
-- **Provenance Status:** Verified present in PDF pages 2–2.
-
-**Verbatim Extracted Content Snippet:**
-```text
-For registration of amount to be credited to a bank to defray the expenses of an off-shore 
-company for the purpose of its office in Sri Lanka
-US $115,000.00
-```
-
-#### [4] `Regulation 14`
-
-- **Clause Type:** `regulation`
-- **Source Pages:** Page 2 to Page 2
-- **Character Length:** 51 characters
-- **First Grounding Phrase:** `For registration of an off-shore company`
-- **Provenance Status:** Verified present in PDF pages 2–2.
-
-**Verbatim Extracted Content Snippet:**
-```text
-For registration of an off-shore company
-198,300.00
-```
-
-#### [5] `Regulation 15`
-
-- **Clause Type:** `regulation`
-- **Source Pages:** Page 2 to Page 2
-- **Character Length:** 985 characters
-- **First Grounding Phrase:** `For registration of a place of business in Sri Lan`
-- **Provenance Status:** Verified present in PDF pages 2–2.
-
-**Verbatim Extracted Content Snippet:**
-```text
-For registration of a place of business in Sri Lanka by an overseas  company
-79,300.00
-16.1
-For re-registration of a company which was formed as a people's company under the 
-companies Act, No. 17 of 1982, under Gamidiriya company Scheme.
-3,900.00
-16.2
-For re-registration of any other existing company (Other than an Overseas company)
-13,200.00
-16.3
-Renewal of registration of an off-shore company f...
 ```
 
 ---

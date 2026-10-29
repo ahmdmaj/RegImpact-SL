@@ -1018,7 +1018,7 @@ def segment_document_clauses(
                         is_heading = True
                         clause_name = sched_kw.upper()
                         clause_type = "schedule"
-                    elif r_num_str:
+                    elif r_num_str and (current_clause_dict is None or current_clause_dict.get("clause_type") != "schedule"):
                         r_num = int(r_num_str)
                         continuing_prepositions = ("under", "to", "of", "in", "the", "and", "or", "with", "that", "from", "for")
                         is_cont = any(prev_line.lower().endswith(f" {prep}") or prev_line.lower() == prep for prep in continuing_prepositions)
