@@ -234,12 +234,9 @@ def extract_document_structure(doc: pymupdf.Document) -> Tuple[Dict[str, Any], L
         "instrument_type": "regulation",
     }
 
-    m_gz = re.search(r"No\.?\s*(\d{4}/\d{1,2})", full_preamble_text, re.IGNORECASE)
-    if m_gz:
-        meta["gazette_no"] = f"Gazette Extraordinary No. {m_gz.group(1)}"
-
-    m_pub = re.search(
-        r"(\d{1,2})(?:st|nd|rd|th)?\s+(January|February|March|April|May|June|July|August|September|October|November|December),?\s+(\d{4})",
+    # Check masthead line first (e.g. No. 2494/06 - TUESDAY, JUNE 23, 2026)
+    m_masthead = re.search(
+        r"No\.?\s*(\d{4}/\d{1,2})\s*-\s*([A-Za-z]+),\s*([A-Za-z]+)\s+(\d{1,2}),?\s*(\d{4})",
         full_preamble_text,
         re.IGNORECASE,
     )
@@ -248,11 +245,27 @@ def extract_document_structure(doc: pymupdf.Document) -> Tuple[Dict[str, Any], L
         "may": "05", "june": "06", "july": "07", "august": "08",
         "september": "09", "october": "10", "november": "11", "december": "12"
     }
-    if m_pub:
-        day = int(m_pub.group(1))
-        month = months.get(m_pub.group(2).lower(), "01")
-        year = m_pub.group(3)
-        meta["published"] = f"{year}-{month}-{day:02d}"
+    if m_masthead:
+        meta["gazette_no"] = f"Gazette Extraordinary No. {m_masthead.group(1)}"
+        m_day = int(m_masthead.group(4))
+        m_mon = months.get(m_masthead.group(3).lower(), "01")
+        m_yr = m_masthead.group(5)
+        meta["published"] = f"{m_yr}-{m_mon}-{m_day:02d}"
+    else:
+        m_gz = re.search(r"No\.?\s*(\d{4}/\d{1,2})", full_preamble_text, re.IGNORECASE)
+        if m_gz:
+            meta["gazette_no"] = f"Gazette Extraordinary No. {m_gz.group(1)}"
+
+        m_pub = re.search(
+            r"(\d{1,2})(?:st|nd|rd|th)?\s+(January|February|March|April|May|June|July|August|September|October|November|December),?\s+(\d{4})",
+            full_preamble_text,
+            re.IGNORECASE,
+        )
+        if m_pub:
+            day = int(m_pub.group(1))
+            month = months.get(m_pub.group(2).lower(), "01")
+            year = m_pub.group(3)
+            meta["published"] = f"{year}-{month}-{day:02d}"
 
     m_auth = re.search(r"(Minister of [^\n\.,]+?)(?:\s+in consultation|\.|\,|$)", full_preamble_text, re.IGNORECASE)
     if m_auth:
