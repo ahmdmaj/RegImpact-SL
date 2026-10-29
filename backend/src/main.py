@@ -1018,6 +1018,13 @@ async def upload_document(
     approved_count = 0
 
     if compiler:
+        reg1_text = ""
+        for c_obj in created_clause_objects:
+            c_num = str(c_obj.clause_number).strip().lower()
+            if c_num in ("1", "regulation 1", "reg 1", "reg. 1", "clause 1", "section 1"):
+                reg1_text = c_obj.text
+                break
+
         for clause in created_clause_objects:
             existing_rule = db.query(RuleORM).filter_by(clause_id=clause.clause_id).first()
             if existing_rule:
@@ -1035,6 +1042,14 @@ async def upload_document(
                         "gazette_no": resolved_gazette_no,
                         "published": resolved_published,
                         "commences": resolved_commences,
+                        "regulation_1_text": reg1_text,
+                        "context_evidence": {
+                            "regulation_1": reg1_text,
+                            "commences": resolved_commences,
+                            "published": resolved_published,
+                            "instrument": resolved_title,
+                            "gazette_no": resolved_gazette_no,
+                        },
                     },
                 )
                 if comp_res.rule:

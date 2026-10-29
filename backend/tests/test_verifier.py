@@ -15,6 +15,7 @@ from backend.src.models.domain import (
     Condition,
     Obligation,
     Rule,
+    RuleEvidence,
     Source,
     Validity,
     Verification,

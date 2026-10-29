@@ -164,6 +164,38 @@ def date_in_text(date_val: Union[str, date], text: str) -> bool:
     return str(date_val).strip().lower() in norm_text
 
 
+def extract_dates_from_text(text: str) -> List[date]:
+    """Extract explicit calendar dates from natural language text."""
+    if not text:
+        return []
+    found_dates: List[date] = []
+
+    # 1. ISO format: YYYY-MM-DD
+    for m in re.finditer(r"\b\d{4}-\d{2}-\d{2}\b", text):
+        d = parse_date(m.group(0))
+        if d and d not in found_dates:
+            found_dates.append(d)
+
+    # 2. Commonwealth / natural textual dates (e.g. 1st June 2024, 01st July 2026, June 1, 2024)
+    textual_pattern = (
+        r"\b(?:\d{1,2}(?:st|nd|rd|th)?\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{4})"
+        r"|(?:\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2}(?:st|nd|rd|th)?(?:,)?\s+\d{4})"
+    )
+    for m in re.finditer(textual_pattern, text, re.IGNORECASE):
+        d = parse_date(m.group(0))
+        if d and d not in found_dates:
+            found_dates.append(d)
+
+    # 3. Numeric formats: DD/MM/YYYY or DD-MM-YYYY
+    numeric_pattern = r"\b\d{1,2}[/\-\.]\d{1,2}[/\-\.]\d{4}\b"
+    for m in re.finditer(numeric_pattern, text):
+        d = parse_date(m.group(0))
+        if d and d not in found_dates:
+            found_dates.append(d)
+
+    return found_dates
+
+
 def number_in_text(val: Union[int, float], text: str) -> bool:
     """Check if a numeric threshold appears as a distinct number/token in text."""
     norm_text = normalize_text(text).lower()
@@ -262,7 +294,7 @@ class RuleVerifier:
         issues.extend(schema_issues)
 
         # Stage 2: Quote-Span Grounding
-        grounding_issues = self.verify_quote_grounding(rule_obj, source_text)
+        grounding_issues = self.verify_quote_grounding(rule_obj, source_text, metadata=metadata)
         issues.extend(grounding_issues)
 
         # If non-compilable, evaluate Stage 4 requirements
@@ -340,12 +372,28 @@ class RuleVerifier:
 
         return issues
 
-    def verify_quote_grounding(self, rule: Rule, source_text: Optional[str]) -> List[VerificationIssue]:
-        """Stage 2: Verify that quote_span exists verbatim (normalized) within source text."""
+    def verify_quote_grounding(
+        self,
+        rule: Rule,
+        source_text: Optional[str],
+        metadata: Optional[Dict[str, Any]] = None,
+    ) -> List[VerificationIssue]:
+        """Stage 2: Verify that substantive obligation quote, threshold quotes, and exceptions quotes exist verbatim."""
         issues: List[VerificationIssue] = []
-        quote = rule.source.quote_span
+        src = rule.source
+        meta_dict = metadata or {}
+        context_evidence = meta_dict.get("context_evidence") or {}
+        reg1_text = meta_dict.get("regulation_1_text") or context_evidence.get("regulation_1") or ""
+        preamble_text = meta_dict.get("preamble_text") or context_evidence.get("preamble") or ""
 
-        if not quote or not quote.strip():
+        # 1. Ground substantive obligation quote in source clause text
+        obl_quote = (
+            getattr(src, "obligation_quote", None)
+            or (getattr(src.evidence, "obligation_quote", None) if getattr(src, "evidence", None) else None)
+            or src.quote_span
+        )
+
+        if not obl_quote or not obl_quote.strip():
             issues.append(
                 VerificationIssue(
                     stage="quote_grounding",
@@ -365,7 +413,7 @@ class RuleVerifier:
             )
             return issues
 
-        norm_quote = normalize_text(quote).lower()
+        norm_quote = normalize_text(obl_quote).lower()
         norm_source = normalize_text(source_text).lower()
 
         if norm_quote not in norm_source:
@@ -377,6 +425,66 @@ class RuleVerifier:
                 )
             )
 
+        # 2. Ground separate commencement quote in documented contextual evidence
+        comm_quote = (
+            getattr(src, "commencement_quote", None)
+            or (getattr(src.evidence, "commencement_quote", None) if getattr(src, "evidence", None) else None)
+            or getattr(rule.validity, "evidence_quote", None)
+        )
+        if comm_quote and comm_quote.strip():
+            context_sources_all = f"{reg1_text} {preamble_text} {source_text or ''}".strip()
+            if context_sources_all:
+                if normalize_text(comm_quote).lower() not in normalize_text(context_sources_all).lower():
+                    issues.append(
+                        VerificationIssue(
+                            stage="quote_grounding",
+                            severity="error",
+                            message=(
+                                f"commencement_quote '{comm_quote}' does not exist verbatim "
+                                "within documented contextual evidence (Regulation 1, preamble, or source text)."
+                            ),
+                        )
+                    )
+
+        # 3. Ground separate threshold quotes in source clause text
+        threshold_quotes = (
+            getattr(src, "threshold_quotes", None)
+            or (getattr(src.evidence, "threshold_quotes", None) if getattr(src, "evidence", None) else None)
+            or {}
+        )
+        if isinstance(threshold_quotes, dict):
+            for t_field, t_quote in threshold_quotes.items():
+                if t_quote and t_quote.strip():
+                    if normalize_text(t_quote).lower() not in norm_source:
+                        issues.append(
+                            VerificationIssue(
+                                stage="quote_grounding",
+                                severity="error",
+                                message=(
+                                    f"threshold_quote for '{t_field}' ('{t_quote}') does not exist verbatim "
+                                    "within the source clause text."
+                                ),
+                            )
+                        )
+
+        # 4. Ground separate exceptions quote in source clause text
+        exc_quote = (
+            getattr(src, "exceptions_quote", None)
+            or (getattr(src.evidence, "exceptions_quote", None) if getattr(src, "evidence", None) else None)
+        )
+        if exc_quote and exc_quote.strip():
+            if normalize_text(exc_quote).lower() not in norm_source:
+                issues.append(
+                    VerificationIssue(
+                        stage="quote_grounding",
+                        severity="error",
+                        message=(
+                            f"exceptions_quote ('{exc_quote}') does not exist verbatim "
+                            "within the source clause text."
+                        ),
+                    )
+                )
+
         return issues
 
     def verify_literals(
@@ -385,9 +493,22 @@ class RuleVerifier:
         source_text: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
     ) -> List[VerificationIssue]:
-        """Stage 3: Verify that every numeric literal, unit, and date exists in quote_span or source text."""
+        """Stage 3: Verify that every numeric literal, unit, exception, and date is grounded in evidence."""
         issues: List[VerificationIssue] = []
-        quote = rule.source.quote_span or ""
+        src = rule.source
+        quote = (
+            getattr(src, "obligation_quote", None)
+            or (getattr(src.evidence, "obligation_quote", None) if getattr(src, "evidence", None) else None)
+            or src.quote_span
+            or ""
+        )
+
+        meta_dict = metadata or {}
+        context_evidence = meta_dict.get("context_evidence") or {}
+        reg1_text = meta_dict.get("regulation_1_text") or context_evidence.get("regulation_1") or ""
+        preamble_text = meta_dict.get("preamble_text") or context_evidence.get("preamble") or ""
+        doc_commences = meta_dict.get("commences") or context_evidence.get("commences") or ""
+        doc_published = meta_dict.get("published") or context_evidence.get("published") or ""
 
         # 1. Condition literals and units
         all_conds: List[Condition] = []
@@ -395,13 +516,18 @@ class RuleVerifier:
             all_conds.extend(rule.applies_if.all or [])
             all_conds.extend(rule.applies_if.any or [])
 
+        threshold_quotes = getattr(src, "threshold_quotes", None) or {}
+        combined_clause_text = f"{quote} {source_text or ''}".strip()
+
         for cond in all_conds:
             val = cond.value
             field = cond.field
+            field_quote = threshold_quotes.get(field, "")
+            text_for_cond = f"{field_quote} {combined_clause_text}".strip()
 
             # Numeric literal checks
             if isinstance(val, (int, float)) and not isinstance(val, bool):
-                if not number_in_text(val, quote):
+                if not number_in_text(val, text_for_cond):
                     issues.append(
                         VerificationIssue(
                             stage="literal_check",
@@ -410,10 +536,9 @@ class RuleVerifier:
                         )
                     )
             elif isinstance(val, str):
-                # Check if value is a date
                 parsed_val_date = parse_date(val)
                 if parsed_val_date is not None and len(val.strip()) >= 8:
-                    if not date_in_text(parsed_val_date, quote):
+                    if not date_in_text(parsed_val_date, text_for_cond):
                         issues.append(
                             VerificationIssue(
                                 stage="literal_check",
@@ -422,11 +547,10 @@ class RuleVerifier:
                             )
                         )
                 else:
-                    # Check if string contains numeric literals (e.g., '50 kg')
                     numbers = re.findall(r"\d+(?:\.\d+)?", val)
                     for num_str in numbers:
                         num_val = float(num_str) if "." in num_str else int(num_str)
-                        if not number_in_text(num_val, quote):
+                        if not number_in_text(num_val, text_for_cond):
                             issues.append(
                                 VerificationIssue(
                                     stage="literal_check",
@@ -435,11 +559,11 @@ class RuleVerifier:
                                 )
                             )
 
-            # Unit checks derived from field path (e.g. production_capacity.kg_per_day)
+            # Unit checks
             field_tokens = field.lower().replace(".", "_").split("_")
             for token in field_tokens:
                 if token in UNIT_EQUIVALENTS:
-                    if not unit_in_text(token, quote):
+                    if not unit_in_text(token, text_for_cond):
                         issues.append(
                             VerificationIssue(
                                 stage="literal_check",
@@ -448,20 +572,109 @@ class RuleVerifier:
                             )
                         )
 
-        # 2. Validity date literals
-        val = rule.validity
-        dates_to_check: List[Tuple[str, Optional[str]]] = [
-            ("commences", val.commences),
-            ("published", val.published),
-            ("transition_until", val.transition_until),
-            ("superseded_date", val.superseded_date),
-        ]
+        # 2. Exceptions check
+        if rule.exceptions:
+            exc_quote = (
+                getattr(src, "exceptions_quote", None)
+                or (getattr(src.evidence, "exceptions_quote", None) if getattr(src, "evidence", None) else None)
+            )
+            if exc_quote:
+                if not normalize_text(exc_quote).lower() in normalize_text(source_text or "").lower():
+                    issues.append(
+                        VerificationIssue(
+                            stage="literal_check",
+                            severity="error",
+                            message="Exceptions quote does not appear in the source clause text.",
+                        )
+                    )
 
-        meta_text = " ".join(str(v) for v in (metadata or {}).values())
-        text_for_dates = f"{quote} {source_text or ''} {meta_text}".strip()
-        for field_name, d_str in dates_to_check:
+        # 3. Validity date literals and contextual verification
+        val = rule.validity
+        meta_text = " ".join(str(v) for v in meta_dict.values())
+
+        # (a) Published date verification
+        if val.published and val.published.strip():
+            pub_context = f"{combined_clause_text} {preamble_text} {doc_published} {meta_text}".strip()
+            if not date_in_text(val.published, pub_context):
+                issues.append(
+                    VerificationIssue(
+                        stage="literal_check",
+                        severity="error",
+                        message=f"Date '{val.published}' in validity.published does not appear in quote_span or source text.",
+                    )
+                )
+
+        # (b) Commencement date verification (context-aware)
+        if val.commences and val.commences.strip():
+            comm_quote = (
+                getattr(src, "commencement_quote", None)
+                or (getattr(src.evidence, "commencement_quote", None) if getattr(src, "evidence", None) else None)
+                or getattr(val, "evidence_quote", None)
+            )
+
+            # Check if commences date appears directly in the clause itself
+            in_clause = date_in_text(val.commences, combined_clause_text)
+
+            # Check documented contextual evidence
+            context_sources_text = f"{reg1_text} {preamble_text} {comm_quote or ''}".strip()
+            in_context = bool(context_sources_text and date_in_text(val.commences, context_sources_text))
+
+            # Contradiction check:
+            parsed_rule_d = parse_date(val.commences)
+            contradiction_found = False
+
+            # 1. Contradiction against metadata doc_commences
+            if doc_commences and doc_commences.strip():
+                parsed_doc_d = parse_date(doc_commences)
+                if parsed_rule_d and parsed_doc_d and parsed_rule_d != parsed_doc_d:
+                    contradiction_found = True
+                    issues.append(
+                        VerificationIssue(
+                            stage="literal_check",
+                            severity="error",
+                            message=(
+                                f"Contradictory commencement date: rule claims '{val.commences}', "
+                                f"but documented evidence specifies '{doc_commences}'."
+                            ),
+                        )
+                    )
+
+            # 2. Contradiction against Regulation 1 text dates
+            if reg1_text and reg1_text.strip():
+                reg1_dates = extract_dates_from_text(reg1_text)
+                if reg1_dates and parsed_rule_d and parsed_rule_d not in reg1_dates:
+                    contradiction_found = True
+                    doc_date_str = str(reg1_dates[0])
+                    issues.append(
+                        VerificationIssue(
+                            stage="literal_check",
+                            severity="error",
+                            message=(
+                                f"Contradictory commencement date: rule claims '{val.commences}', "
+                                f"but documented contextual evidence (Regulation 1) specifies '{doc_date_str}'."
+                            ),
+                        )
+                    )
+
+            # 3. Missing evidence check (ungrounded)
+            if not in_clause and not in_context and not date_in_text(val.commences, meta_text):
+                if not contradiction_found:
+                    issues.append(
+                        VerificationIssue(
+                            stage="literal_check",
+                            severity="error",
+                            message=(
+                                f"Commencement date '{val.commences}' in validity.commences is ungrounded: "
+                                f"does not appear in clause text and no supporting contextual evidence was provided."
+                            ),
+                        )
+                    )
+
+        # Transition / superseded dates
+        for field_name, d_str in [("transition_until", val.transition_until), ("superseded_date", val.superseded_date)]:
             if d_str and d_str.strip():
-                if not date_in_text(d_str, text_for_dates):
+                all_text = f"{combined_clause_text} {reg1_text} {preamble_text} {meta_text}".strip()
+                if not date_in_text(d_str, all_text):
                     issues.append(
                         VerificationIssue(
                             stage="literal_check",

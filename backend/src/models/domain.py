@@ -52,6 +52,18 @@ class BusinessProfile(BaseModel):
     as_at_date: Optional[str] = None
 
 
+class RuleEvidence(BaseModel):
+    """Context-aware evidence separating claims across obligation, dates, exceptions, and thresholds."""
+    model_config = ConfigDict(extra="allow")
+    obligation_quote: Optional[str] = None
+    commencement_quote: Optional[str] = None
+    commencement_source: Optional[str] = None  # e.g. "Regulation 1", "Preamble", "Clause"
+    publication_quote: Optional[str] = None
+    exceptions_quote: Optional[str] = None
+    threshold_quotes: Optional[Dict[str, str]] = None
+    context_evidence: Optional[Dict[str, Any]] = None
+
+
 class Source(BaseModel):
     model_config = ConfigDict(extra="allow")
     instrument: str
@@ -60,6 +72,14 @@ class Source(BaseModel):
     clause: str
     page: int
     quote_span: str
+    # Context-aware separate evidence fields
+    evidence: Optional[RuleEvidence] = None
+    obligation_quote: Optional[str] = None
+    commencement_quote: Optional[str] = None
+    commencement_clause: Optional[str] = None
+    exceptions_quote: Optional[str] = None
+    threshold_quotes: Optional[Dict[str, str]] = None
+
 
 class Validity(BaseModel):
     model_config = ConfigDict(extra="allow")
@@ -68,6 +88,8 @@ class Validity(BaseModel):
     transition_until: Optional[str] = None
     superseded_by: Optional[str] = None
     superseded_date: Optional[str] = None
+    evidence_quote: Optional[str] = None
+    evidence_source: Optional[str] = None
 
 class Condition(BaseModel):
     model_config = ConfigDict(extra="allow")

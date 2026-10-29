@@ -107,7 +107,6 @@ from backend.src.extraction.llm_client import MockLLMClient  # noqa: E402
 # ---------------------------------------------------------------------------
 # Prompt Construction
 # ---------------------------------------------------------------------------
-
 SCHEMA_HINT = """
 Return a SINGLE JSON object (not an array, no markdown fences) conforming strictly to this structure:
 {
@@ -118,17 +117,27 @@ Return a SINGLE JSON object (not an array, no markdown fences) conforming strict
     "gazette_no": "string",
     "clause": "string",
     "page": 1,
-    "quote_span": "verbatim excerpt from raw_text grounding the rule"
+    "quote_span": "verbatim excerpt from raw_text grounding the rule",
+    "obligation_quote": "exact verbatim excerpt from raw_text grounding the substantive obligation",
+    "commencement_quote": "exact verbatim excerpt from Regulation 1 or clause establishing commencement date",
+    "commencement_clause": "e.g. 'Regulation 1' or clause number",
+    "exceptions_quote": "exact verbatim excerpt of any statutory exception or proviso",
+    "threshold_quotes": {
+      "field_name": "exact verbatim snippet containing the threshold and units"
+    }
   },
   "validity": {
     "published": "YYYY-MM-DD",
-    "commences": "YYYY-MM-DD"
+    "commences": "YYYY-MM-DD",
+    "evidence_quote": "verbatim quote establishing commencement date",
+    "evidence_source": "e.g. Regulation 1"
   },
   "applies_if": {
     "all": [
       {"field": "string", "op": "eq|gte|lte|gt|lt|in", "value": "threshold/string/boolean"}
     ]
   },
+  "exceptions": [],
   "obligation": {
     "type": "MANDATE|PROHIBITION|PERMISSION",
     "text": "plain text explanation",
@@ -146,18 +155,33 @@ Return a SINGLE JSON object (not an array, no markdown fences) conforming strict
 def construct_initial_prompt(raw_text: str, source_metadata: Dict[str, Any]) -> str:
     """Construct first-pass prompt for LLM rule compilation (literal extraction)."""
     metadata_json = json.dumps(source_metadata, indent=2)
+    reg1_hint = ""
+    context_evidence = source_metadata.get("context_evidence") or {}
+    reg1_text = source_metadata.get("regulation_1_text") or context_evidence.get("regulation_1")
+    if reg1_text:
+        reg1_hint = f"\n### CONTEXTUAL DOCUMENT EVIDENCE (REGULATION 1 - CITATION & COMMENCEMENT):\n{reg1_text}\n"
+
     return (
         "You are an expert legal knowledge extraction assistant for RegImpact-SL.\n"
         "Your goal is to convert the following Sri Lankan regulatory clause into a typed, verified Rule JSON.\n\n"
         "### STRICT EXTRACTION RULES:\n"
-        "1. Every threshold, measurement unit, condition, and date MUST appear verbatim in raw_text.\n"
-        "2. The 'quote_span' field in source MUST be an exact verbatim excerpt from raw_text grounding the entire rule.\n"
-        "3. Do NOT hallucinate or infer numbers or dates that are not in the text.\n"
-        "4. If the clause contains subjective, discretionary, or ambiguous language that cannot be safely compiled, "
+        "1. GROUNDING PRINCIPLE: A commencement date can be supported by Regulation 1 or document-level contextual evidence, "
+        "while the substantive obligation MUST be grounded in its own clause (the RAW REGULATORY CLAUSE).\n"
+        "2. SEPARATE EVIDENCE REQUIRED:\n"
+        "   - 'obligation_quote': exact verbatim excerpt from RAW REGULATORY CLAUSE establishing the obligation.\n"
+        "   - 'commencement_quote': exact verbatim excerpt from Regulation 1 (or clause) establishing commencement.\n"
+        "   - 'commencement_clause': the clause providing the commencement date (e.g. 'Regulation 1').\n"
+        "   - 'threshold_quotes': dictionary mapping condition fields to exact verbatim snippets in the clause.\n"
+        "   - 'exceptions_quote': exact verbatim excerpt of any statutory exception or proviso.\n"
+        "   - 'quote_span': exact verbatim excerpt from RAW REGULATORY CLAUSE grounding the rule.\n"
+        "3. Every threshold, measurement unit, condition, and date MUST appear verbatim in raw_text or documented contextual evidence.\n"
+        "4. Do NOT hallucinate or infer numbers or dates. If Regulation 1 or metadata specifies a commencement date, use that exact date.\n"
+        "5. If the clause contains subjective, discretionary, or ambiguous language that cannot be safely compiled, "
         "set verification.status to 'NON_COMPILABLE', provide a clear verification.reason, and leave applies_if empty.\n"
-        "5. Return a SINGLE JSON object complying with the following schema structure:\n\n"
+        "6. Return a SINGLE JSON object complying with the following schema structure:\n\n"
         f"{SCHEMA_HINT}\n\n"
-        f"### SOURCE METADATA:\n{metadata_json}\n\n"
+        f"### SOURCE METADATA:\n{metadata_json}\n"
+        f"{reg1_hint}\n"
         f"### RAW REGULATORY CLAUSE:\n{raw_text}\n\n"
         "Output the valid Rule JSON object:"
     )
@@ -166,18 +190,26 @@ def construct_initial_prompt(raw_text: str, source_metadata: Dict[str, Any]) -> 
 def construct_secondary_prompt(raw_text: str, source_metadata: Dict[str, Any]) -> str:
     """Construct second-pass prompt for cross-extraction agreement (structural decomposition)."""
     metadata_json = json.dumps(source_metadata, indent=2)
+    reg1_hint = ""
+    context_evidence = source_metadata.get("context_evidence") or {}
+    reg1_text = source_metadata.get("regulation_1_text") or context_evidence.get("regulation_1")
+    if reg1_text:
+        reg1_hint = f"\n### CONTEXTUAL DOCUMENT EVIDENCE (REGULATION 1 - CITATION & COMMENCEMENT):\n{reg1_text}\n"
+
     return (
         "You are an independent regulatory compliance auditor evaluating Sri Lankan legislation.\n"
         "Perform a rigorous structural decomposition of the regulatory clause below into a formal Rule schema.\n\n"
         "### STRUCTURAL AUDIT GUIDELINES:\n"
         "1. Deconstruct all statutory predicates: identify activity, production capacity, threshold limits, and premises.\n"
-        "2. Use standard condition operators: 'eq', 'gte', 'lte', 'gt', 'lt', 'in'.\n"
-        "3. Ensure the 'quote_span' is an exact literal excerpt from the text that legally justifies the rule.\n"
-        "4. If statutory applicability depends on subjective criteria or discretionary administrative conditions, "
+        "2. Keep separate evidence: ground the substantive obligation in the clause text, and ground commencement in Regulation 1 or document context.\n"
+        "3. Provide exact verbatim quotes: 'obligation_quote', 'commencement_quote', 'threshold_quotes', and 'quote_span'.\n"
+        "4. Use standard condition operators: 'eq', 'gte', 'lte', 'gt', 'lt', 'in'.\n"
+        "5. If statutory applicability depends on subjective criteria or discretionary administrative conditions, "
         "mark verification.status as 'CONDITIONAL_RULE' or 'NON_COMPILABLE'.\n"
-        "5. Return a SINGLE JSON object complying with the following schema structure:\n\n"
+        "6. Return a SINGLE JSON object complying with the following schema structure:\n\n"
         f"{SCHEMA_HINT}\n\n"
-        f"### SOURCE CONTEXT:\n{metadata_json}\n\n"
+        f"### SOURCE CONTEXT:\n{metadata_json}\n"
+        f"{reg1_hint}\n"
         f"### CLAUSE TEXT:\n{raw_text}\n\n"
         "Output the formal Rule JSON:"
     )
@@ -205,11 +237,12 @@ def construct_retry_prompt(
         f"{issues_formatted}\n\n"
         "### PREVIOUS FAILED CANDIDATE:\n"
         f"{previous_attempt_json}\n\n"
-        f"### RAW REGULATORY CLAUSE:\n{raw_text}\n\n"
+        "### RAW REGULATORY CLAUSE:\n{raw_text}\n\n"
         "### INSTRUCTIONS FOR CORRECTION:\n"
-        "1. Ensure all numeric thresholds and dates appear verbatim in quote_span and match raw_text exactly.\n"
-        "2. Ensure quote_span exists word-for-word in the raw text.\n"
-        "3. If the clause cannot be safely compiled without hallucinating missing thresholds, "
+        "1. Keep separate evidence: 'obligation_quote' must be in RAW REGULATORY CLAUSE, and 'commencement_quote' must be in Regulation 1 or clause.\n"
+        "2. Ensure all numeric thresholds and dates match the source text or documented evidence exactly. Do NOT use contradictory or ungrounded dates.\n"
+        "3. Ensure quote_span and obligation_quote exist word-for-word in the raw text.\n"
+        "4. If the clause cannot be safely compiled without hallucinating missing thresholds, "
         "mark it 'NON_COMPILABLE' with an explicit verification.reason.\n\n"
         "Provide the corrected JSON object complying with the Rule schema."
     )
