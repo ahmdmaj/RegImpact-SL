@@ -54,6 +54,9 @@ from backend.src.db.repositories import (
 )
 from backend.src.extraction.ingestion import (
     DocumentIngestionService,
+    NestedSubClause,
+    SegmentedClause,
+    TableData,
     _sha256_of_bytes,
     _sha256_of_text,
     extract_document_preamble,
@@ -848,3 +851,115 @@ def test_seg_005_extract_document_preamble():
     assert meta["commences"] == "2026-07-01"
     assert "Food (Labelling and Advertising) Regulations 2026" in (meta["instrument"] or "")
     assert "Minister of Health" in (meta["authority"] or "")
+
+
+# ===========================================================================
+# SEG-006: Nested subclauses and provisos
+# ===========================================================================
+
+def test_seg_006_provisos_and_nested_subclauses():
+    """Clauses must parse nested subregulations, paragraphs, subparagraphs, and provisos."""
+    sample_text = (
+        "REGULATIONS\n"
+        "3. (1) Where any food contains any amount of sugar, the label shall have the corresponding logo:\n"
+        "Provided that this requirement shall not apply to raw agricultural commodities;\n"
+        "Provided however, when there is a space constraint, the logo dimensions may be reduced.\n"
+        "(a) by the repeal of sub-regulation (1);\n"
+        "(b) by the substitution for the words;\n"
+        "(i) exceeding 8.0 g/100 ml;\n"
+        "(ii) exceeding 12.0 g/100 ml."
+    )
+    clauses = segment_document_clauses([sample_text])
+    assert len(clauses) == 1
+    c = clauses[0]
+    assert c.clause_number == "Regulation 3(1)"
+    assert len(c.provisos) == 2
+    assert any("raw agricultural commodities" in p for p in c.provisos)
+    assert any("space constraint" in p for p in c.provisos)
+
+    sub_identifiers = [sc.identifier for sc in c.sub_clauses]
+    assert "Proviso" in sub_identifiers
+    assert "(a)" in sub_identifiers
+    assert "(b)" in sub_identifiers
+    assert "(i)" in sub_identifiers
+    assert "(ii)" in sub_identifiers
+
+
+# ===========================================================================
+# SEG-007: Real Gazette amendment directives, provisos, and tables (2494-06_E.pdf)
+# ===========================================================================
+
+def test_seg_007_amendment_directives_and_tables():
+    """An amendment gazette with cross-page provisos and schedule tables must be parsed cleanly."""
+    from pathlib import Path
+    pdf_path = Path("backend/data/raw_sources/2494-06_E.pdf")
+    if not pdf_path.exists():
+        pytest.skip("2494-06_E.pdf not present in test environment.")
+
+    clauses = segment_document_clauses([], pdf_path=pdf_path)
+    assert len(clauses) >= 5
+
+    names = [c.clause_number for c in clauses]
+    assert any("Directive (1)" in n for n in names)
+    assert any("Directive (2)" in n for n in names)
+    assert any("SCHEDULE" in n for n in names)
+
+    # Directive (1) crosses Page 1 to Page 2 with proviso
+    d1 = next(c for c in clauses if "Directive (1)" in c.clause_number)
+    assert d1.start_page == 1
+    assert d1.end_page == 2
+    assert d1.provisos, "Proviso across page boundary must be captured"
+    assert any("space constraint" in p for p in d1.provisos)
+
+    # Schedule has structured tables
+    sched = next(c for c in clauses if "SCHEDULE" in c.clause_number)
+    assert sched.tables, "Schedule must contain extracted table data"
+    assert any("sugar" in col.lower() for col in sched.tables[0].headers)
+
+
+# ===========================================================================
+# SEG-008: Real Gazette statutory orders and fee schedule (2496-03_E.pdf)
+# ===========================================================================
+
+def test_seg_008_statutory_orders_and_fee_schedules():
+    """A statutory order gazette must extract the order clause and multi-row schedule table."""
+    from pathlib import Path
+    pdf_path = Path("backend/data/raw_sources/2496-03_E.pdf")
+    if not pdf_path.exists():
+        pytest.skip("2496-03_E.pdf not present in test environment.")
+
+    clauses = segment_document_clauses([], pdf_path=pdf_path)
+    assert len(clauses) >= 2
+
+    # Verify Order clause
+    order_clause = clauses[0]
+    assert order_clause.clause_type == "order"
+    assert "are hereby amended" in order_clause.text
+
+    # Verify Schedule table
+    sched_clause = clauses[1]
+    assert sched_clause.clause_type == "schedule"
+    assert sched_clause.tables
+    table = sched_clause.tables[0]
+    assert len(table.rows) >= 20, f"Expected 20+ rows in fee schedule, got {len(table.rows)}"
+    assert any("registration" in r[1].lower() and "limited" in r[1].lower() for r in table.rows)
+
+
+# ===========================================================================
+# SEG-009: Masthead metadata extraction precision
+# ===========================================================================
+
+def test_seg_009_masthead_metadata_precision():
+    """Preamble extraction must resolve exact publication numbers and dates from mastheads."""
+    from pathlib import Path
+    pdf_path = Path("backend/data/raw_sources/2494-06_E.pdf")
+    if not pdf_path.exists():
+        pytest.skip("2494-06_E.pdf not present in test environment.")
+
+    import pymupdf
+    doc = pymupdf.open(str(pdf_path))
+    meta = extract_document_preamble([doc[0].get_text("text")])
+    assert meta["gazette_no"] == "Gazette Extraordinary No. 2494/06"
+    assert meta["published"] == "2026-06-23"
+    assert meta["instrument_type"] == "amendment_regulation"
+

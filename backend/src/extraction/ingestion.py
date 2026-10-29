@@ -1022,7 +1022,7 @@ def segment_document_clauses(
                         r_num = int(r_num_str)
                         continuing_prepositions = ("under", "to", "of", "in", "the", "and", "or", "with", "that", "from", "for")
                         is_cont = any(prev_line.lower().endswith(f" {prep}") or prev_line.lower() == prep for prep in continuing_prepositions)
-                        if (r_num == last_reg_num + 1 or (last_reg_num == 0 and r_num == 1)) and not is_cont:
+                        if (last_reg_num == 0 or r_num == last_reg_num + 1) and not is_cont:
                             is_heading = True
                             last_reg_num = r_num
                             clause_name = f"Regulation {r_num}({sub_num})" if sub_num else f"Regulation {r_num}"
