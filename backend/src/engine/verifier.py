@@ -419,13 +419,15 @@ class RuleVerifier:
         norm_source = normalize_text(source_text).lower()
 
         if norm_quote not in norm_source:
-            issues.append(
-                VerificationIssue(
-                    stage="quote_grounding",
-                    severity="error",
-                    message="quote_span does not exist verbatim within the provided source text.",
+            stripped_quote = re.sub(r"^(?:(?:regulation|reg\.?|section|sec\.?|clause)?\s*\d+[\.\:\)]?\s*)", "", norm_quote).strip()
+            if not (stripped_quote and stripped_quote in norm_source):
+                issues.append(
+                    VerificationIssue(
+                        stage="quote_grounding",
+                        severity="error",
+                        message="quote_span does not exist verbatim within the provided source text.",
+                    )
                 )
-            )
 
         # 2. Ground separate commencement quote in documented contextual evidence
         comm_quote = (
@@ -436,7 +438,15 @@ class RuleVerifier:
         if comm_quote and comm_quote.strip():
             context_sources_all = f"{reg1_text} {preamble_text} {source_text or ''}".strip()
             if context_sources_all:
-                if normalize_text(comm_quote).lower() not in normalize_text(context_sources_all).lower():
+                norm_cq = normalize_text(comm_quote).lower()
+                norm_csa = normalize_text(context_sources_all).lower()
+                match_found = norm_cq in norm_csa
+                if not match_found:
+                    stripped_cq = re.sub(r"^(?:(?:regulation|reg\.?|section|sec\.?|clause)?\s*\d+[\.\:\)]?\s*)", "", norm_cq).strip()
+                    if stripped_cq and stripped_cq in norm_csa:
+                        match_found = True
+
+                if not match_found:
                     issues.append(
                         VerificationIssue(
                             stage="quote_grounding",

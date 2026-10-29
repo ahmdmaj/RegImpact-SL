@@ -46,7 +46,7 @@ from backend.src.engine.review import (
     RuleNotFoundError,
 )
 from backend.src.extraction.compiler import RuleCompiler
-from backend.src.extraction.embedding_client import get_embedding_client
+from backend.src.extraction.embedding_client import get_embedding_client, MockEmbeddingClient
 from backend.src.extraction.explanation import ExplanationGenerator
 from backend.src.extraction.ingestion import (
     DocumentIngestionService,
@@ -396,36 +396,75 @@ def run_analysis(
     # Mode 1: Targeted Clause/Rule Evaluation (request.clause_ids specified)
     # -------------------------------------------------------------------------
     if request.clause_ids:
-        targeted_rules = repo.get_rules_by_ids(request.clause_ids)
+        all_rules = repo.get_rules_by_ids(request.clause_ids)
+        targeted_rules: List[Rule] = []
+        unapproved_rules: List[Tuple[Rule, str]] = []
+
+        for r in all_rules:
+            r_orm = db.query(RuleORM).filter_by(rule_id=r.rule_id).first()
+            status = r_orm.review_status if r_orm else getattr(r.verification, "status", "PENDING_REVIEW")
+            if status == "APPROVED":
+                targeted_rules.append(r)
+            else:
+                unapproved_rules.append((r, status))
+
         found_rule_ids = {r.rule_id for r in targeted_rules} | {r.source.clause for r in targeted_rules}
 
         # Check for requested IDs that do not have an approved rule in the DB (coverage gaps)
         for cid in request.clause_ids:
             if cid not in found_rule_ids:
-                prov = _resolve_provenance(db, rule_id=cid, clause_id=cid)
-                evaluations.append(
-                    RuleAnalysisDetail(
-                        rule_id=cid,
-                        clause=cid,
-                        instrument=prov.get("document_title") or "Regulatory Corpus",
-                        authority="Statutory Authority",
-                        status=OutcomeStatus.UNSUPPORTED,
-                        reason=f"Coverage Gap: Target clause/rule '{cid}' lacks an approved executable rule.",
-                        temporal_status=None,
-                        quote_span=None,
-                        missing_fields=[],
-                        counterfactuals=[],
-                        evaluation_trace=[],
-                        impact=None,
-                        document_title=prov.get("document_title"),
-                        document_id=prov.get("document_id"),
-                        page_number=prov.get("page_number", 1),
-                        char_start=prov.get("char_start", 0),
-                        char_end=prov.get("char_end", 0),
-                        review_status="UNSUPPORTED_COVERAGE_GAP",
-                        coverage_gap=True,
+                unapp = next((ur for ur in unapproved_rules if ur[0].rule_id == cid or ur[0].source.clause == cid), None)
+                if unapp:
+                    unapp_rule, unapp_status = unapp
+                    prov = _resolve_provenance(db, rule_id=unapp_rule.rule_id, clause_id=unapp_rule.source.clause)
+                    evaluations.append(
+                        RuleAnalysisDetail(
+                            rule_id=unapp_rule.rule_id,
+                            clause=unapp_rule.source.clause,
+                            instrument=prov.get("document_title") or unapp_rule.source.instrument,
+                            authority=unapp_rule.source.authority,
+                            status=OutcomeStatus.UNSUPPORTED,
+                            reason=f"Coverage Gap: Rule '{unapp_rule.rule_id}' is unapproved (status: '{unapp_status}') and unavailable for execution until reviewed.",
+                            temporal_status=None,
+                            quote_span=unapp_rule.source.quote_span,
+                            missing_fields=[],
+                            counterfactuals=[],
+                            evaluation_trace=[],
+                            impact=None,
+                            document_title=prov.get("document_title"),
+                            document_id=prov.get("document_id"),
+                            page_number=prov.get("page_number", unapp_rule.source.page),
+                            char_start=prov.get("char_start", 0),
+                            char_end=prov.get("char_end", len(unapp_rule.source.quote_span or "")),
+                            review_status=unapp_status,
+                            coverage_gap=True,
+                        )
                     )
-                )
+                else:
+                    prov = _resolve_provenance(db, rule_id=cid, clause_id=cid)
+                    evaluations.append(
+                        RuleAnalysisDetail(
+                            rule_id=cid,
+                            clause=cid,
+                            instrument=prov.get("document_title") or "Regulatory Corpus",
+                            authority="Statutory Authority",
+                            status=OutcomeStatus.UNSUPPORTED,
+                            reason=f"Coverage Gap: Target clause/rule '{cid}' lacks an approved executable rule.",
+                            temporal_status=None,
+                            quote_span=None,
+                            missing_fields=[],
+                            counterfactuals=[],
+                            evaluation_trace=[],
+                            impact=None,
+                            document_title=prov.get("document_title"),
+                            document_id=prov.get("document_id"),
+                            page_number=prov.get("page_number", 1),
+                            char_start=prov.get("char_start", 0),
+                            char_end=prov.get("char_end", 0),
+                            review_status="UNSUPPORTED_COVERAGE_GAP",
+                            coverage_gap=True,
+                        )
+                    )
                 unsupported_count += 1
 
         # Evaluate found approved rules
@@ -972,6 +1011,8 @@ async def upload_document(
         if not existing:
             is_live_emb = emb_client is not None and not isinstance(emb_client, MockEmbeddingClient)
             emb = emb_client.embed_text(seg.text) if emb_client else None
+            prov_name = getattr(emb_client, "provider_name", "sentence-transformers") if is_live_emb else None
+            mod_name = getattr(emb_client, "model_name", "BAAI/bge-base-en-v1.5") if is_live_emb else None
             patch_data = {
                 "clause_type": seg.clause_type,
                 "sub_clauses_count": len(seg.sub_clauses),
@@ -997,12 +1038,21 @@ async def upload_document(
                 is_compilable=True,
                 embedding=emb,
                 embedding_verified=bool(emb and is_live_emb),
+                embedding_provider=prov_name,
+                embedding_model=mod_name,
             )
             db.add(clause_orm)
             db.flush()
             clauses_created += 1
             created_clause_objects.append(clause_orm)
         else:
+            if emb_client and (not existing.embedding or not existing.embedding_verified or not existing.embedding_provider):
+                is_live_emb = not isinstance(emb_client, MockEmbeddingClient)
+                existing.embedding = emb_client.embed_text(seg.text)
+                existing.embedding_verified = is_live_emb
+                existing.embedding_provider = getattr(emb_client, "provider_name", "sentence-transformers") if is_live_emb else None
+                existing.embedding_model = getattr(emb_client, "model_name", "BAAI/bge-base-en-v1.5") if is_live_emb else None
+                db.flush()
             created_clause_objects.append(existing)
 
     llm_client = getattr(app.state, "llm_client", None)
@@ -1022,7 +1072,7 @@ async def upload_document(
         for c_obj in created_clause_objects:
             c_num = str(c_obj.clause_number).strip().lower()
             if c_num in ("1", "regulation 1", "reg 1", "reg. 1", "clause 1", "section 1"):
-                reg1_text = c_obj.text
+                reg1_text = f"{c_obj.clause_number}. {c_obj.text}"
                 break
 
         for clause in created_clause_objects:
@@ -1051,6 +1101,7 @@ async def upload_document(
                             "gazette_no": resolved_gazette_no,
                         },
                     },
+                    auto_approve=False,
                 )
                 if comp_res.rule:
                     r = comp_res.rule
