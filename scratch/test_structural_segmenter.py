@@ -392,9 +392,12 @@ def extract_document_structure(doc: pymupdf.Document) -> Tuple[Dict[str, Any], L
                 in_substantive_body = True
             elif not is_amendment and (principal_heading.match(s) or principal_inline.match(s)):
                 in_substantive_body = True
-            elif is_orders and "are hereby amended" in s:
+            elif is_orders and ("are hereby amended" in s or (s.endswith("Orders") and len(s) < 80)):
                 in_substantive_body = True
-                continue
+                is_heading = True
+                clause_name = s if s.endswith("Orders") else "Order 1"
+                clause_type = "order"
+                inline_body = s if not s.endswith("Orders") else ""
             else:
                 continue
 
