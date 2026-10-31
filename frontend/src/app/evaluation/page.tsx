@@ -70,27 +70,55 @@ const SYSTEM_LABELS: Record<string, { label: string; desc: string; category: "pr
 };
 
 export default function EvaluationDashboard() {
+  const [currentRole, setCurrentRole] = useState<UserRole>("admin");
+  const [authError, setAuthError] = useState<string | null>(null);
   const [data, setData] = useState<EvaluationResultsPayload | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedFilter, setSelectedFilter] = useState<"all" | "baselines" | "ablations">("all");
 
   const loadData = async () => {
+    const role = getCurrentUserRole();
+    if (role !== "admin") {
+      setAuthError(`Access Forbidden: Role '${role}' is not authorized to view the Empirical Benchmark Evaluation Dashboard. Access is restricted to System Administrators and Academic Researchers.`);
+      setData(null);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
+    setAuthError(null);
     setError(null);
     try {
       const res = await getEvaluationResults();
       setData(res);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Failed to load evaluation benchmark results.";
-      setError(msg);
+      if (err instanceof ApiError && (err.status === 401 || err.status === 403)) {
+        setAuthError(err.message || "Access forbidden: Admin role required to view benchmark evaluation results.");
+        setData(null);
+      } else {
+        const msg = err instanceof Error ? err.message : "Failed to load evaluation benchmark results.";
+        setError(msg);
+      }
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
+    setCurrentRole(getCurrentUserRole());
     loadData();
+
+    const handleRoleChange = (e: Event) => {
+      const customEvent = e as CustomEvent<{ role: UserRole }>;
+      if (customEvent.detail?.role) {
+        setCurrentRole(customEvent.detail.role);
+      }
+      loadData();
+    };
+
+    window.addEventListener("regimpact:role_change", handleRoleChange);
+    return () => window.removeEventListener("regimpact:role_change", handleRoleChange);
   }, []);
 
   const systemP = data?.metrics["P_Proposed_System"];
