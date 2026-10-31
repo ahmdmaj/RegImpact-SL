@@ -551,8 +551,8 @@ export default function AdminReviewsPage() {
           </div>
         )}
 
-        {/* TAB 2: DOCUMENT UPLOAD */}
-        {activeTab === "upload" && (
+        {/* TAB 2: DOCUMENT UPLOAD (ADMIN ONLY) */}
+        {activeTab === "upload" && currentRole === "admin" && (
           <div className="max-w-2xl mx-auto rounded-xl border border-zinc-800 bg-zinc-900 shadow-sm p-6 sm:p-8 space-y-6">
             <div>
               <h2 className="text-sm font-semibold text-zinc-100 flex items-center gap-2">
@@ -662,6 +662,8 @@ export default function AdminReviewsPage() {
               </div>
             </form>
           </div>
+        )}
+          </>
         )}
       </main>
 
