@@ -5,12 +5,17 @@ import Link from "next/link";
 import {
   EvaluationResultsPayload,
   getEvaluationResults,
+  ApiError,
+  UserRole,
+  getCurrentUserRole,
+  setCurrentUserRole,
 } from "@/services/api";
 import { Navbar } from "@/components/Navbar";
 import { MetricCard } from "@/components/MetricCard";
 import {
   BarChart3,
   ShieldCheck,
+  ShieldAlert,
   CheckCircle2,
   AlertTriangle,
   Clock,
