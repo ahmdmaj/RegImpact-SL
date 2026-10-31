@@ -521,6 +521,8 @@ export default function EvaluationDashboard() {
             </p>
           </div>
         </div>
+        </>
+      )}
       </main>
 
       {/* Footer */}
