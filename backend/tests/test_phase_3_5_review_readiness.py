@@ -137,7 +137,7 @@ def live_db():
 
 @pytest.fixture()
 def client() -> TestClient:
-    return TestClient(app)
+    return TestClient(app, headers={"X-User-Role": "admin"})
 
 
 @pytest.fixture()
