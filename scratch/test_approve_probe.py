@@ -42,3 +42,4 @@ for label, role in roles:
         print(f"  [{label.ljust(12)}] Status: {e.code} | detail: {detail}")
     except Exception as e:
         print(f"  [{label.ljust(12)}] Error: {e}")
+
