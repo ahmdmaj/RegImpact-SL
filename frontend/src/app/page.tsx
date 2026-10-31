@@ -1,13 +1,17 @@
 "use client";
 
 import React, { useEffect, useState, useCallback } from "react";
+import Link from "next/link";
 import {
   BusinessProfile,
   ClauseVersion,
   StructuredImpactReport,
   getHealth,
   getRegulations,
+  getPendingReviews,
   runAnalysis,
+  UserRole,
+  getCurrentUserRole,
 } from "@/services/api";
 import { Navbar } from "@/components/Navbar";
 import { ProfileForm } from "@/components/ProfileForm";
@@ -18,9 +22,13 @@ import {
   ListChecks,
   HelpCircle,
   ShieldCheck,
+  Shield,
   AlertCircle,
   FileCheck2,
   BookOpen,
+  Scale,
+  Building2,
+  BarChart3,
 } from "lucide-react";
 
 export default function Home() {
