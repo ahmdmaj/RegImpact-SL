@@ -33,6 +33,8 @@ import {
 } from "lucide-react";
 
 export default function AdminReviewsPage() {
+  const [currentRole, setCurrentRole] = useState<UserRole>("admin");
+  const [authError, setAuthError] = useState<string | null>(null);
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionInProgress, setActionInProgress] = useState<string | null>(null);
@@ -54,21 +56,55 @@ export default function AdminReviewsPage() {
   const [uploadResult, setUploadResult] = useState<string | null>(null);
 
   const fetchQueue = useCallback(async () => {
+    const role = getCurrentUserRole();
+    if (role === "sme_user") {
+      setAuthError("Access Forbidden: SME User role is not authorized to access the Regulatory Review Queue or Document Ingestion Portal. Please switch to Legal Reviewer or Admin role.");
+      setReviews([]);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
+    setAuthError(null);
     try {
       const items = await getPendingReviews();
       setReviews(items);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Failed to load review queue.";
-      setToastMessage({ type: "error", text: msg });
+      if (err instanceof ApiError && (err.status === 401 || err.status === 403)) {
+        setAuthError(err.message || "Access forbidden: You do not have permission to view the review queue.");
+        setReviews([]);
+      } else {
+        const msg = err instanceof Error ? err.message : "Failed to load review queue.";
+        setToastMessage({ type: "error", text: msg });
+      }
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
+    const role = getCurrentUserRole();
+    setCurrentRole(role);
+    if (role === "reviewer" && activeTab === "upload") {
+      setActiveTab("queue");
+    }
     fetchQueue();
-  }, [fetchQueue]);
+
+    const handleRoleChange = (e: Event) => {
+      const customEvent = e as CustomEvent<{ role: UserRole }>;
+      if (customEvent.detail?.role) {
+        const newRole = customEvent.detail.role;
+        setCurrentRole(newRole);
+        if (newRole === "reviewer" && activeTab === "upload") {
+          setActiveTab("queue");
+        }
+      }
+      fetchQueue();
+    };
+
+    window.addEventListener("regimpact:role_change", handleRoleChange);
+    return () => window.removeEventListener("regimpact:role_change", handleRoleChange);
+  }, [fetchQueue, activeTab]);
 
   const showToast = (text: string, type: "success" | "error" = "success") => {
     setToastMessage({ text, type });
