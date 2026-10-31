@@ -187,7 +187,7 @@ def test_api_analysis_with_verified_narrative():
         from backend.src.scripts.seed_corpus import seed_regulatory_corpus
         seed_regulatory_corpus(db=session, include_synthetic_fixtures=True)
 
-    client = TestClient(app)
+    client = TestClient(app, headers={"X-User-Role": "admin"})
 
     # Inject mock generator that produces grounded summary
     mock_llm = MagicMock(spec=LLMClient)
@@ -217,7 +217,7 @@ def test_api_analysis_with_verified_narrative():
 
 # 7. Test API integration with EvidenceChecker withholding hallucinated narrative
 def test_api_analysis_withholds_hallucinated_narrative():
-    client = TestClient(app)
+    client = TestClient(app, headers={"X-User-Role": "admin"})
 
     # Inject mock generator that produces hallucinated fine
     mock_llm = MagicMock(spec=LLMClient)

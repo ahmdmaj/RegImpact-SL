@@ -24,8 +24,8 @@ from backend.src.models.domain import OutcomeStatus
 
 @pytest.fixture
 def client():
-    """FastAPI TestClient with app lifecycle active."""
-    with TestClient(app) as test_client:
+    """FastAPI TestClient with app lifecycle active and default Admin role."""
+    with TestClient(app, headers={"X-User-Role": "admin"}) as test_client:
         yield test_client
 
 

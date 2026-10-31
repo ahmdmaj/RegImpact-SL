@@ -19,7 +19,7 @@ from backend.src.models.domain import OutcomeStatus
 
 @pytest.fixture
 def client() -> TestClient:
-    return TestClient(app)
+    return TestClient(app, headers={"X-User-Role": "admin"})
 
 
 def test_section_6_first_end_to_end_acceptance_scenario(client: TestClient):

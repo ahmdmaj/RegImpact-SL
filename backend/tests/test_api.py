@@ -9,8 +9,8 @@ from backend.src.models.domain import OutcomeStatus
 
 @pytest.fixture
 def client():
-    """Fixture providing a TestClient for FastAPI app with lifespan active."""
-    with TestClient(app) as test_client:
+    """Fixture providing a TestClient for FastAPI app with lifespan active and default Admin role."""
+    with TestClient(app, headers={"X-User-Role": "admin"}) as test_client:
         yield test_client
 
 
@@ -527,6 +527,37 @@ def test_admin_document_upload(client: TestClient, tmp_path):
 
 
 # 16. RBAC Tests: Role-Based Access Control Verification
+def test_rbac_missing_role_header_returns_401():
+    """Verify that omitting X-User-Role returns 401 Unauthorized across protected endpoints."""
+    with TestClient(app) as unauth_client:
+        res1 = unauth_client.get("/regulations")
+        assert res1.status_code == 401
+        assert "Authentication required" in res1.json()["detail"]
+
+        res2 = unauth_client.post("/analysis", json={"business_profile": {"activity": "food"}})
+        assert res2.status_code == 401
+
+        res3 = unauth_client.get("/admin/reviews")
+        assert res3.status_code == 401
+
+        res4 = unauth_client.post("/admin/documents/upload")
+        assert res4.status_code == 401
+
+        res5 = unauth_client.get("/evaluation/results")
+        assert res5.status_code == 401
+
+        # Public health check remains accessible without auth header
+        res_health = unauth_client.get("/health")
+        assert res_health.status_code == 200
+
+
+def test_rbac_invalid_role_returns_401(client: TestClient):
+    """Verify that an unknown or invalid X-User-Role returns 401 Unauthorized."""
+    res = client.get("/regulations", headers={"X-User-Role": "unauthorized_hacker"})
+    assert res.status_code == 401
+    assert "Invalid X-User-Role" in res.json()["detail"]
+
+
 def test_rbac_sme_user_allowed_endpoints(client: TestClient):
     """Verify that sme_user can access /regulations and /analysis."""
     res_regs = client.get("/regulations", headers={"X-User-Role": "sme_user"})
@@ -540,6 +571,21 @@ def test_rbac_sme_user_allowed_endpoints(client: TestClient):
 def test_rbac_sme_user_forbidden_on_admin_reviews(client: TestClient):
     """Verify that sme_user cannot access /admin/reviews (403 Forbidden)."""
     res = client.get("/admin/reviews", headers={"X-User-Role": "sme_user"})
+    assert res.status_code == 403
+    assert "Access forbidden" in res.json()["detail"]
+
+
+def test_rbac_sme_user_forbidden_on_evaluation_results(client: TestClient):
+    """Verify that sme_user cannot access /evaluation/results (403 Forbidden)."""
+    res = client.get("/evaluation/results", headers={"X-User-Role": "sme_user"})
+    assert res.status_code == 403
+    assert "Access forbidden" in res.json()["detail"]
+
+
+def test_rbac_sme_user_forbidden_on_document_upload(client: TestClient):
+    """Verify that sme_user cannot upload documents (403 Forbidden)."""
+    files = {"file": ("test.pdf", b"%PDF-1.4 dummy", "application/pdf")}
+    res = client.post("/admin/documents/upload", files=files, headers={"X-User-Role": "sme_user"})
     assert res.status_code == 403
     assert "Access forbidden" in res.json()["detail"]
 
@@ -558,11 +604,20 @@ def test_rbac_reviewer_forbidden_on_document_upload(client: TestClient):
     assert "Access forbidden" in res.json()["detail"]
 
 
-def test_rbac_invalid_role_returns_400(client: TestClient):
-    """Verify that an unknown or invalid X-User-Role returns 400 Bad Request."""
-    res = client.get("/regulations", headers={"X-User-Role": "unauthorized_hacker"})
-    assert res.status_code == 400
-    assert "Invalid X-User-Role" in res.json()["detail"]
+def test_rbac_reviewer_forbidden_on_evaluation_results(client: TestClient):
+    """Verify that reviewer cannot access /evaluation/results (403 Forbidden)."""
+    res = client.get("/evaluation/results", headers={"X-User-Role": "reviewer"})
+    assert res.status_code == 403
+    assert "Access forbidden" in res.json()["detail"]
+
+
+def test_rbac_admin_full_access(client: TestClient):
+    """Verify that admin can access review queue and evaluation dashboard."""
+    res_rev = client.get("/admin/reviews", headers={"X-User-Role": "admin"})
+    assert res_rev.status_code == 200
+
+    res_eval = client.get("/evaluation/results", headers={"X-User-Role": "admin"})
+    assert res_eval.status_code == 200
 
 
 

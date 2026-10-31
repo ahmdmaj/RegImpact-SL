@@ -144,7 +144,7 @@ def client_with_hybrid_db(hybrid_db_with_real_and_synthetic: Session) -> Generat
             pass
 
     app.dependency_overrides[get_db] = _override_get_db
-    with TestClient(app) as test_client:
+    with TestClient(app, headers={"X-User-Role": "admin"}) as test_client:
         yield test_client
     app.dependency_overrides.clear()
 

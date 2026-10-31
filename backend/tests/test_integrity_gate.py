@@ -37,7 +37,7 @@ from backend.src.scripts.run_experiments import run_full_experiments
 
 @pytest.fixture()
 def client() -> TestClient:
-    return TestClient(app)
+    return TestClient(app, headers={"X-User-Role": "admin"})
 
 
 # ---------------------------------------------------------------------------

@@ -32,6 +32,8 @@ import {
 } from "lucide-react";
 
 export default function Home() {
+  const [currentRole, setCurrentRole] = useState<UserRole>("admin");
+  const [pendingReviewCount, setPendingReviewCount] = useState<number>(0);
   const [healthStatus, setHealthStatus] = useState<"checking" | "connected" | "disconnected">("checking");
   const [regulations, setRegulations] = useState<ClauseVersion[]>([]);
   
@@ -41,6 +43,24 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [activeResultTab, setActiveResultTab] = useState<"overview" | "questions" | "evidence">("overview");
+
+  // Sync role and load pending review counts for privileged roles
+  useEffect(() => {
+    const updateRole = () => {
+      const r = getCurrentUserRole();
+      setCurrentRole(r);
+      if (r === "admin" || r === "reviewer") {
+        getPendingReviews()
+          .then((items) => setPendingReviewCount(items.length))
+          .catch(() => setPendingReviewCount(0));
+      } else {
+        setPendingReviewCount(0);
+      }
+    };
+    updateRole();
+    window.addEventListener("regimpact:role_change", updateRole);
+    return () => window.removeEventListener("regimpact:role_change", updateRole);
+  }, []);
 
   // Check health and load catalog on mount
   const checkBackendHealth = useCallback(async () => {
@@ -157,6 +177,127 @@ export default function Home() {
             >
               &times;
             </button>
+          </div>
+        )}
+
+        {/* Role-Specific Presentation Banner */}
+        {currentRole === "sme_user" && (
+          <div className="mb-6 p-4 rounded-xl border border-zinc-800 bg-zinc-900/60 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-zinc-800 text-zinc-300 border border-zinc-700">
+                <Building2 className="w-5 h-5 text-emerald-400" />
+              </div>
+              <div>
+                <span className="font-semibold text-zinc-100 text-sm">SME Self-Assessment Portal</span>
+                <p className="text-xs text-zinc-400 mt-0.5">
+                  Configure your food manufacturing parameters on the left or select a benchmark preset to evaluate statutory compliance obligations.
+                </p>
+              </div>
+            </div>
+            <span className="text-[10px] font-mono px-2.5 py-1 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-800/40 shrink-0">
+              Active Persona: Food Enterprise SME
+            </span>
+          </div>
+        )}
+
+        {currentRole === "reviewer" && (
+          <div className="mb-6 p-4 rounded-xl border border-zinc-800 bg-zinc-900/60 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-zinc-800 text-zinc-300 border border-zinc-700">
+                <Scale className="w-5 h-5 text-amber-400" />
+              </div>
+              <div>
+                <span className="font-semibold text-zinc-100 text-sm">Legal Reviewer Workspace</span>
+                <p className="text-xs text-zinc-400 mt-0.5">
+                  Compliance Assessor available for impact verification. {pendingReviewCount} candidate rule{pendingReviewCount !== 1 ? "s" : ""} awaiting human adjudication.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Link
+                href="/admin/reviews"
+                className="px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-100 text-xs font-medium border border-zinc-700 transition-colors flex items-center gap-2 cursor-pointer shadow-sm"
+              >
+                <span>Open Reviewer Portal</span>
+                {pendingReviewCount > 0 && (
+                  <span className="px-1.5 py-0.2 text-[10px] font-mono rounded bg-amber-950 text-amber-300 border border-amber-800">
+                    {pendingReviewCount}
+                  </span>
+                )}
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {currentRole === "admin" && (
+          <div className="mb-6 p-4 rounded-xl border border-zinc-800 bg-zinc-900 shadow-sm space-y-3">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-zinc-800 text-zinc-200 border border-zinc-700">
+                  <Shield className="w-5 h-5 text-zinc-300" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-semibold text-zinc-100">Administrator System Overview</span>
+                    <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-400 border border-zinc-700">
+                      Full Platform Access
+                    </span>
+                  </div>
+                  <p className="text-xs text-zinc-400 mt-0.5">
+                    Supervise regulatory corpus ingestion, review extracted rules, and monitor empirical benchmark metrics.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <Link
+                  href="/admin/reviews"
+                  className="px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-100 text-xs font-medium border border-zinc-700 transition-colors flex items-center gap-1.5 cursor-pointer"
+                >
+                  <span>Review Queue</span>
+                  {pendingReviewCount > 0 && (
+                    <span className="px-1.5 py-0.2 text-[10px] font-mono rounded bg-amber-950 text-amber-300 border border-amber-800">
+                      {pendingReviewCount}
+                    </span>
+                  )}
+                </Link>
+                <Link
+                  href="/evaluation"
+                  className="px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-100 text-xs font-medium border border-zinc-700 transition-colors flex items-center gap-1.5 cursor-pointer"
+                >
+                  <BarChart3 className="w-3.5 h-3.5 text-zinc-400" />
+                  <span>Evaluation Matrix</span>
+                </Link>
+              </div>
+            </div>
+
+            {/* Live System KPI Status Pills */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 border-t border-zinc-800/80">
+              <div className="p-2.5 rounded-lg bg-zinc-950 border border-zinc-800">
+                <span className="text-[10px] uppercase font-mono text-zinc-500 block">Engine State</span>
+                <span className="text-xs font-medium text-emerald-400 flex items-center gap-1.5 mt-0.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  {healthStatus === "connected" ? "Online (Healthy)" : "Offline"}
+                </span>
+              </div>
+              <div className="p-2.5 rounded-lg bg-zinc-950 border border-zinc-800">
+                <span className="text-[10px] uppercase font-mono text-zinc-500 block">Indexed Clauses</span>
+                <span className="text-xs font-mono font-medium text-zinc-200 block mt-0.5">
+                  {regulations.length} Clauses Active
+                </span>
+              </div>
+              <div className="p-2.5 rounded-lg bg-zinc-950 border border-zinc-800">
+                <span className="text-[10px] uppercase font-mono text-zinc-500 block">Pending Review</span>
+                <span className="text-xs font-mono font-medium text-amber-400 block mt-0.5">
+                  {pendingReviewCount} Rules Awaiting Audit
+                </span>
+              </div>
+              <div className="p-2.5 rounded-lg bg-zinc-950 border border-zinc-800">
+                <span className="text-[10px] uppercase font-mono text-zinc-500 block">Ingestion Pipeline</span>
+                <span className="text-xs font-mono font-medium text-zinc-300 block mt-0.5">
+                  Layout + BGE-768
+                </span>
+              </div>
+            </div>
           </div>
         )}
 
