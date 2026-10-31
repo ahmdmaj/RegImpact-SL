@@ -219,75 +219,114 @@ export default function AdminReviewsPage() {
 
       {/* 2. Main Workspace */}
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-6">
-        {/* Top Control Bar: Active Reviewer & Tab Toggle */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl border border-zinc-800 bg-zinc-900 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-zinc-800 text-zinc-200 border border-zinc-700">
-              <Scale className="w-5 h-5 text-zinc-300" />
+        {authError ? (
+          /* Access Denied Barrier for Unauthorized Roles (e.g. SME) */
+          <div className="max-w-2xl mx-auto rounded-xl border border-rose-900/50 bg-zinc-900 p-8 sm:p-12 text-center space-y-5 shadow-lg my-8">
+            <div className="w-14 h-14 mx-auto rounded-full bg-rose-950/60 border border-rose-800 flex items-center justify-center text-rose-400">
+              <ShieldAlert className="w-7 h-7" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-sm font-semibold text-zinc-100">
-                  Legal Reviewer & Adjudication Portal
-                </h1>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700">
-                  Human-In-The-Loop Audit
-                </span>
-              </div>
-              <div className="flex items-center gap-2 mt-1 flex-wrap">
-                <span className="text-xs text-zinc-400">Reviewer ID:</span>
-                <input
-                  type="text"
-                  value={reviewerId}
-                  onChange={(e) => setReviewerId(e.target.value)}
-                  className="px-2 py-0.5 bg-zinc-950 border border-zinc-800 rounded text-xs font-mono text-zinc-200 focus:outline-none focus:border-zinc-500"
-                  placeholder="Reviewer ID"
-                />
-                <span className="text-xs text-zinc-400 ml-2">Role:</span>
-                <select
-                  value={reviewerRole}
-                  onChange={(e) => setReviewerRole(e.target.value)}
-                  className="px-2 py-0.5 bg-zinc-950 border border-zinc-800 rounded text-xs font-mono text-zinc-200 focus:outline-none focus:border-zinc-500"
-                >
-                  <option value="PRIMARY_ANNOTATOR">Primary Annotator</option>
-                  <option value="SECONDARY_ANNOTATOR">Secondary Annotator</option>
-                  <option value="EXPERT_ADJUDICATOR">Expert Adjudicator (Legal)</option>
-                </select>
-              </div>
+            <div className="space-y-2">
+              <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-rose-950 text-rose-400 border border-rose-800">
+                403 Forbidden &bull; Role Authorization Barrier
+              </span>
+              <h2 className="text-base font-semibold text-zinc-100">
+                Access Restricted to Legal Reviewers & Administrators
+              </h2>
+              <p className="text-xs text-zinc-400 max-w-md mx-auto leading-relaxed">
+                {authError}
+              </p>
+            </div>
+            <div className="pt-2 flex items-center justify-center gap-3 flex-wrap">
+              <Link
+                href="/"
+                className="px-4 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium border border-zinc-700 transition-colors"
+              >
+                Return to Compliance Assessor
+              </Link>
+              <button
+                onClick={() => {
+                  setCurrentUserRole("reviewer");
+                  setCurrentRole("reviewer");
+                }}
+                className="px-4 py-2 rounded-lg bg-white hover:bg-zinc-200 text-zinc-950 text-xs font-medium transition-colors cursor-pointer"
+              >
+                Switch to Legal Reviewer Role
+              </button>
             </div>
           </div>
+        ) : (
+          <>
+            {/* Top Control Bar: Active Reviewer & Tab Toggle */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl border border-zinc-800 bg-zinc-900 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-zinc-800 text-zinc-200 border border-zinc-700">
+                  <Scale className="w-5 h-5 text-zinc-300" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h1 className="text-sm font-semibold text-zinc-100">
+                      Legal Reviewer & Adjudication Portal
+                    </h1>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700">
+                      Human-In-The-Loop Audit
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 mt-1 flex-wrap">
+                    <span className="text-xs text-zinc-400">Reviewer ID:</span>
+                    <input
+                      type="text"
+                      value={reviewerId}
+                      onChange={(e) => setReviewerId(e.target.value)}
+                      className="px-2 py-0.5 bg-zinc-950 border border-zinc-800 rounded text-xs font-mono text-zinc-200 focus:outline-none focus:border-zinc-500"
+                      placeholder="Reviewer ID"
+                    />
+                    <span className="text-xs text-zinc-400 ml-2">Role:</span>
+                    <select
+                      value={reviewerRole}
+                      onChange={(e) => setReviewerRole(e.target.value)}
+                      className="px-2 py-0.5 bg-zinc-950 border border-zinc-800 rounded text-xs font-mono text-zinc-200 focus:outline-none focus:border-zinc-500"
+                    >
+                      <option value="PRIMARY_ANNOTATOR">Primary Annotator</option>
+                      <option value="SECONDARY_ANNOTATOR">Secondary Annotator</option>
+                      <option value="EXPERT_ADJUDICATOR">Expert Adjudicator (Legal)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
 
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setActiveTab("queue")}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
-                activeTab === "queue"
-                  ? "bg-zinc-800 text-zinc-100 border border-zinc-700 shadow-sm"
-                  : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50"
-              }`}
-            >
-              Review Queue ({reviews.length})
-            </button>
-            <button
-              onClick={() => setActiveTab("upload")}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
-                activeTab === "upload"
-                  ? "bg-zinc-800 text-zinc-100 border border-zinc-700 shadow-sm"
-                  : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50"
-              }`}
-            >
-              Ingest Document (PDF)
-            </button>
-            <button
-              onClick={fetchQueue}
-              disabled={loading}
-              className="p-1.5 rounded-lg bg-zinc-800 text-zinc-400 hover:text-white border border-zinc-700 transition-colors ml-1 cursor-pointer"
-              title="Refresh queue"
-            >
-              <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
-            </button>
-          </div>
-        </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setActiveTab("queue")}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+                    activeTab === "queue"
+                      ? "bg-zinc-800 text-zinc-100 border border-zinc-700 shadow-sm"
+                      : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50"
+                  }`}
+                >
+                  Review Queue ({reviews.length})
+                </button>
+                {currentRole === "admin" && (
+                  <button
+                    onClick={() => setActiveTab("upload")}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+                      activeTab === "upload"
+                        ? "bg-zinc-800 text-zinc-100 border border-zinc-700 shadow-sm"
+                        : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50"
+                    }`}
+                  >
+                    Ingest Document (PDF)
+                  </button>
+                )}
+                <button
+                  onClick={fetchQueue}
+                  disabled={loading}
+                  className="p-1.5 rounded-lg bg-zinc-800 text-zinc-400 hover:text-white border border-zinc-700 transition-colors ml-1 cursor-pointer"
+                  title="Refresh queue"
+                >
+                  <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+                </button>
+              </div>
+            </div>
 
         {/* TAB 1: REVIEW QUEUE */}
         {activeTab === "queue" && (
