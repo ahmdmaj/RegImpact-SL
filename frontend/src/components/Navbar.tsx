@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { RoleSwitcher } from "./RoleSwitcher";
-import { getHealth, getPendingReviews } from "@/services/api";
+import { getHealth, getPendingReviews, UserRole, getCurrentUserRole } from "@/services/api";
 import { 
   FileCheck2, 
   Scale, 
@@ -15,9 +15,22 @@ import {
 
 export const Navbar: React.FC = () => {
   const pathname = usePathname();
+  const [role, setRole] = useState<UserRole>("admin");
   const [engineConnected, setEngineConnected] = useState<boolean | null>(null);
   const [pendingCount, setPendingCount] = useState<number>(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    setRole(getCurrentUserRole());
+    const handleRoleChange = (e: Event) => {
+      const customEvent = e as CustomEvent<{ role: UserRole }>;
+      if (customEvent.detail?.role) {
+        setRole(customEvent.detail.role);
+      }
+    };
+    window.addEventListener("regimpact:role_change", handleRoleChange);
+    return () => window.removeEventListener("regimpact:role_change", handleRoleChange);
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -29,11 +42,15 @@ export const Navbar: React.FC = () => {
         if (isMounted) setEngineConnected(false);
       }
 
-      try {
-        const queue = await getPendingReviews();
-        if (isMounted) setPendingCount(queue.length);
-      } catch {
-        // Pending reviews fetch secondary
+      if (role === "reviewer" || role === "admin") {
+        try {
+          const queue = await getPendingReviews();
+          if (isMounted) setPendingCount(queue.length);
+        } catch {
+          if (isMounted) setPendingCount(0);
+        }
+      } else {
+        if (isMounted) setPendingCount(0);
       }
     };
 
@@ -43,7 +60,7 @@ export const Navbar: React.FC = () => {
       isMounted = false;
       clearInterval(interval);
     };
-  }, []);
+  }, [role]);
 
   const navLinks = [
     {
@@ -51,6 +68,7 @@ export const Navbar: React.FC = () => {
       href: "/",
       icon: FileCheck2,
       active: pathname === "/",
+      visible: true,
     },
     {
       name: "Reviewer Portal",
@@ -58,14 +76,16 @@ export const Navbar: React.FC = () => {
       icon: Scale,
       active: pathname.startsWith("/admin"),
       badge: pendingCount > 0 ? pendingCount : undefined,
+      visible: role === "reviewer" || role === "admin",
     },
     {
       name: "Evaluation Dashboard",
       href: "/evaluation",
       icon: BarChart3,
       active: pathname.startsWith("/evaluation"),
+      visible: role === "admin",
     },
-  ];
+  ].filter((item) => item.visible);
 
   return (
     <nav className="sticky top-0 z-50 bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800">

@@ -96,13 +96,16 @@ VALID_ROLES: Set[str] = {"sme_user", "reviewer", "admin"}
 
 
 def get_current_role(x_user_role: Optional[str] = Header(None, alias="X-User-Role")) -> str:
-    """Extract and validate role from X-User-Role header. Default to 'admin' when omitted."""
+    """Extract and validate role from X-User-Role header. No default Admin fallback."""
     if not x_user_role:
-        return "admin"
+        raise HTTPException(
+            status_code=401,
+            detail="Authentication required: X-User-Role header missing. Valid roles are: admin, reviewer, sme_user",
+        )
     role = x_user_role.strip().lower()
     if role not in VALID_ROLES:
         raise HTTPException(
-            status_code=400,
+            status_code=401,
             detail=f"Invalid X-User-Role '{x_user_role}'. Valid roles are: {', '.join(sorted(VALID_ROLES))}",
         )
     return role
@@ -347,7 +350,7 @@ def get_regulations(
 @app.get("/evaluation/results")
 @app.get("/api/evaluation/results")
 def get_evaluation_results(
-    _role: str = Depends(require_role({"sme_user", "reviewer", "admin"})),
+    _role: str = Depends(require_role({"admin"})),
 ) -> Dict[str, Any]:
     """Return the latest compiled benchmark evaluation results and clustered statistical testing."""
     primary_path = Path("backend/data/evaluation/results.json")
