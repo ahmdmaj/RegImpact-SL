@@ -137,7 +137,7 @@ def client_with_real_slice(seeded_real_db):
             pass
 
     app.dependency_overrides[get_db] = _override_get_db
-    with TestClient(app) as client:
+    with TestClient(app, headers={"X-User-Role": "admin"}) as client:
         yield client
     app.dependency_overrides.clear()
 
