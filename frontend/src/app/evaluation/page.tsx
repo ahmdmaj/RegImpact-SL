@@ -138,17 +138,54 @@ export default function EvaluationDashboard() {
 
       {/* 2. Main Container */}
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-6">
-        {error && (
-          <div className="p-4 rounded-lg bg-zinc-900 border border-rose-800/60 text-rose-300 text-xs flex items-center justify-between">
-            <span>{error}</span>
-            <button
-              onClick={loadData}
-              className="px-2.5 py-1 rounded bg-zinc-800 text-xs text-white hover:bg-zinc-700 transition-colors cursor-pointer"
-            >
-              Retry
-            </button>
+        {authError ? (
+          /* Access Denied Barrier for Non-Admin Roles */
+          <div className="max-w-2xl mx-auto rounded-xl border border-rose-900/50 bg-zinc-900 p-8 sm:p-12 text-center space-y-5 shadow-lg my-8">
+            <div className="w-14 h-14 mx-auto rounded-full bg-rose-950/60 border border-rose-800 flex items-center justify-center text-rose-400">
+              <ShieldAlert className="w-7 h-7" />
+            </div>
+            <div className="space-y-2">
+              <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-rose-950 text-rose-400 border border-rose-800">
+                403 Forbidden &bull; Role Authorization Barrier
+              </span>
+              <h2 className="text-base font-semibold text-zinc-100">
+                Access Restricted to Administrators & Academic Researchers
+              </h2>
+              <p className="text-xs text-zinc-400 max-w-md mx-auto leading-relaxed">
+                {authError}
+              </p>
+            </div>
+            <div className="pt-2 flex items-center justify-center gap-3 flex-wrap">
+              <Link
+                href="/"
+                className="px-4 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium border border-zinc-700 transition-colors"
+              >
+                Return to Compliance Assessor
+              </Link>
+              <button
+                onClick={() => {
+                  setCurrentUserRole("admin");
+                  setCurrentRole("admin");
+                }}
+                className="px-4 py-2 rounded-lg bg-white hover:bg-zinc-200 text-zinc-950 text-xs font-medium transition-colors cursor-pointer"
+              >
+                Switch to Administrator Role
+              </button>
+            </div>
           </div>
-        )}
+        ) : (
+          <>
+            {error && (
+              <div className="p-4 rounded-lg bg-zinc-900 border border-rose-800/60 text-rose-300 text-xs flex items-center justify-between">
+                <span>{error}</span>
+                <button
+                  onClick={loadData}
+                  className="px-2.5 py-1 rounded bg-zinc-800 text-xs text-white hover:bg-zinc-700 transition-colors cursor-pointer"
+                >
+                  Retry
+                </button>
+              </div>
+            )}
 
         {/* Section Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl border border-zinc-800 bg-zinc-900 shadow-sm">
