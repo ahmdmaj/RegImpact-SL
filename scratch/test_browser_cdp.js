@@ -3,7 +3,7 @@ const http = require('http');
 
 const EDGE_PATH = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
 const USER_DATA_DIR = 'C:\\Users\\HP\\AppData\\Local\\Temp\\edge_cdp_audit_' + Date.now();
-const PORT = 9224;
+const PORT = 9228;
 
 function wait(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -71,7 +71,7 @@ class CDPClient {
 
   async navigate(url) {
     await this.send('Page.navigate', { url });
-    await wait(2200); // Wait for page load and client-side hydration
+    await wait(2200);
   }
 }
 
@@ -125,7 +125,7 @@ async function runAudit() {
       localStorage.setItem('regimpact_user_role', 'sme_user');
       window.dispatchEvent(new CustomEvent('regimpact:role_change', { detail: { role: 'sme_user' } }));
     `);
-    await wait(800);
+    await wait(1000);
 
     const smeNavLinks = await cdp.eval(`
       Array.from(document.querySelectorAll('nav a')).map(a => a.textContent.trim())
@@ -173,7 +173,7 @@ async function runAudit() {
       localStorage.setItem('regimpact_user_role', 'reviewer');
       window.dispatchEvent(new CustomEvent('regimpact:role_change', { detail: { role: 'reviewer' } }));
     `);
-    await wait(800);
+    await wait(1000);
 
     const revNavLinks = await cdp.eval(`
       Array.from(document.querySelectorAll('nav a')).map(a => a.textContent.trim())
@@ -192,7 +192,7 @@ async function runAudit() {
 
     // Direct navigation to /admin/reviews as Reviewer
     await cdp.navigate('http://localhost:3000/admin/reviews');
-    await wait(2500); // Wait for reviews to load
+    await wait(2500);
     const revQueueLoaded = await cdp.eval(`
       document.body.innerText.includes('RULE-COLOURING') || document.body.innerText.includes('Pending Review Queue')
     `);
@@ -220,7 +220,7 @@ async function runAudit() {
       localStorage.setItem('regimpact_user_role', 'admin');
       window.dispatchEvent(new CustomEvent('regimpact:role_change', { detail: { role: 'admin' } }));
     `);
-    await wait(800);
+    await wait(1000);
 
     const adminNavLinks = await cdp.eval(`
       Array.from(document.querySelectorAll('nav a')).map(a => a.textContent.trim())
@@ -236,9 +236,11 @@ async function runAudit() {
       document.body.innerText.includes('Administrator System Overview')
     `);
     const adminKpiPills = await cdp.eval(`
-      document.body.innerText.includes('Engine State') || document.body.innerText.includes('Indexed Regulations')
+      document.body.innerText.toUpperCase().includes('ENGINE STATE') &&
+      document.body.innerText.toUpperCase().includes('INDEXED CLAUSES') &&
+      document.body.innerText.toUpperCase().includes('PENDING REVIEW')
     `);
-    record('ADM-02-BANNER', 'Admin Home KPI Banner', adminBanner && adminKpiPills,
+    record('ADM-02-BANNER', 'Admin Home KPI Banner & System Information', adminBanner && adminKpiPills,
       `Banner: ${adminBanner}, KPI Info: ${adminKpiPills}`);
 
     // Direct navigation to /admin/reviews as Admin
@@ -342,27 +344,26 @@ async function runAudit() {
     `);
 
     console.log(`Clicked Analyze Regulatory Impact: ${clickSubmit}`);
-    // Wait for analysis API call to complete and render results
-    await wait(7000);
+    // Wait for analysis API call to complete, execute Gemini LLM, and render results
+    await wait(9000);
 
     const analysisDetails = await cdp.eval(`
       (() => {
         const body = document.body.innerText;
         return {
-          hasComplianceDossier: body.includes('Regulatory Compliance Dossier'),
+          hasDossier: body.includes('Regulatory Compliance Dossier'),
           hasExecutiveSummary: body.includes('Executive Compliance Summary'),
-          hasMandatoryObligations: body.includes('Mandatory') || body.includes('mandatory statutory obligation'),
-          hasActionChecklist: body.includes('Action Item Checklist') || body.includes('Action Items') || body.includes('Action Checklist') || body.includes('Checklist'),
-          hasStatutoryCitations: body.includes('Statutory Citation') || body.includes('Citations') || body.includes('Regulation 3') || body.includes('Gazette'),
-          bodySample: body.substring(body.indexOf('Regulatory Compliance Dossier'), body.indexOf('Regulatory Compliance Dossier') + 400)
+          hasMandatory: body.toUpperCase().includes('MANDATORY'),
+          hasEvidenceVerified: body.includes('Evidence Verified'),
+          hasCitations: body.includes('Citations') || body.includes('Regulation 3')
         };
       })()
     `);
 
-    const compAnalysisPass = clickSubmit && analysisDetails.hasComplianceDossier && analysisDetails.hasExecutiveSummary;
+    const compAnalysisPass = clickSubmit && analysisDetails.hasDossier && analysisDetails.hasExecutiveSummary && analysisDetails.hasMandatory;
     record('ANALYSIS-01-REGRESSION', 'Live Browser SME Compliance Assessment Execution',
       compAnalysisPass,
-      `Dossier: ${analysisDetails.hasComplianceDossier}, Summary: ${analysisDetails.hasExecutiveSummary}, Mandatory: ${analysisDetails.hasMandatoryObligations}`);
+      `Dossier: ${analysisDetails.hasDossier}, Summary: ${analysisDetails.hasExecutiveSummary}, Mandatory: ${analysisDetails.hasMandatory}, Verified: ${analysisDetails.hasEvidenceVerified}`);
 
   } catch (err) {
     console.error('Test execution error:', err);
