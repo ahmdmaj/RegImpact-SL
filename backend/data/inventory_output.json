@@ -1,0 +1,1796 @@
+{
+  "inspected_directories": [
+    "/app/backend/data/raw_sources",
+    "/app/backend/data/quarantine",
+    "/app/backend/data/derived",
+    "/app"
+  ],
+  "total_pdf_count": 100,
+  "inventory": [
+    {
+      "filename": "00158db0b6fa7c8ef686e4d0d0f2c0a73e5c6604f4177ec652579f65297519e2.pdf",
+      "path": "backend/data/raw_sources/00158db0b6fa7c8ef686e4d0d0f2c0a73e5c6604f4177ec652579f65297519e2.pdf",
+      "size_bytes": 1376,
+      "sha256": "00158db0b6fa7c8ef686e4d0d0f2c0a73e5c6604f4177ec652579f65297519e2",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": "2499/12",
+      "gazette_date": "01st July 2026",
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Official Sri Lankan Gazette",
+      "language": "English",
+      "text_sample": "THE GAZETTE OF THE DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA (EXTRAORDINARY) No. 2499/12 - WEDNESDAY, OCTOBER 14, 2024 PART I : SECTION (I) - GENERAL FOOD ACT, No. 26 OF 1980 REGULATIONS made by the Minister of Health under section 32 of the Food Act, No. 26 of 1980. 1. These regulations may be cited as the Food (Cold Storage Temperature) Regulations 2024 and shall come into operation on 01st Jul",
+      "readable_text_length": 579
+    },
+    {
+      "filename": "0042af1f052c3528500b96f65a9728e48d4ba9c68955a95c5c0f78e22896b476.pdf",
+      "path": "backend/data/raw_sources/0042af1f052c3528500b96f65a9728e48d4ba9c68955a95c5c0f78e22896b476.pdf",
+      "size_bytes": 1037,
+      "sha256": "0042af1f052c3528500b96f65a9728e48d4ba9c68955a95c5c0f78e22896b476",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "03d2aaf2927bf455c04bf1ddc0e3471da48426c8fc75ce01171a1fec5b457efd.pdf",
+      "path": "backend/data/raw_sources/03d2aaf2927bf455c04bf1ddc0e3471da48426c8fc75ce01171a1fec5b457efd.pdf",
+      "size_bytes": 1037,
+      "sha256": "03d2aaf2927bf455c04bf1ddc0e3471da48426c8fc75ce01171a1fec5b457efd",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "059a9fbace6cf60f8956139df5044e6b1952432ef193c525e5428a9edf223d11.pdf",
+      "path": "backend/data/raw_sources/059a9fbace6cf60f8956139df5044e6b1952432ef193c525e5428a9edf223d11.pdf",
+      "size_bytes": 1037,
+      "sha256": "059a9fbace6cf60f8956139df5044e6b1952432ef193c525e5428a9edf223d11",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "0c421c9ceb793f8fecaee455295fa8203c94f1c67ab8ad21b97945b7f3aa33b2.pdf",
+      "path": "backend/data/raw_sources/0c421c9ceb793f8fecaee455295fa8203c94f1c67ab8ad21b97945b7f3aa33b2.pdf",
+      "size_bytes": 1037,
+      "sha256": "0c421c9ceb793f8fecaee455295fa8203c94f1c67ab8ad21b97945b7f3aa33b2",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "15803fe0b14aabe0c79126ebe7c8834d8063b6ed8c2a9033c1201ff538bcd95b.pdf",
+      "path": "backend/data/raw_sources/15803fe0b14aabe0c79126ebe7c8834d8063b6ed8c2a9033c1201ff538bcd95b.pdf",
+      "size_bytes": 398991,
+      "sha256": "15803fe0b14aabe0c79126ebe7c8834d8063b6ed8c2a9033c1201ff538bcd95b",
+      "page_count": 3,
+      "metadata": {
+        "format": "PDF 1.7",
+        "creator": "Mozilla Firefox 153.0.1",
+        "producer": "cairo 1.18.4 (https://cairographics.org)",
+        "creationDate": "D:20260807130446+05'30"
+      },
+      "gazette_number": "2319/42",
+      "gazette_date": "2026.06.23",
+      "reg_title": null,
+      "document_type": "Official Sri Lankan Gazette",
+      "language": "English",
+      "text_sample": "EXTRAORDINARY The Gazette of the Democratic Socialist Republic of Sri Lanka (Published by Authority) PART I : SECTION (I) — GENERAL GovermeNoﬁco 1A - PG 7779 - 3000 (06/2026) This Gazette Extraordinary can be downloaded from www.documents.gov.lk L.D.B. 11/80 (29) FOOD ACT, No. 26 oF 1980 REGULATIONS made by the Minister of Health and Mass Media under section 32 of the Food Act, No. 26 of",
+      "readable_text_length": 4217
+    },
+    {
+      "filename": "16eaf35a00044c4948fcbf9e68ed6d39294a65fef5ad605b2b7a27530dcae92d.pdf",
+      "path": "backend/data/raw_sources/16eaf35a00044c4948fcbf9e68ed6d39294a65fef5ad605b2b7a27530dcae92d.pdf",
+      "size_bytes": 1037,
+      "sha256": "16eaf35a00044c4948fcbf9e68ed6d39294a65fef5ad605b2b7a27530dcae92d",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "1d7790a0820a56d9ff13217818c578ff00ec17b19e199f2feb6cdfb402573048.pdf",
+      "path": "backend/data/raw_sources/1d7790a0820a56d9ff13217818c578ff00ec17b19e199f2feb6cdfb402573048.pdf",
+      "size_bytes": 1037,
+      "sha256": "1d7790a0820a56d9ff13217818c578ff00ec17b19e199f2feb6cdfb402573048",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "1ddb36aa4a75659ca258fcb0113ea71c5aa1ae45c9cd766e726b2044e659440a.pdf",
+      "path": "backend/data/raw_sources/1ddb36aa4a75659ca258fcb0113ea71c5aa1ae45c9cd766e726b2044e659440a.pdf",
+      "size_bytes": 1037,
+      "sha256": "1ddb36aa4a75659ca258fcb0113ea71c5aa1ae45c9cd766e726b2044e659440a",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "1eceb2e1c4c0cb2a8b953cbf11cf003584605c1e20382f1399ca292033f879eb.pdf",
+      "path": "backend/data/raw_sources/1eceb2e1c4c0cb2a8b953cbf11cf003584605c1e20382f1399ca292033f879eb.pdf",
+      "size_bytes": 1037,
+      "sha256": "1eceb2e1c4c0cb2a8b953cbf11cf003584605c1e20382f1399ca292033f879eb",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "220c17ffe536e78825390d174040286a736628efbd1a059a6fdf090e68df999b.pdf",
+      "path": "backend/data/raw_sources/220c17ffe536e78825390d174040286a736628efbd1a059a6fdf090e68df999b.pdf",
+      "size_bytes": 1376,
+      "sha256": "220c17ffe536e78825390d174040286a736628efbd1a059a6fdf090e68df999b",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": "2499/12",
+      "gazette_date": "01st July 2026",
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Official Sri Lankan Gazette",
+      "language": "English",
+      "text_sample": "THE GAZETTE OF THE DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA (EXTRAORDINARY) No. 2499/12 - WEDNESDAY, OCTOBER 14, 2024 PART I : SECTION (I) - GENERAL FOOD ACT, No. 26 OF 1980 REGULATIONS made by the Minister of Health under section 32 of the Food Act, No. 26 of 1980. 1. These regulations may be cited as the Food (Cold Storage Temperature) Regulations 2024 and shall come into operation on 01st Jul",
+      "readable_text_length": 579
+    },
+    {
+      "filename": "2443-27_E.pdf",
+      "path": "backend/data/raw_sources/2443-27_E.pdf",
+      "size_bytes": 280770,
+      "sha256": "d7852dcc0da491ee0f67dbc355ad3ed96c1b860018b6151204d0db9d3fe2f45d",
+      "page_count": 7,
+      "metadata": {
+        "format": "PDF 1.4",
+        "creator": "Adobe InDesign 19.4 (Windows)",
+        "producer": "Adobe PDF Library 17.0",
+        "creationDate": "D:20250920110840-07'00'",
+        "modDate": "D:20250920110841-07'00'"
+      },
+      "gazette_number": "2443/27",
+      "gazette_date": "2025.07.01",
+      "reg_title": "Food (Labelling and Advertising) Regulations 2026",
+      "document_type": "Official Sri Lankan Gazette",
+      "language": "English",
+      "text_sample": "w;s úfYI wxl 2443$27 - 2025 cQ,s ui 01 jeks w`.yrejdod - 2025.07.01 No. 2443/27  -  TUESDAY,   JULY  01, 2025 EXTRAORDINARY Y%S ,xld m%cd;dka;%sl iudcjd§ ckrcfha .eiÜ m;%h The Gazette of the Democratic Socialist Republic of Sri Lanka (Published by Authority) PART I : SECTION (I) — GENERAL Government Notifications 1A- PG 7181 - 3004 (07/2025)  This Gazette Extraordinary can be downloaded from www.d",
+      "readable_text_length": 10366
+    },
+    {
+      "filename": "2494-06_E.pdf",
+      "path": "backend/data/raw_sources/2494-06_E.pdf",
+      "size_bytes": 398991,
+      "sha256": "15803fe0b14aabe0c79126ebe7c8834d8063b6ed8c2a9033c1201ff538bcd95b",
+      "page_count": 3,
+      "metadata": {
+        "format": "PDF 1.7",
+        "creator": "Mozilla Firefox 153.0.1",
+        "producer": "cairo 1.18.4 (https://cairographics.org)",
+        "creationDate": "D:20260807130446+05'30"
+      },
+      "gazette_number": "2319/42",
+      "gazette_date": "2026.06.23",
+      "reg_title": "Food (Labelling and Advertising) Regulations 2026",
+      "document_type": "Official Sri Lankan Gazette",
+      "language": "English",
+      "text_sample": "EXTRAORDINARY The Gazette of the Democratic Socialist Republic of Sri Lanka (Published by Authority) PART I : SECTION (I) — GENERAL GovermeNoﬁco 1A - PG 7779 - 3000 (06/2026) This Gazette Extraordinary can be downloaded from www.documents.gov.lk L.D.B. 11/80 (29) FOOD ACT, No. 26 oF 1980 REGULATIONS made by the Minister of Health and Mass Media under section 32 of the Food Act, No. 26 of",
+      "readable_text_length": 4217
+    },
+    {
+      "filename": "2494-06_E_1784568259.pdf",
+      "path": "backend/data/raw_sources/2494-06_E_1784568259.pdf",
+      "size_bytes": 516930,
+      "sha256": "e5b947e6e795476a6a732176a85fb9de703072451f55d125b6cef47f70528db7",
+      "page_count": 3,
+      "metadata": {
+        "format": "PDF 1.4",
+        "creator": "Adobe InDesign 19.4 (Windows)",
+        "producer": "Adobe PDF Library 17.0",
+        "creationDate": "D:20260702013845-07'00'",
+        "modDate": "D:20260702013847-07'00'"
+      },
+      "gazette_number": "2319/42",
+      "gazette_date": "2026.06.23",
+      "reg_title": "Food (Labelling and Advertising) Regulations 2026",
+      "document_type": "Official Sri Lankan Gazette",
+      "language": "English",
+      "text_sample": "EXTRAORDINARY The Gazette of the Democratic Socialist Republic of Sri Lanka (Published by Authority) PART I : SECTION (I) — GENERAL Government Notifications 1A - PG 7779 - 3000 (06/2026)  This Gazette Extraordinary can be downloaded from www.documents.gov.lk L.D.B. 11/80 (29) FOOD ACT, No. 26 oF 1980  REGULATIONS made by the Minister of Health and Mass Media under section 32 of the Food Act, No. 2",
+      "readable_text_length": 4443
+    },
+    {
+      "filename": "2494-47_E.pdf",
+      "path": "backend/data/raw_sources/2494-47_E.pdf",
+      "size_bytes": 424172,
+      "sha256": "83ed19c22873471652d0073fe16c977442e42c8ecac2edf1d691d00d78d8a054",
+      "page_count": 25,
+      "metadata": {
+        "format": "PDF 1.7",
+        "creator": "Mozilla Firefox 153.0.1",
+        "producer": "cairo 1.18.4 (https://cairographics.org)",
+        "creationDate": "D:20260807124840+05'30"
+      },
+      "gazette_number": "2494/47",
+      "gazette_date": "01st July 2026",
+      "reg_title": "Food (Labelling and Advertising) Regulations 2026",
+      "document_type": "Official Sri Lankan Gazette",
+      "language": "English",
+      "text_sample": "EXTRAORDINARY The Gazette of the Democratic Socialist Republic of Sri Lanka (Published by Authority) PART I : SECTION (I) — GENERAL GovermeNoﬁco 1A - PG 7797 - 3003 (07/2026) This Gazette Extraordinary can be downloaded from www.documents.gov.lk L.D.B.- 11/1980 (30)(A) FOOD ACT, No. 26 OF 1980 REGULATIONS made by the Minister of Health and Mass Media in consultation with the Food Advisor",
+      "readable_text_length": 10819
+    },
+    {
+      "filename": "2496-03_E.pdf",
+      "path": "backend/data/raw_sources/2496-03_E.pdf",
+      "size_bytes": 232401,
+      "sha256": "672a95c9c8e179b960dbcd00ebdd07f67e2848239a0c67ade17c8eaeed7f37b9",
+      "page_count": 2,
+      "metadata": {
+        "format": "PDF 1.4",
+        "creator": "Adobe InDesign 19.4 (Windows)",
+        "producer": "Adobe PDF Library 17.0",
+        "creationDate": "D:20260710042629-07'00'",
+        "modDate": "D:20260710042629-07'00'"
+      },
+      "gazette_number": "2496/03",
+      "gazette_date": null,
+      "reg_title": null,
+      "document_type": "Official Sri Lankan Gazette",
+      "language": "English",
+      "text_sample": "w;s úfYI wxl 2496$03 - 2026 cQ,s ui 06 jeks i`÷od - 2026'07'06 No. 2496/03 -  MONDAY,   JULY  06,  2026 EXTRAORDINARY Y%S ,xld m%cd;dka;%sl iudcjd§ ckrcfha .eiÜ m;%h The Gazette of the Democratic Socialist Republic of Sri Lanka (Published by Authority) PART I : SECTION (I) — GENERAL Government Notifications 1A - G 47131 - 04 (07/2026)  This Gazette Extraordinary can be downloaded from www.document",
+      "readable_text_length": 3858
+    },
+    {
+      "filename": "27c646bb6e755ed8e46f4636d67ca775afeec9abcdef8b29c1eb5ee6a507ff09.pdf",
+      "path": "backend/data/raw_sources/27c646bb6e755ed8e46f4636d67ca775afeec9abcdef8b29c1eb5ee6a507ff09.pdf",
+      "size_bytes": 1037,
+      "sha256": "27c646bb6e755ed8e46f4636d67ca775afeec9abcdef8b29c1eb5ee6a507ff09",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "291759ecef9fc7c9129bff1139d1837790a50cac32236ec46c0e4b351d76270c.pdf",
+      "path": "backend/data/raw_sources/291759ecef9fc7c9129bff1139d1837790a50cac32236ec46c0e4b351d76270c.pdf",
+      "size_bytes": 1037,
+      "sha256": "291759ecef9fc7c9129bff1139d1837790a50cac32236ec46c0e4b351d76270c",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "311a8b8c7ff17702ed3fe2325a5dfa302485fc89df12c77bc56332c6ee7be247.pdf",
+      "path": "backend/data/raw_sources/311a8b8c7ff17702ed3fe2325a5dfa302485fc89df12c77bc56332c6ee7be247.pdf",
+      "size_bytes": 1037,
+      "sha256": "311a8b8c7ff17702ed3fe2325a5dfa302485fc89df12c77bc56332c6ee7be247",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "3a67d3cdcff047060fe5af5f296a3b8da783267422bd67b2873c9faeb7b22166.pdf",
+      "path": "backend/data/raw_sources/3a67d3cdcff047060fe5af5f296a3b8da783267422bd67b2873c9faeb7b22166.pdf",
+      "size_bytes": 1037,
+      "sha256": "3a67d3cdcff047060fe5af5f296a3b8da783267422bd67b2873c9faeb7b22166",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "3afde169bfcb3dac613c10edeb688430b1fd048d49544f7ba18600536fc03889.pdf",
+      "path": "backend/data/raw_sources/3afde169bfcb3dac613c10edeb688430b1fd048d49544f7ba18600536fc03889.pdf",
+      "size_bytes": 1037,
+      "sha256": "3afde169bfcb3dac613c10edeb688430b1fd048d49544f7ba18600536fc03889",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "3cd9948d2c334d08a11dd5bc9cc1f1a1ec053d6e819ea30f205687dda7c342c7.pdf",
+      "path": "backend/data/raw_sources/3cd9948d2c334d08a11dd5bc9cc1f1a1ec053d6e819ea30f205687dda7c342c7.pdf",
+      "size_bytes": 81054,
+      "sha256": "3cd9948d2c334d08a11dd5bc9cc1f1a1ec053d6e819ea30f205687dda7c342c7",
+      "page_count": 2,
+      "metadata": {
+        "format": "PDF 1.4",
+        "creator": "HP PDF Formatter version 3.2.0.947",
+        "producer": "Adobe PDF Library 5.0.4",
+        "creationDate": "D:20110728103237+05'30'",
+        "modDate": "D:20110728103237+05'30'"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": null,
+      "document_type": "Regulatory or Administrative Document",
+      "language": "Unknown / Scanned",
+      "text_sample": "",
+      "readable_text_length": 0
+    },
+    {
+      "filename": "3e863d976d56eb45ca7d410173fd8b451d6fef7308cceb706afe6720cec78b7f.pdf",
+      "path": "backend/data/raw_sources/3e863d976d56eb45ca7d410173fd8b451d6fef7308cceb706afe6720cec78b7f.pdf",
+      "size_bytes": 1037,
+      "sha256": "3e863d976d56eb45ca7d410173fd8b451d6fef7308cceb706afe6720cec78b7f",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "3efe6174c4c4a48217a77e2c278775d9edfe8ee4e19b12d3fb670c9c99535f90.pdf",
+      "path": "backend/data/raw_sources/3efe6174c4c4a48217a77e2c278775d9edfe8ee4e19b12d3fb670c9c99535f90.pdf",
+      "size_bytes": 1037,
+      "sha256": "3efe6174c4c4a48217a77e2c278775d9edfe8ee4e19b12d3fb670c9c99535f90",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "3f75e3ac63af8670c6ddda34fa8a61d2869e7697d5c88dfaee34162f5036f6e1.pdf",
+      "path": "backend/data/raw_sources/3f75e3ac63af8670c6ddda34fa8a61d2869e7697d5c88dfaee34162f5036f6e1.pdf",
+      "size_bytes": 1037,
+      "sha256": "3f75e3ac63af8670c6ddda34fa8a61d2869e7697d5c88dfaee34162f5036f6e1",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "3f85f3ef96b7622bdd3e45d7cc642fd96fdbd83a9f84f35f048121eab3e4016f.pdf",
+      "path": "backend/data/raw_sources/3f85f3ef96b7622bdd3e45d7cc642fd96fdbd83a9f84f35f048121eab3e4016f.pdf",
+      "size_bytes": 154178,
+      "sha256": "3f85f3ef96b7622bdd3e45d7cc642fd96fdbd83a9f84f35f048121eab3e4016f",
+      "page_count": 11,
+      "metadata": {
+        "format": "PDF 1.4",
+        "title": "PG 4409   (E)  (I-I)  Govt. Noti..pmd",
+        "author": "Dell",
+        "creator": "PageMaker 7.0",
+        "producer": "Acrobat Distiller 10.1.1 (Windows)",
+        "creationDate": "D:20190425220313+05'30'",
+        "modDate": "D:20190425220313+05'30'"
+      },
+      "gazette_number": "2113/16",
+      "gazette_date": "19th June\n1990",
+      "reg_title": "Food (Labelling and Advertising) Regulations 2026",
+      "document_type": "Official Sri Lankan Gazette",
+      "language": "English",
+      "text_sample": "w;s úfYI wxl 2113$16 - 2019 ud¾;= ui 05 jeks wÕyrejdod - 2019'03'05 No. 2113/16 -  TUESDAY  MARCH  05,  2019 EXTRAORDINARY Y%S ,xld m%cd;dka;%sl iudcjd§ ckrcfha .eiÜ m;%h The Gazette of the Democratic Socialist Republic of Sri Lanka (Published by Authority) PART I : SECTION (I) — GENERAL Government Notifications",
+      "readable_text_length": 7551
+    },
+    {
+      "filename": "3fa4b35c8b47c7fc3b7d14bccb4904d3661865eb7ef582a14f306e281351c786.pdf",
+      "path": "backend/data/raw_sources/3fa4b35c8b47c7fc3b7d14bccb4904d3661865eb7ef582a14f306e281351c786.pdf",
+      "size_bytes": 1037,
+      "sha256": "3fa4b35c8b47c7fc3b7d14bccb4904d3661865eb7ef582a14f306e281351c786",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "4e5aa358c6befc48c6eca0ebce0b5edd2c7293a178f3368fcb918df3eea0ad27.pdf",
+      "path": "backend/data/raw_sources/4e5aa358c6befc48c6eca0ebce0b5edd2c7293a178f3368fcb918df3eea0ad27.pdf",
+      "size_bytes": 1037,
+      "sha256": "4e5aa358c6befc48c6eca0ebce0b5edd2c7293a178f3368fcb918df3eea0ad27",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "4effa65c7b067ba27b35bb3b8bce534f3286dfa42e6e5c3fa7feefdb5c7577fb.pdf",
+      "path": "backend/data/raw_sources/4effa65c7b067ba27b35bb3b8bce534f3286dfa42e6e5c3fa7feefdb5c7577fb.pdf",
+      "size_bytes": 1037,
+      "sha256": "4effa65c7b067ba27b35bb3b8bce534f3286dfa42e6e5c3fa7feefdb5c7577fb",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "502361d7bd38cf570abcc16e84522c313862230bf5de325c754f5ed0a4668bea.pdf",
+      "path": "backend/data/raw_sources/502361d7bd38cf570abcc16e84522c313862230bf5de325c754f5ed0a4668bea.pdf",
+      "size_bytes": 1037,
+      "sha256": "502361d7bd38cf570abcc16e84522c313862230bf5de325c754f5ed0a4668bea",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "5113e42b90d7ebadf855753fd9c4a0afc8f7c653e9a78e387975a25ba328872a.pdf",
+      "path": "backend/data/raw_sources/5113e42b90d7ebadf855753fd9c4a0afc8f7c653e9a78e387975a25ba328872a.pdf",
+      "size_bytes": 1376,
+      "sha256": "5113e42b90d7ebadf855753fd9c4a0afc8f7c653e9a78e387975a25ba328872a",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": "2499/12",
+      "gazette_date": "01st July 2026",
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Official Sri Lankan Gazette",
+      "language": "English",
+      "text_sample": "THE GAZETTE OF THE DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA (EXTRAORDINARY) No. 2499/12 - WEDNESDAY, OCTOBER 14, 2024 PART I : SECTION (I) - GENERAL FOOD ACT, No. 26 OF 1980 REGULATIONS made by the Minister of Health under section 32 of the Food Act, No. 26 of 1980. 1. These regulations may be cited as the Food (Cold Storage Temperature) Regulations 2024 and shall come into operation on 01st Jul",
+      "readable_text_length": 579
+    },
+    {
+      "filename": "561b0e26761ba48d2a698c6b6bc76e9316b71f1965cfb7f2381e72025d1787e9.pdf",
+      "path": "backend/data/raw_sources/561b0e26761ba48d2a698c6b6bc76e9316b71f1965cfb7f2381e72025d1787e9.pdf",
+      "size_bytes": 1376,
+      "sha256": "561b0e26761ba48d2a698c6b6bc76e9316b71f1965cfb7f2381e72025d1787e9",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": "2499/12",
+      "gazette_date": "01st July 2026",
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Official Sri Lankan Gazette",
+      "language": "English",
+      "text_sample": "THE GAZETTE OF THE DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA (EXTRAORDINARY) No. 2499/12 - WEDNESDAY, OCTOBER 14, 2024 PART I : SECTION (I) - GENERAL FOOD ACT, No. 26 OF 1980 REGULATIONS made by the Minister of Health under section 32 of the Food Act, No. 26 of 1980. 1. These regulations may be cited as the Food (Cold Storage Temperature) Regulations 2024 and shall come into operation on 01st Jul",
+      "readable_text_length": 579
+    },
+    {
+      "filename": "58a58c41bf7d133299fd0fc96a8057f321d0ebfc8d0292fb72ae9c77bc2be3d7.pdf",
+      "path": "backend/data/raw_sources/58a58c41bf7d133299fd0fc96a8057f321d0ebfc8d0292fb72ae9c77bc2be3d7.pdf",
+      "size_bytes": 1037,
+      "sha256": "58a58c41bf7d133299fd0fc96a8057f321d0ebfc8d0292fb72ae9c77bc2be3d7",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "5a9c924af562cb5be4ad1e800b26cf4535f2bbea45fc9098a46efce132765236.pdf",
+      "path": "backend/data/raw_sources/5a9c924af562cb5be4ad1e800b26cf4535f2bbea45fc9098a46efce132765236.pdf",
+      "size_bytes": 1037,
+      "sha256": "5a9c924af562cb5be4ad1e800b26cf4535f2bbea45fc9098a46efce132765236",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "5c6df499ddb5c1ba7ab75af53d138c3c74b78e09de3731f28012c9cf185d9a39.pdf",
+      "path": "backend/data/raw_sources/5c6df499ddb5c1ba7ab75af53d138c3c74b78e09de3731f28012c9cf185d9a39.pdf",
+      "size_bytes": 1037,
+      "sha256": "5c6df499ddb5c1ba7ab75af53d138c3c74b78e09de3731f28012c9cf185d9a39",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "5ef8b1d699e073bd332121ce69add52c222a949dcfefd9f9e7d7b15dc751bb62.pdf",
+      "path": "backend/data/raw_sources/5ef8b1d699e073bd332121ce69add52c222a949dcfefd9f9e7d7b15dc751bb62.pdf",
+      "size_bytes": 1037,
+      "sha256": "5ef8b1d699e073bd332121ce69add52c222a949dcfefd9f9e7d7b15dc751bb62",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "6530c833247216f50bf6761120432ef8395c53f2ac68966efbe177774b6828e0.pdf",
+      "path": "backend/data/raw_sources/6530c833247216f50bf6761120432ef8395c53f2ac68966efbe177774b6828e0.pdf",
+      "size_bytes": 1037,
+      "sha256": "6530c833247216f50bf6761120432ef8395c53f2ac68966efbe177774b6828e0",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "672a95c9c8e179b960dbcd00ebdd07f67e2848239a0c67ade17c8eaeed7f37b9.pdf",
+      "path": "backend/data/raw_sources/672a95c9c8e179b960dbcd00ebdd07f67e2848239a0c67ade17c8eaeed7f37b9.pdf",
+      "size_bytes": 232401,
+      "sha256": "672a95c9c8e179b960dbcd00ebdd07f67e2848239a0c67ade17c8eaeed7f37b9",
+      "page_count": 2,
+      "metadata": {
+        "format": "PDF 1.4",
+        "creator": "Adobe InDesign 19.4 (Windows)",
+        "producer": "Adobe PDF Library 17.0",
+        "creationDate": "D:20260710042629-07'00'",
+        "modDate": "D:20260710042629-07'00'"
+      },
+      "gazette_number": "2496/03",
+      "gazette_date": null,
+      "reg_title": null,
+      "document_type": "Official Sri Lankan Gazette",
+      "language": "English",
+      "text_sample": "w;s úfYI wxl 2496$03 - 2026 cQ,s ui 06 jeks i`÷od - 2026'07'06 No. 2496/03 -  MONDAY,   JULY  06,  2026 EXTRAORDINARY Y%S ,xld m%cd;dka;%sl iudcjd§ ckrcfha .eiÜ m;%h The Gazette of the Democratic Socialist Republic of Sri Lanka (Published by Authority) PART I : SECTION (I) — GENERAL Government Notifications 1A - G 47131 - 04 (07/2026)  This Gazette Extraordinary can be downloaded from www.document",
+      "readable_text_length": 3858
+    },
+    {
+      "filename": "67564883c04adfd342e4c297ca2b5549f8db4de54d6d93e950b775f9318381c4.pdf",
+      "path": "backend/data/raw_sources/67564883c04adfd342e4c297ca2b5549f8db4de54d6d93e950b775f9318381c4.pdf",
+      "size_bytes": 1037,
+      "sha256": "67564883c04adfd342e4c297ca2b5549f8db4de54d6d93e950b775f9318381c4",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "70b0ab6a074cf2e06283021d5a5bb987c7096964208acf16d70de9a94fdc44a0.pdf",
+      "path": "backend/data/raw_sources/70b0ab6a074cf2e06283021d5a5bb987c7096964208acf16d70de9a94fdc44a0.pdf",
+      "size_bytes": 1037,
+      "sha256": "70b0ab6a074cf2e06283021d5a5bb987c7096964208acf16d70de9a94fdc44a0",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "73632333a54dd7e93eb86523027387370e819f4b22b92d562c9e4d3f6b2f77f3.pdf",
+      "path": "backend/data/raw_sources/73632333a54dd7e93eb86523027387370e819f4b22b92d562c9e4d3f6b2f77f3.pdf",
+      "size_bytes": 1376,
+      "sha256": "73632333a54dd7e93eb86523027387370e819f4b22b92d562c9e4d3f6b2f77f3",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": "2499/12",
+      "gazette_date": "01st July 2026",
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Official Sri Lankan Gazette",
+      "language": "English",
+      "text_sample": "THE GAZETTE OF THE DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA (EXTRAORDINARY) No. 2499/12 - WEDNESDAY, OCTOBER 14, 2024 PART I : SECTION (I) - GENERAL FOOD ACT, No. 26 OF 1980 REGULATIONS made by the Minister of Health under section 32 of the Food Act, No. 26 of 1980. 1. These regulations may be cited as the Food (Cold Storage Temperature) Regulations 2024 and shall come into operation on 01st Jul",
+      "readable_text_length": 579
+    },
+    {
+      "filename": "738a208ce8bf8e97e0498ab07c026874ce5b153faec5b3b11457ad90e35bfc73.pdf",
+      "path": "backend/data/raw_sources/738a208ce8bf8e97e0498ab07c026874ce5b153faec5b3b11457ad90e35bfc73.pdf",
+      "size_bytes": 1301,
+      "sha256": "738a208ce8bf8e97e0498ab07c026874ce5b153faec5b3b11457ad90e35bfc73",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": "2500/01",
+      "gazette_date": "01st January 2027",
+      "reg_title": null,
+      "document_type": "Official Sri Lankan Gazette",
+      "language": "English",
+      "text_sample": "THE GAZETTE OF THE DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA (EXTRAORDINARY) No. 2500/01 - FRIDAY, NOVEMBER 01, 2024 PART I : SECTION (I) - GENERAL FOOD ACT, No. 26 OF 1980 1. These regulations may be cited as the Food (Beverage Acidity) Regulations 2024 and shall come into operation on 01st January 2027. 2. Any carbonated beverage containing titratable acidity exceeding 0.5 percent shall state t",
+      "readable_text_length": 455
+    },
+    {
+      "filename": "7a9ba8d34ea5d876caa80b1d81f600808958ce0ae6b0bb2cb73637b92e2a650b.pdf",
+      "path": "backend/data/raw_sources/7a9ba8d34ea5d876caa80b1d81f600808958ce0ae6b0bb2cb73637b92e2a650b.pdf",
+      "size_bytes": 1037,
+      "sha256": "7a9ba8d34ea5d876caa80b1d81f600808958ce0ae6b0bb2cb73637b92e2a650b",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "7cfbe2821a48574fc5a7a9b6c29f4235cef8a79a23cd3d5a7d2e1698637507f2.pdf",
+      "path": "backend/data/raw_sources/7cfbe2821a48574fc5a7a9b6c29f4235cef8a79a23cd3d5a7d2e1698637507f2.pdf",
+      "size_bytes": 1376,
+      "sha256": "7cfbe2821a48574fc5a7a9b6c29f4235cef8a79a23cd3d5a7d2e1698637507f2",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": "2499/12",
+      "gazette_date": "01st July 2026",
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Official Sri Lankan Gazette",
+      "language": "English",
+      "text_sample": "THE GAZETTE OF THE DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA (EXTRAORDINARY) No. 2499/12 - WEDNESDAY, OCTOBER 14, 2024 PART I : SECTION (I) - GENERAL FOOD ACT, No. 26 OF 1980 REGULATIONS made by the Minister of Health under section 32 of the Food Act, No. 26 of 1980. 1. These regulations may be cited as the Food (Cold Storage Temperature) Regulations 2024 and shall come into operation on 01st Jul",
+      "readable_text_length": 579
+    },
+    {
+      "filename": "7f6c02a7cbe534558d8b3d25975dfe7e4c1a8da9e88f48aefe5e3f725599dfec.pdf",
+      "path": "backend/data/raw_sources/7f6c02a7cbe534558d8b3d25975dfe7e4c1a8da9e88f48aefe5e3f725599dfec.pdf",
+      "size_bytes": 1037,
+      "sha256": "7f6c02a7cbe534558d8b3d25975dfe7e4c1a8da9e88f48aefe5e3f725599dfec",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "83ed19c22873471652d0073fe16c977442e42c8ecac2edf1d691d00d78d8a054.pdf",
+      "path": "backend/data/raw_sources/83ed19c22873471652d0073fe16c977442e42c8ecac2edf1d691d00d78d8a054.pdf",
+      "size_bytes": 424172,
+      "sha256": "83ed19c22873471652d0073fe16c977442e42c8ecac2edf1d691d00d78d8a054",
+      "page_count": 25,
+      "metadata": {
+        "format": "PDF 1.7",
+        "creator": "Mozilla Firefox 153.0.1",
+        "producer": "cairo 1.18.4 (https://cairographics.org)",
+        "creationDate": "D:20260807124840+05'30"
+      },
+      "gazette_number": "2494/47",
+      "gazette_date": "01st July 2026",
+      "reg_title": "Food (Labelling and Advertising) Regulations 2026",
+      "document_type": "Official Sri Lankan Gazette",
+      "language": "English",
+      "text_sample": "EXTRAORDINARY The Gazette of the Democratic Socialist Republic of Sri Lanka (Published by Authority) PART I : SECTION (I) — GENERAL GovermeNoﬁco 1A - PG 7797 - 3003 (07/2026) This Gazette Extraordinary can be downloaded from www.documents.gov.lk L.D.B.- 11/1980 (30)(A) FOOD ACT, No. 26 OF 1980 REGULATIONS made by the Minister of Health and Mass Media in consultation with the Food Advisor",
+      "readable_text_length": 10819
+    },
+    {
+      "filename": "87917e1621acbd77759b2c3b53a8d3fd3de1e1eb6014762058bea98451dabc45.pdf",
+      "path": "backend/data/raw_sources/87917e1621acbd77759b2c3b53a8d3fd3de1e1eb6014762058bea98451dabc45.pdf",
+      "size_bytes": 1037,
+      "sha256": "87917e1621acbd77759b2c3b53a8d3fd3de1e1eb6014762058bea98451dabc45",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "8a1611b7ec275f2dc87afbaaac6d7ef108969e8df63baca7053987e516c37d88.pdf",
+      "path": "backend/data/raw_sources/8a1611b7ec275f2dc87afbaaac6d7ef108969e8df63baca7053987e516c37d88.pdf",
+      "size_bytes": 1376,
+      "sha256": "8a1611b7ec275f2dc87afbaaac6d7ef108969e8df63baca7053987e516c37d88",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": "2499/12",
+      "gazette_date": "01st July 2026",
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Official Sri Lankan Gazette",
+      "language": "English",
+      "text_sample": "THE GAZETTE OF THE DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA (EXTRAORDINARY) No. 2499/12 - WEDNESDAY, OCTOBER 14, 2024 PART I : SECTION (I) - GENERAL FOOD ACT, No. 26 OF 1980 REGULATIONS made by the Minister of Health under section 32 of the Food Act, No. 26 of 1980. 1. These regulations may be cited as the Food (Cold Storage Temperature) Regulations 2024 and shall come into operation on 01st Jul",
+      "readable_text_length": 579
+    },
+    {
+      "filename": "8acbee59cec77da3d2da047d4599717b197b92b42e25e19c6ec2ba0c9454a7f8.pdf",
+      "path": "backend/data/raw_sources/8acbee59cec77da3d2da047d4599717b197b92b42e25e19c6ec2ba0c9454a7f8.pdf",
+      "size_bytes": 1037,
+      "sha256": "8acbee59cec77da3d2da047d4599717b197b92b42e25e19c6ec2ba0c9454a7f8",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "8c0973455d9304c7844748d3d199f549f199d8e44e06d1260f9abcce59c83761.pdf",
+      "path": "backend/data/raw_sources/8c0973455d9304c7844748d3d199f549f199d8e44e06d1260f9abcce59c83761.pdf",
+      "size_bytes": 1037,
+      "sha256": "8c0973455d9304c7844748d3d199f549f199d8e44e06d1260f9abcce59c83761",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "9552dcd5b99cc7c7ba5670ae738bf1d76cf4bca48a3556b5b1ed680e6bbbcf06.pdf",
+      "path": "backend/data/raw_sources/9552dcd5b99cc7c7ba5670ae738bf1d76cf4bca48a3556b5b1ed680e6bbbcf06.pdf",
+      "size_bytes": 1376,
+      "sha256": "9552dcd5b99cc7c7ba5670ae738bf1d76cf4bca48a3556b5b1ed680e6bbbcf06",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": "2499/12",
+      "gazette_date": "01st July 2026",
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Official Sri Lankan Gazette",
+      "language": "English",
+      "text_sample": "THE GAZETTE OF THE DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA (EXTRAORDINARY) No. 2499/12 - WEDNESDAY, OCTOBER 14, 2024 PART I : SECTION (I) - GENERAL FOOD ACT, No. 26 OF 1980 REGULATIONS made by the Minister of Health under section 32 of the Food Act, No. 26 of 1980. 1. These regulations may be cited as the Food (Cold Storage Temperature) Regulations 2024 and shall come into operation on 01st Jul",
+      "readable_text_length": 579
+    },
+    {
+      "filename": "9828600a5e9a2ca92cca62171f24ce9bd77bad8951a2da4645b8ad90a29bc665.pdf",
+      "path": "backend/data/raw_sources/9828600a5e9a2ca92cca62171f24ce9bd77bad8951a2da4645b8ad90a29bc665.pdf",
+      "size_bytes": 1037,
+      "sha256": "9828600a5e9a2ca92cca62171f24ce9bd77bad8951a2da4645b8ad90a29bc665",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "98d27633348855c40356ca1e3ca04e9d1af0e5ddea37fb03a04d58591e3404fe.pdf",
+      "path": "backend/data/raw_sources/98d27633348855c40356ca1e3ca04e9d1af0e5ddea37fb03a04d58591e3404fe.pdf",
+      "size_bytes": 1037,
+      "sha256": "98d27633348855c40356ca1e3ca04e9d1af0e5ddea37fb03a04d58591e3404fe",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "9adf6ed526547e0a89f741e517e2d4d0fffe0fa0bc125f55eff98946d2480a94.pdf",
+      "path": "backend/data/raw_sources/9adf6ed526547e0a89f741e517e2d4d0fffe0fa0bc125f55eff98946d2480a94.pdf",
+      "size_bytes": 1037,
+      "sha256": "9adf6ed526547e0a89f741e517e2d4d0fffe0fa0bc125f55eff98946d2480a94",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "9d63f6c4d8e678c0c27ab0566de2b383620abb861113c56eb1078bc0441eb237.pdf",
+      "path": "backend/data/raw_sources/9d63f6c4d8e678c0c27ab0566de2b383620abb861113c56eb1078bc0441eb237.pdf",
+      "size_bytes": 1037,
+      "sha256": "9d63f6c4d8e678c0c27ab0566de2b383620abb861113c56eb1078bc0441eb237",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "English_The_Food_Labelling_and_Advertising_Regulations.pdf",
+      "path": "backend/data/raw_sources/English_The_Food_Labelling_and_Advertising_Regulations.pdf",
+      "size_bytes": 137011,
+      "sha256": "d5fd93679c6a3c12c64118d6a1e738e11fcbe1d8e577880fb4dae65d868272cd",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7",
+        "creator": "Mozilla Firefox 140.0.2",
+        "producer": "cairo 1.18.0 (https://cairographics.org)",
+        "creationDate": "D:20250709130710+05'30"
+      },
+      "gazette_number": "2443/06",
+      "gazette_date": "14th\nFebruary 2023",
+      "reg_title": "Food (Labelling and Advertising) Regulations 2026",
+      "document_type": "Official Sri Lankan Gazette",
+      "language": "English",
+      "text_sample": "w;s úfYI wxl 2443$06 - 2025 cqks ui 30 jeks i÷od - 2025'06'30 No. 2443/06 - MONDAY, JUNE 30, 2025 EXTRAORDINARY Y%S ,xld m%cd;dka;%sl iudcjd§ ckrcfha .eiÜ m;%h The Gazette of the Democratic Socialist Republic of Sri Lanka (Published by Authority) PART I : SECTION (I) — GENERAL GovermeNoﬁco FOOD ACT, No. 26 OF 1980 REGULATIONS made by the Minister of Health and Mass Media, in consultation",
+      "readable_text_length": 1281
+    },
+    {
+      "filename": "Gazette_2024_Cold_Storage_E2E.pdf",
+      "path": "backend/data/raw_sources/Gazette_2024_Cold_Storage_E2E.pdf",
+      "size_bytes": 1376,
+      "sha256": "00158db0b6fa7c8ef686e4d0d0f2c0a73e5c6604f4177ec652579f65297519e2",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": "2499/12",
+      "gazette_date": "01st July 2026",
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Official Sri Lankan Gazette",
+      "language": "English",
+      "text_sample": "THE GAZETTE OF THE DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA (EXTRAORDINARY) No. 2499/12 - WEDNESDAY, OCTOBER 14, 2024 PART I : SECTION (I) - GENERAL FOOD ACT, No. 26 OF 1980 REGULATIONS made by the Minister of Health under section 32 of the Food Act, No. 26 of 1980. 1. These regulations may be cited as the Food (Cold Storage Temperature) Regulations 2024 and shall come into operation on 01st Jul",
+      "readable_text_length": 579
+    },
+    {
+      "filename": "Gazette_2024_Rejection_E2E.pdf",
+      "path": "backend/data/raw_sources/Gazette_2024_Rejection_E2E.pdf",
+      "size_bytes": 1301,
+      "sha256": "cac27d4f87efe2d64a176d56c08987a984fceae3f50ceb7979fc8e5690abeb00",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": "2500/01",
+      "gazette_date": "01st January 2027",
+      "reg_title": null,
+      "document_type": "Official Sri Lankan Gazette",
+      "language": "English",
+      "text_sample": "THE GAZETTE OF THE DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA (EXTRAORDINARY) No. 2500/01 - FRIDAY, NOVEMBER 01, 2024 PART I : SECTION (I) - GENERAL FOOD ACT, No. 26 OF 1980 1. These regulations may be cited as the Food (Beverage Acidity) Regulations 2024 and shall come into operation on 01st January 2027. 2. Any carbonated beverage containing titratable acidity exceeding 0.5 percent shall state t",
+      "readable_text_length": 455
+    },
+    {
+      "filename": "Labelling_Regulations_Final_-_11.02.2026.pdf",
+      "path": "backend/data/raw_sources/Labelling_Regulations_Final_-_11.02.2026.pdf",
+      "size_bytes": 613690,
+      "sha256": "c70b5668131b76ff206897ef391cb3402bb4bf6be39a76ad1400d24c07330142",
+      "page_count": 22,
+      "metadata": {
+        "format": "PDF 1.3",
+        "title": "Microsoft Word - Regulations Final - 11.02.2026.docx",
+        "creator": "Word",
+        "producer": "macOS Version 26.2 (Build 25C56) Quartz PDFContext",
+        "creationDate": "D:20260211080312Z00'00'",
+        "modDate": "D:20260211133831+05'00'"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Food (Labelling and Advertising) Regulations 2026",
+      "document_type": "Regulatory Document / Regulations",
+      "language": "English",
+      "text_sample": "Regulations    1. These regulations may be cited as Food (Labelling and Advertising) Regulations 2026 and shall come into operation  on July 1, 2026. These regulations shall not apply to food products manufactured before July 1, 2026.    2. A person shall not import, transport, distribute, store, sell, offer for sale, expose or keep for sale or advertise, any  food contained in a package or co",
+      "readable_text_length": 14111
+    },
+    {
+      "filename": "Lec 03.pdf",
+      "path": "backend/data/raw_sources/Lec 03.pdf",
+      "size_bytes": 1583780,
+      "sha256": "b2cfaf0ae21c67ae28864038a0b21293eb4c0f888dbc984c331e975c5528c37f",
+      "page_count": 59,
+      "metadata": {
+        "format": "PDF 1.7",
+        "producer": "iLovePDF",
+        "modDate": "D:20261006091721Z"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "University Lecture Slides (Lec 03)",
+      "document_type": "Lecture Presentation / Slides",
+      "language": "English",
+      "text_sample": "IS5103 – High Performance Computing Interconnection Networks & Basic Communication Operations T. Kayalvizhy  |  Faculty of Computing, SUSL T. Kayalvizhy 1  Interconnection Networks & Basic Communication Operations  What Is a Parallel Computer? • A parallel computer contains multiple processing elements that can work on  different parts of a problem at the same time. • Example: 8 images can be proc",
+      "readable_text_length": 1039
+    },
+    {
+      "filename": "a0e92d717cc4da767efd8e38505074baa5d94d6ec522db8e1268363cd990c058.pdf",
+      "path": "backend/data/raw_sources/a0e92d717cc4da767efd8e38505074baa5d94d6ec522db8e1268363cd990c058.pdf",
+      "size_bytes": 1037,
+      "sha256": "a0e92d717cc4da767efd8e38505074baa5d94d6ec522db8e1268363cd990c058",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "a1043a45247238f9e2836b68a693ecb2ce8933e092a481f80e1efc613c1ee03e.pdf",
+      "path": "backend/data/raw_sources/a1043a45247238f9e2836b68a693ecb2ce8933e092a481f80e1efc613c1ee03e.pdf",
+      "size_bytes": 1037,
+      "sha256": "a1043a45247238f9e2836b68a693ecb2ce8933e092a481f80e1efc613c1ee03e",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "a167265aa79ca2ff98f4968cb1ef0218d4bfe58c4a337c3b72a52a91ef27ee9e.pdf",
+      "path": "backend/data/raw_sources/a167265aa79ca2ff98f4968cb1ef0218d4bfe58c4a337c3b72a52a91ef27ee9e.pdf",
+      "size_bytes": 1037,
+      "sha256": "a167265aa79ca2ff98f4968cb1ef0218d4bfe58c4a337c3b72a52a91ef27ee9e",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "a19b8f518aadee15e2e3a2e218a8c5219cc4c114bd48dfc0d7b1b8f0d4de0b8c.pdf",
+      "path": "backend/data/raw_sources/a19b8f518aadee15e2e3a2e218a8c5219cc4c114bd48dfc0d7b1b8f0d4de0b8c.pdf",
+      "size_bytes": 1037,
+      "sha256": "a19b8f518aadee15e2e3a2e218a8c5219cc4c114bd48dfc0d7b1b8f0d4de0b8c",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "a1c9419e70c4c50b2fd1930464fafc951e2d9925dc29f830deaccb10f2802434.pdf",
+      "path": "backend/data/raw_sources/a1c9419e70c4c50b2fd1930464fafc951e2d9925dc29f830deaccb10f2802434.pdf",
+      "size_bytes": 1037,
+      "sha256": "a1c9419e70c4c50b2fd1930464fafc951e2d9925dc29f830deaccb10f2802434",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "a4d6eb3eea7f89f21399fa97f65051957ff0acc634d55b455104b06cd87af4ef.pdf",
+      "path": "backend/data/raw_sources/a4d6eb3eea7f89f21399fa97f65051957ff0acc634d55b455104b06cd87af4ef.pdf",
+      "size_bytes": 1376,
+      "sha256": "a4d6eb3eea7f89f21399fa97f65051957ff0acc634d55b455104b06cd87af4ef",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": "2499/12",
+      "gazette_date": "01st July 2026",
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Official Sri Lankan Gazette",
+      "language": "English",
+      "text_sample": "THE GAZETTE OF THE DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA (EXTRAORDINARY) No. 2499/12 - WEDNESDAY, OCTOBER 14, 2024 PART I : SECTION (I) - GENERAL FOOD ACT, No. 26 OF 1980 REGULATIONS made by the Minister of Health under section 32 of the Food Act, No. 26 of 1980. 1. These regulations may be cited as the Food (Cold Storage Temperature) Regulations 2024 and shall come into operation on 01st Jul",
+      "readable_text_length": 579
+    },
+    {
+      "filename": "a909151f06f6eaf8cc41f66a7da1c94b67714309b707d3ee651cbaab172c15a7.pdf",
+      "path": "backend/data/raw_sources/a909151f06f6eaf8cc41f66a7da1c94b67714309b707d3ee651cbaab172c15a7.pdf",
+      "size_bytes": 1037,
+      "sha256": "a909151f06f6eaf8cc41f66a7da1c94b67714309b707d3ee651cbaab172c15a7",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "ad66bf53c840ba8cec9407197a97e168bf45fe1ed51ef9f3769b58d748459774.pdf",
+      "path": "backend/data/raw_sources/ad66bf53c840ba8cec9407197a97e168bf45fe1ed51ef9f3769b58d748459774.pdf",
+      "size_bytes": 1037,
+      "sha256": "ad66bf53c840ba8cec9407197a97e168bf45fe1ed51ef9f3769b58d748459774",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "b2cfaf0ae21c67ae28864038a0b21293eb4c0f888dbc984c331e975c5528c37f.pdf",
+      "path": "backend/data/raw_sources/b2cfaf0ae21c67ae28864038a0b21293eb4c0f888dbc984c331e975c5528c37f.pdf",
+      "size_bytes": 1583780,
+      "sha256": "b2cfaf0ae21c67ae28864038a0b21293eb4c0f888dbc984c331e975c5528c37f",
+      "page_count": 59,
+      "metadata": {
+        "format": "PDF 1.7",
+        "producer": "iLovePDF",
+        "modDate": "D:20261006091721Z"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": null,
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "IS5103 – High Performance Computing Interconnection Networks & Basic Communication Operations T. Kayalvizhy  |  Faculty of Computing, SUSL T. Kayalvizhy 1  Interconnection Networks & Basic Communication Operations  What Is a Parallel Computer? • A parallel computer contains multiple processing elements that can work on  different parts of a problem at the same time. • Example: 8 images can be proc",
+      "readable_text_length": 1039
+    },
+    {
+      "filename": "b2f25b3a07114c75d5a4dda734bdd49a98ec42fded7ee0d125ab6c3fcbd2640f.pdf",
+      "path": "backend/data/raw_sources/b2f25b3a07114c75d5a4dda734bdd49a98ec42fded7ee0d125ab6c3fcbd2640f.pdf",
+      "size_bytes": 1301,
+      "sha256": "b2f25b3a07114c75d5a4dda734bdd49a98ec42fded7ee0d125ab6c3fcbd2640f",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": "2500/01",
+      "gazette_date": "01st January 2027",
+      "reg_title": null,
+      "document_type": "Official Sri Lankan Gazette",
+      "language": "English",
+      "text_sample": "THE GAZETTE OF THE DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA (EXTRAORDINARY) No. 2500/01 - FRIDAY, NOVEMBER 01, 2024 PART I : SECTION (I) - GENERAL FOOD ACT, No. 26 OF 1980 1. These regulations may be cited as the Food (Beverage Acidity) Regulations 2024 and shall come into operation on 01st January 2027. 2. Any carbonated beverage containing titratable acidity exceeding 0.5 percent shall state t",
+      "readable_text_length": 455
+    },
+    {
+      "filename": "b46601cd3a5156c3dcb0285ded5b700821065479c19dbdd53dc012fd66f0679f.pdf",
+      "path": "backend/data/raw_sources/b46601cd3a5156c3dcb0285ded5b700821065479c19dbdd53dc012fd66f0679f.pdf",
+      "size_bytes": 1037,
+      "sha256": "b46601cd3a5156c3dcb0285ded5b700821065479c19dbdd53dc012fd66f0679f",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "b630e088a7703f8df2a2b4eb36e1d1f46fbd7ee6cc9164fa45475252e256f3d9.pdf",
+      "path": "backend/data/raw_sources/b630e088a7703f8df2a2b4eb36e1d1f46fbd7ee6cc9164fa45475252e256f3d9.pdf",
+      "size_bytes": 1376,
+      "sha256": "b630e088a7703f8df2a2b4eb36e1d1f46fbd7ee6cc9164fa45475252e256f3d9",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": "2499/12",
+      "gazette_date": "01st July 2026",
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Official Sri Lankan Gazette",
+      "language": "English",
+      "text_sample": "THE GAZETTE OF THE DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA (EXTRAORDINARY) No. 2499/12 - WEDNESDAY, OCTOBER 14, 2024 PART I : SECTION (I) - GENERAL FOOD ACT, No. 26 OF 1980 REGULATIONS made by the Minister of Health under section 32 of the Food Act, No. 26 of 1980. 1. These regulations may be cited as the Food (Cold Storage Temperature) Regulations 2024 and shall come into operation on 01st Jul",
+      "readable_text_length": 579
+    },
+    {
+      "filename": "b78479b6b08d12e11fd27cfc39677d5a284bc147bf16a777eafb495b86f4135a.pdf",
+      "path": "backend/data/raw_sources/b78479b6b08d12e11fd27cfc39677d5a284bc147bf16a777eafb495b86f4135a.pdf",
+      "size_bytes": 147560,
+      "sha256": "b78479b6b08d12e11fd27cfc39677d5a284bc147bf16a777eafb495b86f4135a",
+      "page_count": 5,
+      "metadata": {
+        "format": "PDF 1.4",
+        "title": "PG- 001548  (E) I - I Food Act, 1980.pmd",
+        "author": "ws_01",
+        "creator": "PageMaker 7.0",
+        "producer": "Acrobat Distiller 6.0 (Windows)",
+        "creationDate": "D:20130713105442+06'00'",
+        "modDate": "D:20130713105442+06'00'"
+      },
+      "gazette_number": "1795/51",
+      "gazette_date": "17th January 2013",
+      "reg_title": "Food (Labelling and Advertising) Regulations 2026",
+      "document_type": "Official Sri Lankan Gazette",
+      "language": "English",
+      "text_sample": "I fldgi ( ^I& fPoh - YS% ,xld m%cd;dka;s%l iudcjd§ ckrcfha w;s úfYI .eiÜ m;%h - 2013'02'01 PART I : SEC. (I) - GAZETTE EXTRAORDINARY OF THE DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA - 01.02.2013 1A w;s úfYI wxl 1795$51 - 2013 fmnrjdß ui 01 jeks isl=rdod - 2013'02'01 No. 1795/51  -  FRIDAY,  FEBRUARY  01,  2013 EXTRAORDINARY Y%S ,xld m%cd;dka;%sl iudcjd§ ckrcfha .eiÜ m;%h The Gazette of the Democr",
+      "readable_text_length": 11953
+    },
+    {
+      "filename": "b8b1cc794b184c612a3fa8ed271e5c7974279fed2dee1b2e475dfb0c652c6c0f.pdf",
+      "path": "backend/data/raw_sources/b8b1cc794b184c612a3fa8ed271e5c7974279fed2dee1b2e475dfb0c652c6c0f.pdf",
+      "size_bytes": 1376,
+      "sha256": "b8b1cc794b184c612a3fa8ed271e5c7974279fed2dee1b2e475dfb0c652c6c0f",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": "2499/12",
+      "gazette_date": "01st July 2026",
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Official Sri Lankan Gazette",
+      "language": "English",
+      "text_sample": "THE GAZETTE OF THE DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA (EXTRAORDINARY) No. 2499/12 - WEDNESDAY, OCTOBER 14, 2024 PART I : SECTION (I) - GENERAL FOOD ACT, No. 26 OF 1980 REGULATIONS made by the Minister of Health under section 32 of the Food Act, No. 26 of 1980. 1. These regulations may be cited as the Food (Cold Storage Temperature) Regulations 2024 and shall come into operation on 01st Jul",
+      "readable_text_length": 579
+    },
+    {
+      "filename": "bb0c2312d46103f143142ac1e8eb6076baf0f1ae632ef209924689659d3af3de.pdf",
+      "path": "backend/data/raw_sources/bb0c2312d46103f143142ac1e8eb6076baf0f1ae632ef209924689659d3af3de.pdf",
+      "size_bytes": 1037,
+      "sha256": "bb0c2312d46103f143142ac1e8eb6076baf0f1ae632ef209924689659d3af3de",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "be4ae24d5de7fb6c7e556878becaaf14b88655bff25af4e8175229d021c00c55.pdf",
+      "path": "backend/data/raw_sources/be4ae24d5de7fb6c7e556878becaaf14b88655bff25af4e8175229d021c00c55.pdf",
+      "size_bytes": 1376,
+      "sha256": "be4ae24d5de7fb6c7e556878becaaf14b88655bff25af4e8175229d021c00c55",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": "2499/12",
+      "gazette_date": "01st July 2026",
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Official Sri Lankan Gazette",
+      "language": "English",
+      "text_sample": "THE GAZETTE OF THE DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA (EXTRAORDINARY) No. 2499/12 - WEDNESDAY, OCTOBER 14, 2024 PART I : SECTION (I) - GENERAL FOOD ACT, No. 26 OF 1980 REGULATIONS made by the Minister of Health under section 32 of the Food Act, No. 26 of 1980. 1. These regulations may be cited as the Food (Cold Storage Temperature) Regulations 2024 and shall come into operation on 01st Jul",
+      "readable_text_length": 579
+    },
+    {
+      "filename": "bf9a68a4cf64256fef7d5626d2736a2b223b8bc6f9d5634e08cd884ac3d81c0b.pdf",
+      "path": "backend/data/raw_sources/bf9a68a4cf64256fef7d5626d2736a2b223b8bc6f9d5634e08cd884ac3d81c0b.pdf",
+      "size_bytes": 1037,
+      "sha256": "bf9a68a4cf64256fef7d5626d2736a2b223b8bc6f9d5634e08cd884ac3d81c0b",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "c03271fbd9735d62146533759505b98b514f57aaf5ec509a2d735f04c26ec929.pdf",
+      "path": "backend/data/raw_sources/c03271fbd9735d62146533759505b98b514f57aaf5ec509a2d735f04c26ec929.pdf",
+      "size_bytes": 1376,
+      "sha256": "c03271fbd9735d62146533759505b98b514f57aaf5ec509a2d735f04c26ec929",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": "2499/12",
+      "gazette_date": "01st July 2026",
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Official Sri Lankan Gazette",
+      "language": "English",
+      "text_sample": "THE GAZETTE OF THE DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA (EXTRAORDINARY) No. 2499/12 - WEDNESDAY, OCTOBER 14, 2024 PART I : SECTION (I) - GENERAL FOOD ACT, No. 26 OF 1980 REGULATIONS made by the Minister of Health under section 32 of the Food Act, No. 26 of 1980. 1. These regulations may be cited as the Food (Cold Storage Temperature) Regulations 2024 and shall come into operation on 01st Jul",
+      "readable_text_length": 579
+    },
+    {
+      "filename": "c244fce78aa38cfc17dbd9029caf602d50bd10bfdfd6fcb20bc215e0b8d47bb8.pdf",
+      "path": "backend/data/raw_sources/c244fce78aa38cfc17dbd9029caf602d50bd10bfdfd6fcb20bc215e0b8d47bb8.pdf",
+      "size_bytes": 1033,
+      "sha256": "c244fce78aa38cfc17dbd9029caf602d50bd10bfdfd6fcb20bc215e0b8d47bb8",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "c27c7cc71725bccceb20f79645d34166a05cf161e99c22dea740e4277430f4c3.pdf",
+      "path": "backend/data/raw_sources/c27c7cc71725bccceb20f79645d34166a05cf161e99c22dea740e4277430f4c3.pdf",
+      "size_bytes": 1037,
+      "sha256": "c27c7cc71725bccceb20f79645d34166a05cf161e99c22dea740e4277430f4c3",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "c70b5668131b76ff206897ef391cb3402bb4bf6be39a76ad1400d24c07330142.pdf",
+      "path": "backend/data/raw_sources/c70b5668131b76ff206897ef391cb3402bb4bf6be39a76ad1400d24c07330142.pdf",
+      "size_bytes": 613690,
+      "sha256": "c70b5668131b76ff206897ef391cb3402bb4bf6be39a76ad1400d24c07330142",
+      "page_count": 22,
+      "metadata": {
+        "format": "PDF 1.3",
+        "title": "Microsoft Word - Regulations Final - 11.02.2026.docx",
+        "creator": "Word",
+        "producer": "macOS Version 26.2 (Build 25C56) Quartz PDFContext",
+        "creationDate": "D:20260211080312Z00'00'",
+        "modDate": "D:20260211133831+05'00'"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Food (Labelling and Advertising) Regulations 2026",
+      "document_type": "Regulatory Document / Regulations",
+      "language": "English",
+      "text_sample": "Regulations    1. These regulations may be cited as Food (Labelling and Advertising) Regulations 2026 and shall come into operation  on July 1, 2026. These regulations shall not apply to food products manufactured before July 1, 2026.    2. A person shall not import, transport, distribute, store, sell, offer for sale, expose or keep for sale or advertise, any  food contained in a package or co",
+      "readable_text_length": 14111
+    },
+    {
+      "filename": "c788d12f5e05492a437eec394ec73e865220a0e5fbdbc5bad4fe170eff730fa2.pdf",
+      "path": "backend/data/raw_sources/c788d12f5e05492a437eec394ec73e865220a0e5fbdbc5bad4fe170eff730fa2.pdf",
+      "size_bytes": 1037,
+      "sha256": "c788d12f5e05492a437eec394ec73e865220a0e5fbdbc5bad4fe170eff730fa2",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "cac27d4f87efe2d64a176d56c08987a984fceae3f50ceb7979fc8e5690abeb00.pdf",
+      "path": "backend/data/raw_sources/cac27d4f87efe2d64a176d56c08987a984fceae3f50ceb7979fc8e5690abeb00.pdf",
+      "size_bytes": 1301,
+      "sha256": "cac27d4f87efe2d64a176d56c08987a984fceae3f50ceb7979fc8e5690abeb00",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": "2500/01",
+      "gazette_date": "01st January 2027",
+      "reg_title": null,
+      "document_type": "Official Sri Lankan Gazette",
+      "language": "English",
+      "text_sample": "THE GAZETTE OF THE DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA (EXTRAORDINARY) No. 2500/01 - FRIDAY, NOVEMBER 01, 2024 PART I : SECTION (I) - GENERAL FOOD ACT, No. 26 OF 1980 1. These regulations may be cited as the Food (Beverage Acidity) Regulations 2024 and shall come into operation on 01st January 2027. 2. Any carbonated beverage containing titratable acidity exceeding 0.5 percent shall state t",
+      "readable_text_length": 455
+    },
+    {
+      "filename": "d00eee03803841cd97a9ee3458e09508fec153d398af17c2165bc6a77685399d.pdf",
+      "path": "backend/data/raw_sources/d00eee03803841cd97a9ee3458e09508fec153d398af17c2165bc6a77685399d.pdf",
+      "size_bytes": 1301,
+      "sha256": "d00eee03803841cd97a9ee3458e09508fec153d398af17c2165bc6a77685399d",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": "2500/01",
+      "gazette_date": "01st January 2027",
+      "reg_title": null,
+      "document_type": "Official Sri Lankan Gazette",
+      "language": "English",
+      "text_sample": "THE GAZETTE OF THE DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA (EXTRAORDINARY) No. 2500/01 - FRIDAY, NOVEMBER 01, 2024 PART I : SECTION (I) - GENERAL FOOD ACT, No. 26 OF 1980 1. These regulations may be cited as the Food (Beverage Acidity) Regulations 2024 and shall come into operation on 01st January 2027. 2. Any carbonated beverage containing titratable acidity exceeding 0.5 percent shall state t",
+      "readable_text_length": 455
+    },
+    {
+      "filename": "d5fd93679c6a3c12c64118d6a1e738e11fcbe1d8e577880fb4dae65d868272cd.pdf",
+      "path": "backend/data/raw_sources/d5fd93679c6a3c12c64118d6a1e738e11fcbe1d8e577880fb4dae65d868272cd.pdf",
+      "size_bytes": 137011,
+      "sha256": "d5fd93679c6a3c12c64118d6a1e738e11fcbe1d8e577880fb4dae65d868272cd",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7",
+        "creator": "Mozilla Firefox 140.0.2",
+        "producer": "cairo 1.18.0 (https://cairographics.org)",
+        "creationDate": "D:20250709130710+05'30"
+      },
+      "gazette_number": "2443/06",
+      "gazette_date": "14th\nFebruary 2023",
+      "reg_title": "Food (Labelling and Advertising) Regulations 2026",
+      "document_type": "Official Sri Lankan Gazette",
+      "language": "English",
+      "text_sample": "w;s úfYI wxl 2443$06 - 2025 cqks ui 30 jeks i÷od - 2025'06'30 No. 2443/06 - MONDAY, JUNE 30, 2025 EXTRAORDINARY Y%S ,xld m%cd;dka;%sl iudcjd§ ckrcfha .eiÜ m;%h The Gazette of the Democratic Socialist Republic of Sri Lanka (Published by Authority) PART I : SECTION (I) — GENERAL GovermeNoﬁco FOOD ACT, No. 26 OF 1980 REGULATIONS made by the Minister of Health and Mass Media, in consultation",
+      "readable_text_length": 1281
+    },
+    {
+      "filename": "d7852dcc0da491ee0f67dbc355ad3ed96c1b860018b6151204d0db9d3fe2f45d.pdf",
+      "path": "backend/data/raw_sources/d7852dcc0da491ee0f67dbc355ad3ed96c1b860018b6151204d0db9d3fe2f45d.pdf",
+      "size_bytes": 280770,
+      "sha256": "d7852dcc0da491ee0f67dbc355ad3ed96c1b860018b6151204d0db9d3fe2f45d",
+      "page_count": 7,
+      "metadata": {
+        "format": "PDF 1.4",
+        "creator": "Adobe InDesign 19.4 (Windows)",
+        "producer": "Adobe PDF Library 17.0",
+        "creationDate": "D:20250920110840-07'00'",
+        "modDate": "D:20250920110841-07'00'"
+      },
+      "gazette_number": "2443/27",
+      "gazette_date": "2025.07.01",
+      "reg_title": "Food (Labelling and Advertising) Regulations 2026",
+      "document_type": "Official Sri Lankan Gazette",
+      "language": "English",
+      "text_sample": "w;s úfYI wxl 2443$27 - 2025 cQ,s ui 01 jeks w`.yrejdod - 2025.07.01 No. 2443/27  -  TUESDAY,   JULY  01, 2025 EXTRAORDINARY Y%S ,xld m%cd;dka;%sl iudcjd§ ckrcfha .eiÜ m;%h The Gazette of the Democratic Socialist Republic of Sri Lanka (Published by Authority) PART I : SECTION (I) — GENERAL Government Notifications 1A- PG 7181 - 3004 (07/2025)  This Gazette Extraordinary can be downloaded from www.d",
+      "readable_text_length": 10366
+    },
+    {
+      "filename": "da1666a5847464eb7b6fc73287ccbad1cbe73eed6b609ee0922bf38678605106.pdf",
+      "path": "backend/data/raw_sources/da1666a5847464eb7b6fc73287ccbad1cbe73eed6b609ee0922bf38678605106.pdf",
+      "size_bytes": 1037,
+      "sha256": "da1666a5847464eb7b6fc73287ccbad1cbe73eed6b609ee0922bf38678605106",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "da4c41d176736be543173969ee27e92127bdb123df3245e1235180979fb96e56.pdf",
+      "path": "backend/data/raw_sources/da4c41d176736be543173969ee27e92127bdb123df3245e1235180979fb96e56.pdf",
+      "size_bytes": 1376,
+      "sha256": "da4c41d176736be543173969ee27e92127bdb123df3245e1235180979fb96e56",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": "2499/12",
+      "gazette_date": "01st July 2026",
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Official Sri Lankan Gazette",
+      "language": "English",
+      "text_sample": "THE GAZETTE OF THE DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA (EXTRAORDINARY) No. 2499/12 - WEDNESDAY, OCTOBER 14, 2024 PART I : SECTION (I) - GENERAL FOOD ACT, No. 26 OF 1980 REGULATIONS made by the Minister of Health under section 32 of the Food Act, No. 26 of 1980. 1. These regulations may be cited as the Food (Cold Storage Temperature) Regulations 2024 and shall come into operation on 01st Jul",
+      "readable_text_length": 579
+    },
+    {
+      "filename": "de47952cc0adf0597ec0b17a0cd348a5a1a735f19c97c7033029ce6dcbe34336.pdf",
+      "path": "backend/data/raw_sources/de47952cc0adf0597ec0b17a0cd348a5a1a735f19c97c7033029ce6dcbe34336.pdf",
+      "size_bytes": 1037,
+      "sha256": "de47952cc0adf0597ec0b17a0cd348a5a1a735f19c97c7033029ce6dcbe34336",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "e1b7381dd853f6b27666eff2d8958e580bfc76db0b09317584b197ea3f68e22d.pdf",
+      "path": "backend/data/raw_sources/e1b7381dd853f6b27666eff2d8958e580bfc76db0b09317584b197ea3f68e22d.pdf",
+      "size_bytes": 1037,
+      "sha256": "e1b7381dd853f6b27666eff2d8958e580bfc76db0b09317584b197ea3f68e22d",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "f1de9aa6235a0167d90046f52e1906fa6ad1a5429266fb545414d5c1b904c168.pdf",
+      "path": "backend/data/raw_sources/f1de9aa6235a0167d90046f52e1906fa6ad1a5429266fb545414d5c1b904c168.pdf",
+      "size_bytes": 1037,
+      "sha256": "f1de9aa6235a0167d90046f52e1906fa6ad1a5429266fb545414d5c1b904c168",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "f3b82833cb6410613c2692337a33d06dadc969146077562f4fea03d3d4313384.pdf",
+      "path": "backend/data/raw_sources/f3b82833cb6410613c2692337a33d06dadc969146077562f4fea03d3d4313384.pdf",
+      "size_bytes": 1037,
+      "sha256": "f3b82833cb6410613c2692337a33d06dadc969146077562f4fea03d3d4313384",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "fa3a596d771501018cd569750c8742ecc8127696311035eba07a0696235497b7.pdf",
+      "path": "backend/data/raw_sources/fa3a596d771501018cd569750c8742ecc8127696311035eba07a0696235497b7.pdf",
+      "size_bytes": 1037,
+      "sha256": "fa3a596d771501018cd569750c8742ecc8127696311035eba07a0696235497b7",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "fe8376dc9eb502d7106d342d670e01e6eb5d0fcde4b6dd624ef5081099042b2e.pdf",
+      "path": "backend/data/raw_sources/fe8376dc9eb502d7106d342d670e01e6eb5d0fcde4b6dd624ef5081099042b2e.pdf",
+      "size_bytes": 1037,
+      "sha256": "fe8376dc9eb502d7106d342d670e01e6eb5d0fcde4b6dd624ef5081099042b2e",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Regulatory or Administrative Document",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "food_amendment_colouring_substances_regulations_2011_en.pdf",
+      "path": "backend/data/raw_sources/food_amendment_colouring_substances_regulations_2011_en.pdf",
+      "size_bytes": 81054,
+      "sha256": "3cd9948d2c334d08a11dd5bc9cc1f1a1ec053d6e819ea30f205687dda7c342c7",
+      "page_count": 2,
+      "metadata": {
+        "format": "PDF 1.4",
+        "creator": "HP PDF Formatter version 3.2.0.947",
+        "producer": "Adobe PDF Library 5.0.4",
+        "creationDate": "D:20110728103237+05'30'",
+        "modDate": "D:20110728103237+05'30'"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": null,
+      "document_type": "Regulatory or Administrative Document",
+      "language": "Unknown / Scanned",
+      "text_sample": "",
+      "readable_text_length": 0
+    },
+    {
+      "filename": "food_flavouring_substances_and_flavour_enhancers_regulations_2013_en.pdf",
+      "path": "backend/data/raw_sources/food_flavouring_substances_and_flavour_enhancers_regulations_2013_en.pdf",
+      "size_bytes": 147560,
+      "sha256": "b78479b6b08d12e11fd27cfc39677d5a284bc147bf16a777eafb495b86f4135a",
+      "page_count": 5,
+      "metadata": {
+        "format": "PDF 1.4",
+        "title": "PG- 001548  (E) I - I Food Act, 1980.pmd",
+        "author": "ws_01",
+        "creator": "PageMaker 7.0",
+        "producer": "Acrobat Distiller 6.0 (Windows)",
+        "creationDate": "D:20130713105442+06'00'",
+        "modDate": "D:20130713105442+06'00'"
+      },
+      "gazette_number": "1795/51",
+      "gazette_date": "17th January 2013",
+      "reg_title": "Food (Labelling and Advertising) Regulations 2026",
+      "document_type": "Official Sri Lankan Gazette",
+      "language": "English",
+      "text_sample": "I fldgi ( ^I& fPoh - YS% ,xld m%cd;dka;s%l iudcjd§ ckrcfha w;s úfYI .eiÜ m;%h - 2013'02'01 PART I : SEC. (I) - GAZETTE EXTRAORDINARY OF THE DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA - 01.02.2013 1A w;s úfYI wxl 1795$51 - 2013 fmnrjdß ui 01 jeks isl=rdod - 2013'02'01 No. 1795/51  -  FRIDAY,  FEBRUARY  01,  2013 EXTRAORDINARY Y%S ,xld m%cd;dka;%sl iudcjd§ ckrcfha .eiÜ m;%h The Gazette of the Democr",
+      "readable_text_length": 11953
+    },
+    {
+      "filename": "preservative-english.pdf",
+      "path": "backend/data/raw_sources/preservative-english.pdf",
+      "size_bytes": 154178,
+      "sha256": "3f85f3ef96b7622bdd3e45d7cc642fd96fdbd83a9f84f35f048121eab3e4016f",
+      "page_count": 11,
+      "metadata": {
+        "format": "PDF 1.4",
+        "title": "PG 4409   (E)  (I-I)  Govt. Noti..pmd",
+        "author": "Dell",
+        "creator": "PageMaker 7.0",
+        "producer": "Acrobat Distiller 10.1.1 (Windows)",
+        "creationDate": "D:20190425220313+05'30'",
+        "modDate": "D:20190425220313+05'30'"
+      },
+      "gazette_number": "2113/16",
+      "gazette_date": "19th June\n1990",
+      "reg_title": "Food (Labelling and Advertising) Regulations 2026",
+      "document_type": "Official Sri Lankan Gazette",
+      "language": "English",
+      "text_sample": "w;s úfYI wxl 2113$16 - 2019 ud¾;= ui 05 jeks wÕyrejdod - 2019'03'05 No. 2113/16 -  TUESDAY  MARCH  05,  2019 EXTRAORDINARY Y%S ,xld m%cd;dka;%sl iudcjd§ ckrcfha .eiÜ m;%h The Gazette of the Democratic Socialist Republic of Sri Lanka (Published by Authority) PART I : SECTION (I) — GENERAL Government Notifications",
+      "readable_text_length": 7551
+    },
+    {
+      "filename": "test.pdf",
+      "path": "backend/data/raw_sources/test.pdf",
+      "size_bytes": 1376,
+      "sha256": "561b0e26761ba48d2a698c6b6bc76e9316b71f1965cfb7f2381e72025d1787e9",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": "2499/12",
+      "gazette_date": "01st July 2026",
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Official Sri Lankan Gazette",
+      "language": "English",
+      "text_sample": "THE GAZETTE OF THE DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA (EXTRAORDINARY) No. 2499/12 - WEDNESDAY, OCTOBER 14, 2024 PART I : SECTION (I) - GENERAL FOOD ACT, No. 26 OF 1980 REGULATIONS made by the Minister of Health under section 32 of the Food Act, No. 26 of 1980. 1. These regulations may be cited as the Food (Cold Storage Temperature) Regulations 2024 and shall come into operation on 01st Jul",
+      "readable_text_length": 579
+    },
+    {
+      "filename": "test_gazette_upload.pdf",
+      "path": "backend/data/raw_sources/test_gazette_upload.pdf",
+      "size_bytes": 1037,
+      "sha256": "70b0ab6a074cf2e06283021d5a5bb987c7096964208acf16d70de9a94fdc44a0",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": null,
+      "gazette_date": null,
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Test Fixture / E2E Artifact",
+      "language": "English",
+      "text_sample": "THE FOOD ACT, No. 26 OF 1980 Regulation 50. Every commercial cold storage facility operating at temperature below minus 18 degrees Celsius shall maintain continuous automated digital temperature logging records.",
+      "readable_text_length": 211
+    },
+    {
+      "filename": "test_upload.pdf",
+      "path": "backend/data/raw_sources/test_upload.pdf",
+      "size_bytes": 1376,
+      "sha256": "c03271fbd9735d62146533759505b98b514f57aaf5ec509a2d735f04c26ec929",
+      "page_count": 1,
+      "metadata": {
+        "format": "PDF 1.7"
+      },
+      "gazette_number": "2499/12",
+      "gazette_date": "01st July 2026",
+      "reg_title": "Cold Storage Test Regulations",
+      "document_type": "Official Sri Lankan Gazette",
+      "language": "English",
+      "text_sample": "THE GAZETTE OF THE DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA (EXTRAORDINARY) No. 2499/12 - WEDNESDAY, OCTOBER 14, 2024 PART I : SECTION (I) - GENERAL FOOD ACT, No. 26 OF 1980 REGULATIONS made by the Minister of Health under section 32 of the Food Act, No. 26 of 1980. 1. These regulations may be cited as the Food (Cold Storage Temperature) Regulations 2024 and shall come into operation on 01st Jul",
+      "readable_text_length": 579
+    }
+  ],
+  "database_records": []
+}

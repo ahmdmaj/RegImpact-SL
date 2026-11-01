@@ -175,7 +175,7 @@ def main():
             rows = conn.execute(text("""
                 SELECT s.id, s.title, s.authority, s.sha256_hash, s.file_path, s.file_size_bytes, 
                        s.page_count, s.extraction_status, s.extraction_tool,
-                       COUNT(c.id) as clause_count
+                       COUNT(c.clause_id) as clause_count
                 FROM source_documents s
                 LEFT JOIN clauses c ON s.id = c.document_id
                 GROUP BY s.id, s.title, s.authority, s.sha256_hash, s.file_path, s.file_size_bytes, 
