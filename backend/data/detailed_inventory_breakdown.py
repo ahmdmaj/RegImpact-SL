@@ -137,3 +137,4 @@ with open("/app/backend/data/detailed_inventory_breakdown.json", "w", encoding="
     }, f, indent=2, ensure_ascii=False)
 
 print("\nSaved to /app/backend/data/detailed_inventory_breakdown.json")
+

@@ -122,3 +122,4 @@ with open("/app/backend/data/inventory_analysis.json", "w", encoding="utf-8") as
     }, f, indent=2, ensure_ascii=False)
 
 print("\nAnalysis saved to /app/backend/data/inventory_analysis.json.")
+
