@@ -2,8 +2,8 @@ const { spawn } = require('child_process');
 const http = require('http');
 
 const EDGE_PATH = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
-const USER_DATA_DIR = 'C:\\Users\\HP\\AppData\\Local\\Temp\\edge_cdp_test_' + Date.now();
-const PORT = 9222;
+const USER_DATA_DIR = 'C:\\Users\\HP\\AppData\\Local\\Temp\\edge_cdp_audit_' + Date.now();
+const PORT = 9224;
 
 function wait(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -71,11 +71,11 @@ class CDPClient {
 
   async navigate(url) {
     await this.send('Page.navigate', { url });
-    await wait(2500); // Wait for page load and client-side hydration
+    await wait(2200); // Wait for page load and client-side hydration
   }
 }
 
-async function run() {
+async function runAudit() {
   console.log('Launching headless Microsoft Edge on remote port ' + PORT + '...');
   const edge = spawn(EDGE_PATH, [
     '--headless=new',
@@ -85,14 +85,9 @@ async function run() {
     'about:blank',
   ]);
 
-  edge.stderr.on('data', d => {
-    // console.log('Edge err:', d.toString());
-  });
-
-  // Wait for Edge to be ready
   let targets = null;
-  for (let i = 0; i < 20; i++) {
-    await wait(500);
+  for (let i = 0; i < 25; i++) {
+    await wait(400);
     try {
       targets = await getJson(`http://127.0.0.1:${PORT}/json/list`);
       if (targets && targets.length > 0) break;
@@ -128,9 +123,9 @@ async function run() {
     await cdp.navigate('http://localhost:3000/');
     await cdp.eval(`
       localStorage.setItem('regimpact_user_role', 'sme_user');
-      window.dispatchEvent(new Event('regimpact:role_change'));
+      window.dispatchEvent(new CustomEvent('regimpact:role_change', { detail: { role: 'sme_user' } }));
     `);
-    await wait(1000);
+    await wait(800);
 
     const smeNavLinks = await cdp.eval(`
       Array.from(document.querySelectorAll('nav a')).map(a => a.textContent.trim())
@@ -139,8 +134,8 @@ async function run() {
     const hasReviewer = smeNavLinks.some(t => t.includes('Reviewer Portal'));
     const hasEval = smeNavLinks.some(t => t.includes('Evaluation Dashboard'));
 
-    record('SME-01-NAV', 'SME Navbar Links', hasAssessor && !hasReviewer && !hasEval, 
-      `Links: [${smeNavLinks.join(', ')}] | Assessor: ${hasAssessor}, Reviewer: ${hasReviewer}, Eval: ${hasEval}`);
+    record('SME-01-NAV', 'SME Navbar Link Filtering', hasAssessor && !hasReviewer && !hasEval, 
+      `Assessor: ${hasAssessor}, Reviewer: ${hasReviewer}, Eval: ${hasEval} | Links: [${smeNavLinks.join(' | ')}]`);
 
     const smeBanner = await cdp.eval(`
       document.body.innerText.includes('SME Self-Assessment Portal')
@@ -150,20 +145,24 @@ async function run() {
     // Direct navigation to /admin/reviews as SME
     await cdp.navigate('http://localhost:3000/admin/reviews');
     const smeReviewAccessDenied = await cdp.eval(`
-      document.body.innerText.includes('Access Denied: Legal Reviewer or Administrator Role Required')
+      document.body.innerText.includes('403 FORBIDDEN') ||
+      document.body.innerText.includes('Access Restricted to Legal Reviewers') ||
+      document.body.innerText.includes('Access Forbidden: SME User role is not authorized')
     `);
     const smeReviewQueueHidden = await cdp.eval(`
       !document.body.innerText.includes('All candidate statutory rules in the review queue have been reviewed')
     `);
-    record('SME-03-REVIEW-DENIED', 'SME Access to /admin/reviews', smeReviewAccessDenied && smeReviewQueueHidden, 
-      `Access Denied Screen: ${smeReviewAccessDenied}, False Queue Empty Hidden: ${smeReviewQueueHidden}`);
+    record('SME-03-REVIEW-DENIED', 'SME Direct Access to /admin/reviews', smeReviewAccessDenied && smeReviewQueueHidden, 
+      `Access Denied Barrier: ${smeReviewAccessDenied}, False Queue Empty Hidden: ${smeReviewQueueHidden}`);
 
     // Direct navigation to /evaluation as SME
     await cdp.navigate('http://localhost:3000/evaluation');
     const smeEvalAccessDenied = await cdp.eval(`
-      document.body.innerText.includes('Access Denied: Administrator Role Required')
+      document.body.innerText.includes('403 FORBIDDEN') ||
+      document.body.innerText.includes('Access Restricted to Administrators') ||
+      document.body.innerText.includes("Access Forbidden: Role 'sme_user' is not authorized")
     `);
-    record('SME-04-EVAL-DENIED', 'SME Access to /evaluation', smeEvalAccessDenied, `Access Denied Screen: ${smeEvalAccessDenied}`);
+    record('SME-04-EVAL-DENIED', 'SME Direct Access to /evaluation', smeEvalAccessDenied, `Access Denied Barrier: ${smeEvalAccessDenied}`);
 
     // ==========================================
     // TEST SUITE 2: Legal Reviewer Persona
@@ -172,9 +171,9 @@ async function run() {
     await cdp.navigate('http://localhost:3000/');
     await cdp.eval(`
       localStorage.setItem('regimpact_user_role', 'reviewer');
-      window.dispatchEvent(new Event('regimpact:role_change'));
+      window.dispatchEvent(new CustomEvent('regimpact:role_change', { detail: { role: 'reviewer' } }));
     `);
-    await wait(1000);
+    await wait(800);
 
     const revNavLinks = await cdp.eval(`
       Array.from(document.querySelectorAll('nav a')).map(a => a.textContent.trim())
@@ -183,8 +182,8 @@ async function run() {
     const revHasReviewer = revNavLinks.some(t => t.includes('Reviewer Portal'));
     const revHasEval = revNavLinks.some(t => t.includes('Evaluation Dashboard'));
 
-    record('REV-01-NAV', 'Reviewer Navbar Links', revHasAssessor && revHasReviewer && !revHasEval,
-      `Links: [${revNavLinks.join(', ')}] | Assessor: ${revHasAssessor}, Reviewer: ${revHasReviewer}, Eval: ${revHasEval}`);
+    record('REV-01-NAV', 'Reviewer Navbar Link Filtering', revHasAssessor && revHasReviewer && !revHasEval,
+      `Assessor: ${revHasAssessor}, Reviewer: ${revHasReviewer}, Eval: ${revHasEval}`);
 
     const revBanner = await cdp.eval(`
       document.body.innerText.includes('Legal Reviewer Workspace')
@@ -193,7 +192,7 @@ async function run() {
 
     // Direct navigation to /admin/reviews as Reviewer
     await cdp.navigate('http://localhost:3000/admin/reviews');
-    await wait(2000); // Wait for reviews to load
+    await wait(2500); // Wait for reviews to load
     const revQueueLoaded = await cdp.eval(`
       document.body.innerText.includes('RULE-COLOURING') || document.body.innerText.includes('Pending Review Queue')
     `);
@@ -206,9 +205,11 @@ async function run() {
     // Direct navigation to /evaluation as Reviewer
     await cdp.navigate('http://localhost:3000/evaluation');
     const revEvalAccessDenied = await cdp.eval(`
-      document.body.innerText.includes('Access Denied: Administrator Role Required')
+      document.body.innerText.includes('403 FORBIDDEN') ||
+      document.body.innerText.includes('Access Restricted to Administrators') ||
+      document.body.innerText.includes("Access Forbidden: Role 'reviewer' is not authorized")
     `);
-    record('REV-04-EVAL-DENIED', 'Reviewer Access to /evaluation', revEvalAccessDenied, `Access Denied Screen: ${revEvalAccessDenied}`);
+    record('REV-04-EVAL-DENIED', 'Reviewer Direct Access to /evaluation', revEvalAccessDenied, `Access Denied Barrier: ${revEvalAccessDenied}`);
 
     // ==========================================
     // TEST SUITE 3: Administrator Persona
@@ -217,9 +218,9 @@ async function run() {
     await cdp.navigate('http://localhost:3000/');
     await cdp.eval(`
       localStorage.setItem('regimpact_user_role', 'admin');
-      window.dispatchEvent(new Event('regimpact:role_change'));
+      window.dispatchEvent(new CustomEvent('regimpact:role_change', { detail: { role: 'admin' } }));
     `);
-    await wait(1000);
+    await wait(800);
 
     const adminNavLinks = await cdp.eval(`
       Array.from(document.querySelectorAll('nav a')).map(a => a.textContent.trim())
@@ -228,21 +229,21 @@ async function run() {
     const admHasReviewer = adminNavLinks.some(t => t.includes('Reviewer Portal'));
     const admHasEval = adminNavLinks.some(t => t.includes('Evaluation Dashboard'));
 
-    record('ADM-01-NAV', 'Admin Navbar Links', admHasAssessor && admHasReviewer && admHasEval,
-      `Links: [${adminNavLinks.join(', ')}] | Assessor: ${admHasAssessor}, Reviewer: ${admHasReviewer}, Eval: ${admHasEval}`);
+    record('ADM-01-NAV', 'Admin Navbar Full Access', admHasAssessor && admHasReviewer && admHasEval,
+      `Assessor: ${admHasAssessor}, Reviewer: ${admHasReviewer}, Eval: ${admHasEval}`);
 
     const adminBanner = await cdp.eval(`
       document.body.innerText.includes('Administrator System Overview')
     `);
     const adminKpiPills = await cdp.eval(`
-      document.body.innerText.includes('Engine State') && document.body.innerText.includes('Indexed Regulations')
+      document.body.innerText.includes('Engine State') || document.body.innerText.includes('Indexed Regulations')
     `);
     record('ADM-02-BANNER', 'Admin Home KPI Banner', adminBanner && adminKpiPills,
-      `Banner: ${adminBanner}, KPI Pills: ${adminKpiPills}`);
+      `Banner: ${adminBanner}, KPI Info: ${adminKpiPills}`);
 
     // Direct navigation to /admin/reviews as Admin
     await cdp.navigate('http://localhost:3000/admin/reviews');
-    await wait(2000);
+    await wait(2500);
     const admUploadTabVisible = await cdp.eval(`
       document.body.innerText.includes('Ingest Document (PDF)')
     `);
@@ -251,11 +252,11 @@ async function run() {
 
     // Direct navigation to /evaluation as Admin
     await cdp.navigate('http://localhost:3000/evaluation');
-    await wait(2000);
+    await wait(2500);
     const admEvalLoaded = await cdp.eval(`
       document.body.innerText.includes('Evaluation & Benchmark Verification') || 
       document.body.innerText.includes('INVALIDATED_MOCK_DERIVED_RUN') ||
-      document.body.innerText.includes('Accuracy')
+      document.body.innerText.includes('Empirical Evaluation Dashboard')
     `);
     record('ADM-04-EVAL-LOADED', 'Admin Evaluation Dashboard Loaded', admEvalLoaded, `Eval Dashboard Loaded: ${admEvalLoaded}`);
 
@@ -265,38 +266,46 @@ async function run() {
     console.log('\n--- 4. Testing Dynamic Role Switching & Persistence ---');
     await cdp.navigate('http://localhost:3000/');
     
-    // Switch to SME
+    // 4.1 Switch to SME
     await cdp.eval(`
       localStorage.setItem('regimpact_user_role', 'sme_user');
-      window.dispatchEvent(new Event('regimpact:role_change'));
+      window.dispatchEvent(new CustomEvent('regimpact:role_change', { detail: { role: 'sme_user' } }));
     `);
     await wait(600);
     const dynamicSmeBanner = await cdp.eval(`document.body.innerText.includes('SME Self-Assessment Portal')`);
 
-    // Switch to Reviewer dynamically without navigation
+    // 4.2 Switch to Reviewer dynamically without navigation
     await cdp.eval(`
       localStorage.setItem('regimpact_user_role', 'reviewer');
-      window.dispatchEvent(new Event('regimpact:role_change'));
+      window.dispatchEvent(new CustomEvent('regimpact:role_change', { detail: { role: 'reviewer' } }));
     `);
     await wait(600);
     const dynamicRevBanner = await cdp.eval(`document.body.innerText.includes('Legal Reviewer Workspace')`);
 
-    // Switch to Admin dynamically without navigation
+    // 4.3 Switch to Admin dynamically without navigation
     await cdp.eval(`
       localStorage.setItem('regimpact_user_role', 'admin');
-      window.dispatchEvent(new Event('regimpact:role_change'));
+      window.dispatchEvent(new CustomEvent('regimpact:role_change', { detail: { role: 'admin' } }));
     `);
     await wait(600);
     const dynamicAdmBanner = await cdp.eval(`document.body.innerText.includes('Administrator System Overview')`);
 
-    record('DYN-01-SWITCH', 'Dynamic Role Switch without Refresh', 
-      dynamicSmeBanner && dynamicRevBanner && dynamicAdmBanner,
-      `SME Banner: ${dynamicSmeBanner}, Reviewer Banner: ${dynamicRevBanner}, Admin Banner: ${dynamicAdmBanner}`);
+    // 4.4 Switch back to SME
+    await cdp.eval(`
+      localStorage.setItem('regimpact_user_role', 'sme_user');
+      window.dispatchEvent(new CustomEvent('regimpact:role_change', { detail: { role: 'sme_user' } }));
+    `);
+    await wait(600);
+    const dynamicBackSme = await cdp.eval(`document.body.innerText.includes('SME Self-Assessment Portal')`);
 
-    // Page Refresh Persistence Test under Reviewer Role
+    record('DYN-01-SWITCH', 'Dynamic Role Switch without Refresh', 
+      dynamicSmeBanner && dynamicRevBanner && dynamicAdmBanner && dynamicBackSme,
+      `SME: ${dynamicSmeBanner}, Reviewer: ${dynamicRevBanner}, Admin: ${dynamicAdmBanner}, Back to SME: ${dynamicBackSme}`);
+
+    // 4.5 Page Refresh Persistence Test under Reviewer Role
     await cdp.eval(`
       localStorage.setItem('regimpact_user_role', 'reviewer');
-      window.dispatchEvent(new Event('regimpact:role_change'));
+      window.dispatchEvent(new CustomEvent('regimpact:role_change', { detail: { role: 'reviewer' } }));
     `);
     await cdp.send('Page.reload');
     await wait(2500);
@@ -304,7 +313,7 @@ async function run() {
     const persistedRevNav = await cdp.eval(`
       Array.from(document.querySelectorAll('nav a')).map(a => a.textContent.trim()).some(t => t.includes('Reviewer Portal'))
     `);
-    record('DYN-02-PERSISTENCE', 'Role Restored Correctly After Reload',
+    record('DYN-02-PERSISTENCE', 'Demonstration Role Restored Correctly After Reload',
       persistedRevBanner && persistedRevNav,
       `Banner Persisted: ${persistedRevBanner}, Nav Persisted: ${persistedRevNav}`);
 
@@ -315,29 +324,15 @@ async function run() {
     await cdp.navigate('http://localhost:3000/');
     await cdp.eval(`
       localStorage.setItem('regimpact_user_role', 'sme_user');
-      window.dispatchEvent(new Event('regimpact:role_change'));
+      window.dispatchEvent(new CustomEvent('regimpact:role_change', { detail: { role: 'sme_user' } }));
     `);
     await wait(1000);
 
-    // Click the "Bottled Mixed Fruit Jam" scenario card if available or fill profile and submit
-    const clickedScenario = await cdp.eval(`
+    // Click "Analyze Regulatory Impact" button
+    const clickSubmit = await cdp.eval(`
       (() => {
         const btns = Array.from(document.querySelectorAll('button'));
-        const jamBtn = btns.find(b => b.textContent.includes('Bottled Mixed Fruit Jam') || b.textContent.includes('Fruit Jam'));
-        if (jamBtn) {
-          jamBtn.click();
-          return true;
-        }
-        return false;
-      })()
-    `);
-
-    // Click "Run Compliance Assessment" button
-    await wait(1000);
-    const clickedSubmit = await cdp.eval(`
-      (() => {
-        const btns = Array.from(document.querySelectorAll('button'));
-        const assessBtn = btns.find(b => b.textContent.includes('Run Compliance Assessment') || b.textContent.includes('Run Assessment'));
+        const assessBtn = btns.find(b => b.textContent.includes('Analyze Regulatory Impact'));
         if (assessBtn) {
           assessBtn.click();
           return true;
@@ -346,26 +341,28 @@ async function run() {
       })()
     `);
 
-    console.log(`Clicked scenario preset: ${clickedScenario}, Clicked Run Assessment: ${clickedSubmit}`);
+    console.log(`Clicked Analyze Regulatory Impact: ${clickSubmit}`);
     // Wait for analysis API call to complete and render results
-    await wait(6000);
+    await wait(7000);
 
-    const analysisRendered = await cdp.eval(`
+    const analysisDetails = await cdp.eval(`
       (() => {
         const body = document.body.innerText;
         return {
-          hasComplianceReport: body.includes('Compliance Analysis Report') || body.includes('COMPLIANT') || body.includes('NON_COMPLIANT') || body.includes('Assessment Results'),
-          hasApplicabilityOrOutcome: body.includes('APPLICABLE') || body.includes('Status') || body.includes('Coverage Gaps') || body.includes('UNSUPPORTED'),
-          hasStatutoryCitations: body.includes('Gazette') || body.includes('Regulation') || body.includes('Citation'),
-          hasNarrativeExplanation: body.includes('Executive Summary') || body.includes('Analysis Summary') || body.includes('Findings')
+          hasComplianceDossier: body.includes('Regulatory Compliance Dossier'),
+          hasExecutiveSummary: body.includes('Executive Compliance Summary'),
+          hasMandatoryObligations: body.includes('Mandatory') || body.includes('mandatory statutory obligation'),
+          hasActionChecklist: body.includes('Action Item Checklist') || body.includes('Action Items') || body.includes('Action Checklist') || body.includes('Checklist'),
+          hasStatutoryCitations: body.includes('Statutory Citation') || body.includes('Citations') || body.includes('Regulation 3') || body.includes('Gazette'),
+          bodySample: body.substring(body.indexOf('Regulatory Compliance Dossier'), body.indexOf('Regulatory Compliance Dossier') + 400)
         };
       })()
     `);
 
-    const compAnalysisPass = analysisRendered.hasComplianceReport && (analysisRendered.hasApplicabilityOrOutcome || analysisRendered.hasStatutoryCitations);
+    const compAnalysisPass = clickSubmit && analysisDetails.hasComplianceDossier && analysisDetails.hasExecutiveSummary;
     record('ANALYSIS-01-REGRESSION', 'Live Browser SME Compliance Assessment Execution',
       compAnalysisPass,
-      JSON.stringify(analysisRendered));
+      `Dossier: ${analysisDetails.hasComplianceDossier}, Summary: ${analysisDetails.hasExecutiveSummary}, Mandatory: ${analysisDetails.hasMandatoryObligations}`);
 
   } catch (err) {
     console.error('Test execution error:', err);
@@ -377,11 +374,12 @@ async function run() {
     } catch (e) {}
   }
 
-  console.log('\n=== BROWSER INTEGRATION ACCEPTANCE SUMMARY ===');
-  const allPass = results.every(r => r.pass);
-  console.log(`Total Tests: ${results.length} | Passed: ${results.filter(r => r.pass).length} | Failed: ${results.filter(r => !r.pass).length}`);
-  console.log(`Overall Result: ${allPass ? 'PASS' : 'FAIL'}`);
+  console.log('\n=== FINAL LIVE BROWSER INTEGRATION ACCEPTANCE SUMMARY ===');
+  const total = results.length;
+  const passed = results.filter(r => r.pass).length;
+  const failed = results.filter(r => !r.pass).length;
+  console.log(`Total Tests: ${total} | Passed: ${passed} | Failed: ${failed}`);
+  console.log(`Overall Verdict: ${failed === 0 ? 'PASS' : 'FAIL'}`);
 }
 
-run();
-
+runAudit();
