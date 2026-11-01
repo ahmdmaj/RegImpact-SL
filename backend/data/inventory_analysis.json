@@ -1,0 +1,937 @@
+{
+  "total_pdfs": 100,
+  "total_unique_hashes": 85,
+  "duplicate_sets": [
+    {
+      "hash": "00158db0b6fa7c8ef686e4d0d0f2c0a73e5c6604f4177ec652579f65297519e2",
+      "files": [
+        "backend/data/raw_sources/00158db0b6fa7c8ef686e4d0d0f2c0a73e5c6604f4177ec652579f65297519e2.pdf",
+        "backend/data/raw_sources/Gazette_2024_Cold_Storage_E2E.pdf"
+      ]
+    },
+    {
+      "hash": "15803fe0b14aabe0c79126ebe7c8834d8063b6ed8c2a9033c1201ff538bcd95b",
+      "files": [
+        "backend/data/raw_sources/15803fe0b14aabe0c79126ebe7c8834d8063b6ed8c2a9033c1201ff538bcd95b.pdf",
+        "backend/data/raw_sources/2494-06_E.pdf"
+      ]
+    },
+    {
+      "hash": "d7852dcc0da491ee0f67dbc355ad3ed96c1b860018b6151204d0db9d3fe2f45d",
+      "files": [
+        "backend/data/raw_sources/2443-27_E.pdf",
+        "backend/data/raw_sources/d7852dcc0da491ee0f67dbc355ad3ed96c1b860018b6151204d0db9d3fe2f45d.pdf"
+      ]
+    },
+    {
+      "hash": "83ed19c22873471652d0073fe16c977442e42c8ecac2edf1d691d00d78d8a054",
+      "files": [
+        "backend/data/raw_sources/2494-47_E.pdf",
+        "backend/data/raw_sources/83ed19c22873471652d0073fe16c977442e42c8ecac2edf1d691d00d78d8a054.pdf"
+      ]
+    },
+    {
+      "hash": "672a95c9c8e179b960dbcd00ebdd07f67e2848239a0c67ade17c8eaeed7f37b9",
+      "files": [
+        "backend/data/raw_sources/2496-03_E.pdf",
+        "backend/data/raw_sources/672a95c9c8e179b960dbcd00ebdd07f67e2848239a0c67ade17c8eaeed7f37b9.pdf"
+      ]
+    },
+    {
+      "hash": "3cd9948d2c334d08a11dd5bc9cc1f1a1ec053d6e819ea30f205687dda7c342c7",
+      "files": [
+        "backend/data/raw_sources/3cd9948d2c334d08a11dd5bc9cc1f1a1ec053d6e819ea30f205687dda7c342c7.pdf",
+        "backend/data/raw_sources/food_amendment_colouring_substances_regulations_2011_en.pdf"
+      ]
+    },
+    {
+      "hash": "3f85f3ef96b7622bdd3e45d7cc642fd96fdbd83a9f84f35f048121eab3e4016f",
+      "files": [
+        "backend/data/raw_sources/3f85f3ef96b7622bdd3e45d7cc642fd96fdbd83a9f84f35f048121eab3e4016f.pdf",
+        "backend/data/raw_sources/preservative-english.pdf"
+      ]
+    },
+    {
+      "hash": "561b0e26761ba48d2a698c6b6bc76e9316b71f1965cfb7f2381e72025d1787e9",
+      "files": [
+        "backend/data/raw_sources/561b0e26761ba48d2a698c6b6bc76e9316b71f1965cfb7f2381e72025d1787e9.pdf",
+        "backend/data/raw_sources/test.pdf"
+      ]
+    },
+    {
+      "hash": "70b0ab6a074cf2e06283021d5a5bb987c7096964208acf16d70de9a94fdc44a0",
+      "files": [
+        "backend/data/raw_sources/70b0ab6a074cf2e06283021d5a5bb987c7096964208acf16d70de9a94fdc44a0.pdf",
+        "backend/data/raw_sources/test_gazette_upload.pdf"
+      ]
+    },
+    {
+      "hash": "d5fd93679c6a3c12c64118d6a1e738e11fcbe1d8e577880fb4dae65d868272cd",
+      "files": [
+        "backend/data/raw_sources/English_The_Food_Labelling_and_Advertising_Regulations.pdf",
+        "backend/data/raw_sources/d5fd93679c6a3c12c64118d6a1e738e11fcbe1d8e577880fb4dae65d868272cd.pdf"
+      ]
+    },
+    {
+      "hash": "cac27d4f87efe2d64a176d56c08987a984fceae3f50ceb7979fc8e5690abeb00",
+      "files": [
+        "backend/data/raw_sources/Gazette_2024_Rejection_E2E.pdf",
+        "backend/data/raw_sources/cac27d4f87efe2d64a176d56c08987a984fceae3f50ceb7979fc8e5690abeb00.pdf"
+      ]
+    },
+    {
+      "hash": "c70b5668131b76ff206897ef391cb3402bb4bf6be39a76ad1400d24c07330142",
+      "files": [
+        "backend/data/raw_sources/Labelling_Regulations_Final_-_11.02.2026.pdf",
+        "backend/data/raw_sources/c70b5668131b76ff206897ef391cb3402bb4bf6be39a76ad1400d24c07330142.pdf"
+      ]
+    },
+    {
+      "hash": "b2cfaf0ae21c67ae28864038a0b21293eb4c0f888dbc984c331e975c5528c37f",
+      "files": [
+        "backend/data/raw_sources/Lec 03.pdf",
+        "backend/data/raw_sources/b2cfaf0ae21c67ae28864038a0b21293eb4c0f888dbc984c331e975c5528c37f.pdf"
+      ]
+    },
+    {
+      "hash": "b78479b6b08d12e11fd27cfc39677d5a284bc147bf16a777eafb495b86f4135a",
+      "files": [
+        "backend/data/raw_sources/b78479b6b08d12e11fd27cfc39677d5a284bc147bf16a777eafb495b86f4135a.pdf",
+        "backend/data/raw_sources/food_flavouring_substances_and_flavour_enhancers_regulations_2013_en.pdf"
+      ]
+    },
+    {
+      "hash": "c03271fbd9735d62146533759505b98b514f57aaf5ec509a2d735f04c26ec929",
+      "files": [
+        "backend/data/raw_sources/c03271fbd9735d62146533759505b98b514f57aaf5ec509a2d735f04c26ec929.pdf",
+        "backend/data/raw_sources/test_upload.pdf"
+      ]
+    }
+  ],
+  "gazette_groups": {
+    "2499/12": [
+      {
+        "filename": "00158db0b6fa7c8ef686e4d0d0f2c0a73e5c6604f4177ec652579f65297519e2.pdf",
+        "hash": "00158db0b6fa7c8ef686e4d0d0f2c0a73e5c6604f4177ec652579f65297519e2",
+        "pages": 1
+      },
+      {
+        "filename": "220c17ffe536e78825390d174040286a736628efbd1a059a6fdf090e68df999b.pdf",
+        "hash": "220c17ffe536e78825390d174040286a736628efbd1a059a6fdf090e68df999b",
+        "pages": 1
+      },
+      {
+        "filename": "5113e42b90d7ebadf855753fd9c4a0afc8f7c653e9a78e387975a25ba328872a.pdf",
+        "hash": "5113e42b90d7ebadf855753fd9c4a0afc8f7c653e9a78e387975a25ba328872a",
+        "pages": 1
+      },
+      {
+        "filename": "561b0e26761ba48d2a698c6b6bc76e9316b71f1965cfb7f2381e72025d1787e9.pdf",
+        "hash": "561b0e26761ba48d2a698c6b6bc76e9316b71f1965cfb7f2381e72025d1787e9",
+        "pages": 1
+      },
+      {
+        "filename": "73632333a54dd7e93eb86523027387370e819f4b22b92d562c9e4d3f6b2f77f3.pdf",
+        "hash": "73632333a54dd7e93eb86523027387370e819f4b22b92d562c9e4d3f6b2f77f3",
+        "pages": 1
+      },
+      {
+        "filename": "7cfbe2821a48574fc5a7a9b6c29f4235cef8a79a23cd3d5a7d2e1698637507f2.pdf",
+        "hash": "7cfbe2821a48574fc5a7a9b6c29f4235cef8a79a23cd3d5a7d2e1698637507f2",
+        "pages": 1
+      },
+      {
+        "filename": "8a1611b7ec275f2dc87afbaaac6d7ef108969e8df63baca7053987e516c37d88.pdf",
+        "hash": "8a1611b7ec275f2dc87afbaaac6d7ef108969e8df63baca7053987e516c37d88",
+        "pages": 1
+      },
+      {
+        "filename": "9552dcd5b99cc7c7ba5670ae738bf1d76cf4bca48a3556b5b1ed680e6bbbcf06.pdf",
+        "hash": "9552dcd5b99cc7c7ba5670ae738bf1d76cf4bca48a3556b5b1ed680e6bbbcf06",
+        "pages": 1
+      },
+      {
+        "filename": "Gazette_2024_Cold_Storage_E2E.pdf",
+        "hash": "00158db0b6fa7c8ef686e4d0d0f2c0a73e5c6604f4177ec652579f65297519e2",
+        "pages": 1
+      },
+      {
+        "filename": "a4d6eb3eea7f89f21399fa97f65051957ff0acc634d55b455104b06cd87af4ef.pdf",
+        "hash": "a4d6eb3eea7f89f21399fa97f65051957ff0acc634d55b455104b06cd87af4ef",
+        "pages": 1
+      },
+      {
+        "filename": "b630e088a7703f8df2a2b4eb36e1d1f46fbd7ee6cc9164fa45475252e256f3d9.pdf",
+        "hash": "b630e088a7703f8df2a2b4eb36e1d1f46fbd7ee6cc9164fa45475252e256f3d9",
+        "pages": 1
+      },
+      {
+        "filename": "b8b1cc794b184c612a3fa8ed271e5c7974279fed2dee1b2e475dfb0c652c6c0f.pdf",
+        "hash": "b8b1cc794b184c612a3fa8ed271e5c7974279fed2dee1b2e475dfb0c652c6c0f",
+        "pages": 1
+      },
+      {
+        "filename": "be4ae24d5de7fb6c7e556878becaaf14b88655bff25af4e8175229d021c00c55.pdf",
+        "hash": "be4ae24d5de7fb6c7e556878becaaf14b88655bff25af4e8175229d021c00c55",
+        "pages": 1
+      },
+      {
+        "filename": "c03271fbd9735d62146533759505b98b514f57aaf5ec509a2d735f04c26ec929.pdf",
+        "hash": "c03271fbd9735d62146533759505b98b514f57aaf5ec509a2d735f04c26ec929",
+        "pages": 1
+      },
+      {
+        "filename": "da4c41d176736be543173969ee27e92127bdb123df3245e1235180979fb96e56.pdf",
+        "hash": "da4c41d176736be543173969ee27e92127bdb123df3245e1235180979fb96e56",
+        "pages": 1
+      },
+      {
+        "filename": "test.pdf",
+        "hash": "561b0e26761ba48d2a698c6b6bc76e9316b71f1965cfb7f2381e72025d1787e9",
+        "pages": 1
+      },
+      {
+        "filename": "test_upload.pdf",
+        "hash": "c03271fbd9735d62146533759505b98b514f57aaf5ec509a2d735f04c26ec929",
+        "pages": 1
+      }
+    ],
+    "2319/42": [
+      {
+        "filename": "15803fe0b14aabe0c79126ebe7c8834d8063b6ed8c2a9033c1201ff538bcd95b.pdf",
+        "hash": "15803fe0b14aabe0c79126ebe7c8834d8063b6ed8c2a9033c1201ff538bcd95b",
+        "pages": 3
+      },
+      {
+        "filename": "2494-06_E.pdf",
+        "hash": "15803fe0b14aabe0c79126ebe7c8834d8063b6ed8c2a9033c1201ff538bcd95b",
+        "pages": 3
+      },
+      {
+        "filename": "2494-06_E_1784568259.pdf",
+        "hash": "e5b947e6e795476a6a732176a85fb9de703072451f55d125b6cef47f70528db7",
+        "pages": 3
+      }
+    ],
+    "2443/27": [
+      {
+        "filename": "2443-27_E.pdf",
+        "hash": "d7852dcc0da491ee0f67dbc355ad3ed96c1b860018b6151204d0db9d3fe2f45d",
+        "pages": 7
+      },
+      {
+        "filename": "d7852dcc0da491ee0f67dbc355ad3ed96c1b860018b6151204d0db9d3fe2f45d.pdf",
+        "hash": "d7852dcc0da491ee0f67dbc355ad3ed96c1b860018b6151204d0db9d3fe2f45d",
+        "pages": 7
+      }
+    ],
+    "2494/47": [
+      {
+        "filename": "2494-47_E.pdf",
+        "hash": "83ed19c22873471652d0073fe16c977442e42c8ecac2edf1d691d00d78d8a054",
+        "pages": 25
+      },
+      {
+        "filename": "83ed19c22873471652d0073fe16c977442e42c8ecac2edf1d691d00d78d8a054.pdf",
+        "hash": "83ed19c22873471652d0073fe16c977442e42c8ecac2edf1d691d00d78d8a054",
+        "pages": 25
+      }
+    ],
+    "2496/03": [
+      {
+        "filename": "2496-03_E.pdf",
+        "hash": "672a95c9c8e179b960dbcd00ebdd07f67e2848239a0c67ade17c8eaeed7f37b9",
+        "pages": 2
+      },
+      {
+        "filename": "672a95c9c8e179b960dbcd00ebdd07f67e2848239a0c67ade17c8eaeed7f37b9.pdf",
+        "hash": "672a95c9c8e179b960dbcd00ebdd07f67e2848239a0c67ade17c8eaeed7f37b9",
+        "pages": 2
+      }
+    ],
+    "2113/16": [
+      {
+        "filename": "3f85f3ef96b7622bdd3e45d7cc642fd96fdbd83a9f84f35f048121eab3e4016f.pdf",
+        "hash": "3f85f3ef96b7622bdd3e45d7cc642fd96fdbd83a9f84f35f048121eab3e4016f",
+        "pages": 11
+      },
+      {
+        "filename": "preservative-english.pdf",
+        "hash": "3f85f3ef96b7622bdd3e45d7cc642fd96fdbd83a9f84f35f048121eab3e4016f",
+        "pages": 11
+      }
+    ],
+    "2500/01": [
+      {
+        "filename": "738a208ce8bf8e97e0498ab07c026874ce5b153faec5b3b11457ad90e35bfc73.pdf",
+        "hash": "738a208ce8bf8e97e0498ab07c026874ce5b153faec5b3b11457ad90e35bfc73",
+        "pages": 1
+      },
+      {
+        "filename": "Gazette_2024_Rejection_E2E.pdf",
+        "hash": "cac27d4f87efe2d64a176d56c08987a984fceae3f50ceb7979fc8e5690abeb00",
+        "pages": 1
+      },
+      {
+        "filename": "b2f25b3a07114c75d5a4dda734bdd49a98ec42fded7ee0d125ab6c3fcbd2640f.pdf",
+        "hash": "b2f25b3a07114c75d5a4dda734bdd49a98ec42fded7ee0d125ab6c3fcbd2640f",
+        "pages": 1
+      },
+      {
+        "filename": "cac27d4f87efe2d64a176d56c08987a984fceae3f50ceb7979fc8e5690abeb00.pdf",
+        "hash": "cac27d4f87efe2d64a176d56c08987a984fceae3f50ceb7979fc8e5690abeb00",
+        "pages": 1
+      },
+      {
+        "filename": "d00eee03803841cd97a9ee3458e09508fec153d398af17c2165bc6a77685399d.pdf",
+        "hash": "d00eee03803841cd97a9ee3458e09508fec153d398af17c2165bc6a77685399d",
+        "pages": 1
+      }
+    ],
+    "2443/06": [
+      {
+        "filename": "English_The_Food_Labelling_and_Advertising_Regulations.pdf",
+        "hash": "d5fd93679c6a3c12c64118d6a1e738e11fcbe1d8e577880fb4dae65d868272cd",
+        "pages": 1
+      },
+      {
+        "filename": "d5fd93679c6a3c12c64118d6a1e738e11fcbe1d8e577880fb4dae65d868272cd.pdf",
+        "hash": "d5fd93679c6a3c12c64118d6a1e738e11fcbe1d8e577880fb4dae65d868272cd",
+        "pages": 1
+      }
+    ],
+    "1795/51": [
+      {
+        "filename": "b78479b6b08d12e11fd27cfc39677d5a284bc147bf16a777eafb495b86f4135a.pdf",
+        "hash": "b78479b6b08d12e11fd27cfc39677d5a284bc147bf16a777eafb495b86f4135a",
+        "pages": 5
+      },
+      {
+        "filename": "food_flavouring_substances_and_flavour_enhancers_regulations_2013_en.pdf",
+        "hash": "b78479b6b08d12e11fd27cfc39677d5a284bc147bf16a777eafb495b86f4135a",
+        "pages": 5
+      }
+    ]
+  },
+  "candidates_for_2494_48": [],
+  "db_matched": [
+    {
+      "db_id": "doc_15803fe0b14aabe0c79126ebe7c8834d8063b6ed8c2a9033c1201ff538bcd95b",
+      "title": "The Sri Lanka Gazette Extraordinary No. 2494/06 (Food Colour Coding for Sugar Levels Amendment)",
+      "hash": "15803fe0b14aabe0c79126ebe7c8834d8063b6ed8c2a9033c1201ff538bcd95b",
+      "local_count": 2
+    },
+    {
+      "db_id": "doc_291759ecef9fc7c9129bff1139d1837790a50cac32236ec46c0e4b351d76270c",
+      "title": "291759Ecef9Fc7C9129Bff1139D1837790A50Cac32236Ec46C0E4B351D76270C",
+      "hash": "291759ecef9fc7c9129bff1139d1837790a50cac32236ec46c0e4b351d76270c",
+      "local_count": 1
+    },
+    {
+      "db_id": "doc_3cd9948d2c334d08a11dd5bc9cc1f1a1ec053d6e819ea30f205687dda7c342c7",
+      "title": "The Sri Lanka Gazette Extraordinary No. 1688/28 (Food Colouring Amendment 2011)",
+      "hash": "3cd9948d2c334d08a11dd5bc9cc1f1a1ec053d6e819ea30f205687dda7c342c7",
+      "local_count": 2
+    },
+    {
+      "db_id": "doc_3e863d976d56eb45ca7d410173fd8b451d6fef7308cceb706afe6720cec78b7f",
+      "title": "3E863D976D56Eb45Ca7D410173Fd8B451D6Fef7308Cceb706Afe6720Cec78B7F",
+      "hash": "3e863d976d56eb45ca7d410173fd8b451d6fef7308cceb706afe6720cec78b7f",
+      "local_count": 1
+    },
+    {
+      "db_id": "doc_3f75e3ac63af8670c6ddda34fa8a61d2869e7697d5c88dfaee34162f5036f6e1",
+      "title": "3F75E3Ac63Af8670C6Ddda34Fa8A61D2869E7697D5C88Dfaee34162F5036F6E1",
+      "hash": "3f75e3ac63af8670c6ddda34fa8a61d2869e7697d5c88dfaee34162f5036f6e1",
+      "local_count": 1
+    },
+    {
+      "db_id": "doc_3f85f3ef96b7622bdd3e45d7cc642fd96fdbd83a9f84f35f048121eab3e4016f",
+      "title": "The Sri Lanka Gazette Extraordinary No. 2113/16 (Food Preservatives Regulations 2019)",
+      "hash": "3f85f3ef96b7622bdd3e45d7cc642fd96fdbd83a9f84f35f048121eab3e4016f",
+      "local_count": 2
+    },
+    {
+      "db_id": "doc_58a58c41bf7d133299fd0fc96a8057f321d0ebfc8d0292fb72ae9c77bc2be3d7",
+      "title": "58A58C41Bf7D133299Fd0Fc96A8057F321D0Ebfc8D0292Fb72Ae9C77Bc2Be3D7",
+      "hash": "58a58c41bf7d133299fd0fc96a8057f321d0ebfc8d0292fb72ae9c77bc2be3d7",
+      "local_count": 1
+    },
+    {
+      "db_id": "doc_6530c833247216f50bf6761120432ef8395c53f2ac68966efbe177774b6828e0",
+      "title": "6530C833247216F50Bf6761120432Ef8395C53F2Ac68966Efbe177774B6828E0",
+      "hash": "6530c833247216f50bf6761120432ef8395c53f2ac68966efbe177774b6828e0",
+      "local_count": 1
+    },
+    {
+      "db_id": "doc_b78479b6b08d12e11fd27cfc39677d5a284bc147bf16a777eafb495b86f4135a",
+      "title": "The Sri Lanka Gazette Extraordinary No. 1795/51 (Food Flavouring Substances and Flavour Enhancers Regulations 2013)",
+      "hash": "b78479b6b08d12e11fd27cfc39677d5a284bc147bf16a777eafb495b86f4135a",
+      "local_count": 2
+    },
+    {
+      "db_id": "doc_c244fce78aa38cfc17dbd9029caf602d50bd10bfdfd6fcb20bc215e0b8d47bb8",
+      "title": "C244Fce78Aa38Cfc17Dbd9029Caf602D50Bd10Bfdfd6Fcb20Bc215E0B8D47Bb8",
+      "hash": "c244fce78aa38cfc17dbd9029caf602d50bd10bfdfd6fcb20bc215e0b8d47bb8",
+      "local_count": 1
+    },
+    {
+      "db_id": "doc_fcau_labelling_advertising_en",
+      "title": "Food (Labelling and Advertising) Regulations",
+      "hash": "d5fd93679c6a3c12c64118d6a1e738e11fcbe1d8e577880fb4dae65d868272cd",
+      "local_count": 2
+    },
+    {
+      "db_id": "doc_gazette_2443_27",
+      "title": "The Sri Lanka Gazette Extraordinary 2443/27",
+      "hash": "d7852dcc0da491ee0f67dbc355ad3ed96c1b860018b6151204d0db9d3fe2f45d",
+      "local_count": 2
+    },
+    {
+      "db_id": "doc_gazette_2494_47",
+      "title": "Sri Lanka Gazette Extraordinary No. 2494/47: Food (Labelling and Advertising) Regulations 2026",
+      "hash": "83ed19c22873471652d0073fe16c977442e42c8ecac2edf1d691d00d78d8a054",
+      "local_count": 2
+    },
+    {
+      "db_id": "doc_gazette_2496_03",
+      "title": "The Sri Lanka Gazette Extraordinary 2496/03",
+      "hash": "672a95c9c8e179b960dbcd00ebdd07f67e2848239a0c67ade17c8eaeed7f37b9",
+      "local_count": 2
+    },
+    {
+      "db_id": "doc_labelling_regulations_final_2026",
+      "title": "Food (Labelling and Advertising) Regulations (FAC Draft Final 11.02.2026)",
+      "hash": "c70b5668131b76ff206897ef391cb3402bb4bf6be39a76ad1400d24c07330142",
+      "local_count": 2
+    },
+    {
+      "db_id": "doc_lec_03",
+      "title": "Lec 03",
+      "hash": "b2cfaf0ae21c67ae28864038a0b21293eb4c0f888dbc984c331e975c5528c37f",
+      "local_count": 2
+    },
+    {
+      "db_id": "doc_test_upload",
+      "title": "Food (Cold Storage Temperature) Regulations 2024",
+      "hash": "c03271fbd9735d62146533759505b98b514f57aaf5ec509a2d735f04c26ec929",
+      "local_count": 2
+    }
+  ],
+  "db_missing_locally": [
+    {
+      "id": "doc_caa_mrp_2023",
+      "title": "Consumer Affairs Authority (Display of Maximum Retail Prices) Direction 2023",
+      "authority": "Consumer Affairs Authority (CAA)",
+      "sha256": "fixture_hash_doc_caa_mrp_202300000000000000000000000000000000000",
+      "file_path": "backend/data/raw_sources/doc_caa_mrp_2023.pdf",
+      "size_bytes": 1024,
+      "page_count": 1,
+      "extraction_status": "SUCCESS",
+      "extraction_tool": "pymupdf",
+      "clause_count": 2
+    },
+    {
+      "id": "doc_cea_epl_2022",
+      "title": "National Environmental (Protection and Quality) Regulations (EPL Standards) 2022",
+      "authority": "Central Environmental Authority (CEA)",
+      "sha256": "fixture_hash_doc_cea_epl_202200000000000000000000000000000000000",
+      "file_path": "backend/data/raw_sources/doc_cea_epl_2022.pdf",
+      "size_bytes": 1024,
+      "page_count": 1,
+      "extraction_status": "SUCCESS",
+      "extraction_tool": "pymupdf",
+      "clause_count": 4
+    },
+    {
+      "id": "doc_fcau_labelling_2024",
+      "title": "Food (Labelling and Advertising) Regulations 2024",
+      "authority": "Food Control Administration Unit (FCAU)",
+      "sha256": "fixture_hash_doc_fcau_labelling_20240000000000000000000000000000",
+      "file_path": "backend/data/raw_sources/doc_fcau_labelling_2024.pdf",
+      "size_bytes": 1024,
+      "page_count": 2,
+      "extraction_status": "SUCCESS",
+      "extraction_tool": "pymupdf",
+      "clause_count": 6
+    }
+  ],
+  "local_not_in_db_sample": [
+    {
+      "filename": "00158db0b6fa7c8ef686e4d0d0f2c0a73e5c6604f4177ec652579f65297519e2.pdf",
+      "count": 2,
+      "hash": "00158db0b6fa7c8ef686e4d0d0f2c0a73e5c6604f4177ec652579f65297519e2",
+      "type": "Official Sri Lankan Gazette",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "0042af1f052c3528500b96f65a9728e48d4ba9c68955a95c5c0f78e22896b476.pdf",
+      "count": 1,
+      "hash": "0042af1f052c3528500b96f65a9728e48d4ba9c68955a95c5c0f78e22896b476",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "03d2aaf2927bf455c04bf1ddc0e3471da48426c8fc75ce01171a1fec5b457efd.pdf",
+      "count": 1,
+      "hash": "03d2aaf2927bf455c04bf1ddc0e3471da48426c8fc75ce01171a1fec5b457efd",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "059a9fbace6cf60f8956139df5044e6b1952432ef193c525e5428a9edf223d11.pdf",
+      "count": 1,
+      "hash": "059a9fbace6cf60f8956139df5044e6b1952432ef193c525e5428a9edf223d11",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "0c421c9ceb793f8fecaee455295fa8203c94f1c67ab8ad21b97945b7f3aa33b2.pdf",
+      "count": 1,
+      "hash": "0c421c9ceb793f8fecaee455295fa8203c94f1c67ab8ad21b97945b7f3aa33b2",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "16eaf35a00044c4948fcbf9e68ed6d39294a65fef5ad605b2b7a27530dcae92d.pdf",
+      "count": 1,
+      "hash": "16eaf35a00044c4948fcbf9e68ed6d39294a65fef5ad605b2b7a27530dcae92d",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "1d7790a0820a56d9ff13217818c578ff00ec17b19e199f2feb6cdfb402573048.pdf",
+      "count": 1,
+      "hash": "1d7790a0820a56d9ff13217818c578ff00ec17b19e199f2feb6cdfb402573048",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "1ddb36aa4a75659ca258fcb0113ea71c5aa1ae45c9cd766e726b2044e659440a.pdf",
+      "count": 1,
+      "hash": "1ddb36aa4a75659ca258fcb0113ea71c5aa1ae45c9cd766e726b2044e659440a",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "1eceb2e1c4c0cb2a8b953cbf11cf003584605c1e20382f1399ca292033f879eb.pdf",
+      "count": 1,
+      "hash": "1eceb2e1c4c0cb2a8b953cbf11cf003584605c1e20382f1399ca292033f879eb",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "220c17ffe536e78825390d174040286a736628efbd1a059a6fdf090e68df999b.pdf",
+      "count": 1,
+      "hash": "220c17ffe536e78825390d174040286a736628efbd1a059a6fdf090e68df999b",
+      "type": "Official Sri Lankan Gazette",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "2494-06_E_1784568259.pdf",
+      "count": 1,
+      "hash": "e5b947e6e795476a6a732176a85fb9de703072451f55d125b6cef47f70528db7",
+      "type": "Official Sri Lankan Gazette",
+      "title": "Food (Labelling and Advertising) Regulations 2026"
+    },
+    {
+      "filename": "27c646bb6e755ed8e46f4636d67ca775afeec9abcdef8b29c1eb5ee6a507ff09.pdf",
+      "count": 1,
+      "hash": "27c646bb6e755ed8e46f4636d67ca775afeec9abcdef8b29c1eb5ee6a507ff09",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "311a8b8c7ff17702ed3fe2325a5dfa302485fc89df12c77bc56332c6ee7be247.pdf",
+      "count": 1,
+      "hash": "311a8b8c7ff17702ed3fe2325a5dfa302485fc89df12c77bc56332c6ee7be247",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "3a67d3cdcff047060fe5af5f296a3b8da783267422bd67b2873c9faeb7b22166.pdf",
+      "count": 1,
+      "hash": "3a67d3cdcff047060fe5af5f296a3b8da783267422bd67b2873c9faeb7b22166",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "3afde169bfcb3dac613c10edeb688430b1fd048d49544f7ba18600536fc03889.pdf",
+      "count": 1,
+      "hash": "3afde169bfcb3dac613c10edeb688430b1fd048d49544f7ba18600536fc03889",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "3efe6174c4c4a48217a77e2c278775d9edfe8ee4e19b12d3fb670c9c99535f90.pdf",
+      "count": 1,
+      "hash": "3efe6174c4c4a48217a77e2c278775d9edfe8ee4e19b12d3fb670c9c99535f90",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "3fa4b35c8b47c7fc3b7d14bccb4904d3661865eb7ef582a14f306e281351c786.pdf",
+      "count": 1,
+      "hash": "3fa4b35c8b47c7fc3b7d14bccb4904d3661865eb7ef582a14f306e281351c786",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "4e5aa358c6befc48c6eca0ebce0b5edd2c7293a178f3368fcb918df3eea0ad27.pdf",
+      "count": 1,
+      "hash": "4e5aa358c6befc48c6eca0ebce0b5edd2c7293a178f3368fcb918df3eea0ad27",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "4effa65c7b067ba27b35bb3b8bce534f3286dfa42e6e5c3fa7feefdb5c7577fb.pdf",
+      "count": 1,
+      "hash": "4effa65c7b067ba27b35bb3b8bce534f3286dfa42e6e5c3fa7feefdb5c7577fb",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "502361d7bd38cf570abcc16e84522c313862230bf5de325c754f5ed0a4668bea.pdf",
+      "count": 1,
+      "hash": "502361d7bd38cf570abcc16e84522c313862230bf5de325c754f5ed0a4668bea",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "5113e42b90d7ebadf855753fd9c4a0afc8f7c653e9a78e387975a25ba328872a.pdf",
+      "count": 1,
+      "hash": "5113e42b90d7ebadf855753fd9c4a0afc8f7c653e9a78e387975a25ba328872a",
+      "type": "Official Sri Lankan Gazette",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "561b0e26761ba48d2a698c6b6bc76e9316b71f1965cfb7f2381e72025d1787e9.pdf",
+      "count": 2,
+      "hash": "561b0e26761ba48d2a698c6b6bc76e9316b71f1965cfb7f2381e72025d1787e9",
+      "type": "Official Sri Lankan Gazette",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "5a9c924af562cb5be4ad1e800b26cf4535f2bbea45fc9098a46efce132765236.pdf",
+      "count": 1,
+      "hash": "5a9c924af562cb5be4ad1e800b26cf4535f2bbea45fc9098a46efce132765236",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "5c6df499ddb5c1ba7ab75af53d138c3c74b78e09de3731f28012c9cf185d9a39.pdf",
+      "count": 1,
+      "hash": "5c6df499ddb5c1ba7ab75af53d138c3c74b78e09de3731f28012c9cf185d9a39",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "5ef8b1d699e073bd332121ce69add52c222a949dcfefd9f9e7d7b15dc751bb62.pdf",
+      "count": 1,
+      "hash": "5ef8b1d699e073bd332121ce69add52c222a949dcfefd9f9e7d7b15dc751bb62",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "67564883c04adfd342e4c297ca2b5549f8db4de54d6d93e950b775f9318381c4.pdf",
+      "count": 1,
+      "hash": "67564883c04adfd342e4c297ca2b5549f8db4de54d6d93e950b775f9318381c4",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "70b0ab6a074cf2e06283021d5a5bb987c7096964208acf16d70de9a94fdc44a0.pdf",
+      "count": 2,
+      "hash": "70b0ab6a074cf2e06283021d5a5bb987c7096964208acf16d70de9a94fdc44a0",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "73632333a54dd7e93eb86523027387370e819f4b22b92d562c9e4d3f6b2f77f3.pdf",
+      "count": 1,
+      "hash": "73632333a54dd7e93eb86523027387370e819f4b22b92d562c9e4d3f6b2f77f3",
+      "type": "Official Sri Lankan Gazette",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "738a208ce8bf8e97e0498ab07c026874ce5b153faec5b3b11457ad90e35bfc73.pdf",
+      "count": 1,
+      "hash": "738a208ce8bf8e97e0498ab07c026874ce5b153faec5b3b11457ad90e35bfc73",
+      "type": "Official Sri Lankan Gazette",
+      "title": null
+    },
+    {
+      "filename": "7a9ba8d34ea5d876caa80b1d81f600808958ce0ae6b0bb2cb73637b92e2a650b.pdf",
+      "count": 1,
+      "hash": "7a9ba8d34ea5d876caa80b1d81f600808958ce0ae6b0bb2cb73637b92e2a650b",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "7cfbe2821a48574fc5a7a9b6c29f4235cef8a79a23cd3d5a7d2e1698637507f2.pdf",
+      "count": 1,
+      "hash": "7cfbe2821a48574fc5a7a9b6c29f4235cef8a79a23cd3d5a7d2e1698637507f2",
+      "type": "Official Sri Lankan Gazette",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "7f6c02a7cbe534558d8b3d25975dfe7e4c1a8da9e88f48aefe5e3f725599dfec.pdf",
+      "count": 1,
+      "hash": "7f6c02a7cbe534558d8b3d25975dfe7e4c1a8da9e88f48aefe5e3f725599dfec",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "87917e1621acbd77759b2c3b53a8d3fd3de1e1eb6014762058bea98451dabc45.pdf",
+      "count": 1,
+      "hash": "87917e1621acbd77759b2c3b53a8d3fd3de1e1eb6014762058bea98451dabc45",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "8a1611b7ec275f2dc87afbaaac6d7ef108969e8df63baca7053987e516c37d88.pdf",
+      "count": 1,
+      "hash": "8a1611b7ec275f2dc87afbaaac6d7ef108969e8df63baca7053987e516c37d88",
+      "type": "Official Sri Lankan Gazette",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "8acbee59cec77da3d2da047d4599717b197b92b42e25e19c6ec2ba0c9454a7f8.pdf",
+      "count": 1,
+      "hash": "8acbee59cec77da3d2da047d4599717b197b92b42e25e19c6ec2ba0c9454a7f8",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "8c0973455d9304c7844748d3d199f549f199d8e44e06d1260f9abcce59c83761.pdf",
+      "count": 1,
+      "hash": "8c0973455d9304c7844748d3d199f549f199d8e44e06d1260f9abcce59c83761",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "9552dcd5b99cc7c7ba5670ae738bf1d76cf4bca48a3556b5b1ed680e6bbbcf06.pdf",
+      "count": 1,
+      "hash": "9552dcd5b99cc7c7ba5670ae738bf1d76cf4bca48a3556b5b1ed680e6bbbcf06",
+      "type": "Official Sri Lankan Gazette",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "9828600a5e9a2ca92cca62171f24ce9bd77bad8951a2da4645b8ad90a29bc665.pdf",
+      "count": 1,
+      "hash": "9828600a5e9a2ca92cca62171f24ce9bd77bad8951a2da4645b8ad90a29bc665",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "98d27633348855c40356ca1e3ca04e9d1af0e5ddea37fb03a04d58591e3404fe.pdf",
+      "count": 1,
+      "hash": "98d27633348855c40356ca1e3ca04e9d1af0e5ddea37fb03a04d58591e3404fe",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "9adf6ed526547e0a89f741e517e2d4d0fffe0fa0bc125f55eff98946d2480a94.pdf",
+      "count": 1,
+      "hash": "9adf6ed526547e0a89f741e517e2d4d0fffe0fa0bc125f55eff98946d2480a94",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "9d63f6c4d8e678c0c27ab0566de2b383620abb861113c56eb1078bc0441eb237.pdf",
+      "count": 1,
+      "hash": "9d63f6c4d8e678c0c27ab0566de2b383620abb861113c56eb1078bc0441eb237",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "Gazette_2024_Rejection_E2E.pdf",
+      "count": 2,
+      "hash": "cac27d4f87efe2d64a176d56c08987a984fceae3f50ceb7979fc8e5690abeb00",
+      "type": "Official Sri Lankan Gazette",
+      "title": null
+    },
+    {
+      "filename": "a0e92d717cc4da767efd8e38505074baa5d94d6ec522db8e1268363cd990c058.pdf",
+      "count": 1,
+      "hash": "a0e92d717cc4da767efd8e38505074baa5d94d6ec522db8e1268363cd990c058",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "a1043a45247238f9e2836b68a693ecb2ce8933e092a481f80e1efc613c1ee03e.pdf",
+      "count": 1,
+      "hash": "a1043a45247238f9e2836b68a693ecb2ce8933e092a481f80e1efc613c1ee03e",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "a167265aa79ca2ff98f4968cb1ef0218d4bfe58c4a337c3b72a52a91ef27ee9e.pdf",
+      "count": 1,
+      "hash": "a167265aa79ca2ff98f4968cb1ef0218d4bfe58c4a337c3b72a52a91ef27ee9e",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "a19b8f518aadee15e2e3a2e218a8c5219cc4c114bd48dfc0d7b1b8f0d4de0b8c.pdf",
+      "count": 1,
+      "hash": "a19b8f518aadee15e2e3a2e218a8c5219cc4c114bd48dfc0d7b1b8f0d4de0b8c",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "a1c9419e70c4c50b2fd1930464fafc951e2d9925dc29f830deaccb10f2802434.pdf",
+      "count": 1,
+      "hash": "a1c9419e70c4c50b2fd1930464fafc951e2d9925dc29f830deaccb10f2802434",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "a4d6eb3eea7f89f21399fa97f65051957ff0acc634d55b455104b06cd87af4ef.pdf",
+      "count": 1,
+      "hash": "a4d6eb3eea7f89f21399fa97f65051957ff0acc634d55b455104b06cd87af4ef",
+      "type": "Official Sri Lankan Gazette",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "a909151f06f6eaf8cc41f66a7da1c94b67714309b707d3ee651cbaab172c15a7.pdf",
+      "count": 1,
+      "hash": "a909151f06f6eaf8cc41f66a7da1c94b67714309b707d3ee651cbaab172c15a7",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "ad66bf53c840ba8cec9407197a97e168bf45fe1ed51ef9f3769b58d748459774.pdf",
+      "count": 1,
+      "hash": "ad66bf53c840ba8cec9407197a97e168bf45fe1ed51ef9f3769b58d748459774",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "b2f25b3a07114c75d5a4dda734bdd49a98ec42fded7ee0d125ab6c3fcbd2640f.pdf",
+      "count": 1,
+      "hash": "b2f25b3a07114c75d5a4dda734bdd49a98ec42fded7ee0d125ab6c3fcbd2640f",
+      "type": "Official Sri Lankan Gazette",
+      "title": null
+    },
+    {
+      "filename": "b46601cd3a5156c3dcb0285ded5b700821065479c19dbdd53dc012fd66f0679f.pdf",
+      "count": 1,
+      "hash": "b46601cd3a5156c3dcb0285ded5b700821065479c19dbdd53dc012fd66f0679f",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "b630e088a7703f8df2a2b4eb36e1d1f46fbd7ee6cc9164fa45475252e256f3d9.pdf",
+      "count": 1,
+      "hash": "b630e088a7703f8df2a2b4eb36e1d1f46fbd7ee6cc9164fa45475252e256f3d9",
+      "type": "Official Sri Lankan Gazette",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "b8b1cc794b184c612a3fa8ed271e5c7974279fed2dee1b2e475dfb0c652c6c0f.pdf",
+      "count": 1,
+      "hash": "b8b1cc794b184c612a3fa8ed271e5c7974279fed2dee1b2e475dfb0c652c6c0f",
+      "type": "Official Sri Lankan Gazette",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "bb0c2312d46103f143142ac1e8eb6076baf0f1ae632ef209924689659d3af3de.pdf",
+      "count": 1,
+      "hash": "bb0c2312d46103f143142ac1e8eb6076baf0f1ae632ef209924689659d3af3de",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "be4ae24d5de7fb6c7e556878becaaf14b88655bff25af4e8175229d021c00c55.pdf",
+      "count": 1,
+      "hash": "be4ae24d5de7fb6c7e556878becaaf14b88655bff25af4e8175229d021c00c55",
+      "type": "Official Sri Lankan Gazette",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "bf9a68a4cf64256fef7d5626d2736a2b223b8bc6f9d5634e08cd884ac3d81c0b.pdf",
+      "count": 1,
+      "hash": "bf9a68a4cf64256fef7d5626d2736a2b223b8bc6f9d5634e08cd884ac3d81c0b",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "c27c7cc71725bccceb20f79645d34166a05cf161e99c22dea740e4277430f4c3.pdf",
+      "count": 1,
+      "hash": "c27c7cc71725bccceb20f79645d34166a05cf161e99c22dea740e4277430f4c3",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "c788d12f5e05492a437eec394ec73e865220a0e5fbdbc5bad4fe170eff730fa2.pdf",
+      "count": 1,
+      "hash": "c788d12f5e05492a437eec394ec73e865220a0e5fbdbc5bad4fe170eff730fa2",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "d00eee03803841cd97a9ee3458e09508fec153d398af17c2165bc6a77685399d.pdf",
+      "count": 1,
+      "hash": "d00eee03803841cd97a9ee3458e09508fec153d398af17c2165bc6a77685399d",
+      "type": "Official Sri Lankan Gazette",
+      "title": null
+    },
+    {
+      "filename": "da1666a5847464eb7b6fc73287ccbad1cbe73eed6b609ee0922bf38678605106.pdf",
+      "count": 1,
+      "hash": "da1666a5847464eb7b6fc73287ccbad1cbe73eed6b609ee0922bf38678605106",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "da4c41d176736be543173969ee27e92127bdb123df3245e1235180979fb96e56.pdf",
+      "count": 1,
+      "hash": "da4c41d176736be543173969ee27e92127bdb123df3245e1235180979fb96e56",
+      "type": "Official Sri Lankan Gazette",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "de47952cc0adf0597ec0b17a0cd348a5a1a735f19c97c7033029ce6dcbe34336.pdf",
+      "count": 1,
+      "hash": "de47952cc0adf0597ec0b17a0cd348a5a1a735f19c97c7033029ce6dcbe34336",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "e1b7381dd853f6b27666eff2d8958e580bfc76db0b09317584b197ea3f68e22d.pdf",
+      "count": 1,
+      "hash": "e1b7381dd853f6b27666eff2d8958e580bfc76db0b09317584b197ea3f68e22d",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "f1de9aa6235a0167d90046f52e1906fa6ad1a5429266fb545414d5c1b904c168.pdf",
+      "count": 1,
+      "hash": "f1de9aa6235a0167d90046f52e1906fa6ad1a5429266fb545414d5c1b904c168",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "f3b82833cb6410613c2692337a33d06dadc969146077562f4fea03d3d4313384.pdf",
+      "count": 1,
+      "hash": "f3b82833cb6410613c2692337a33d06dadc969146077562f4fea03d3d4313384",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "fa3a596d771501018cd569750c8742ecc8127696311035eba07a0696235497b7.pdf",
+      "count": 1,
+      "hash": "fa3a596d771501018cd569750c8742ecc8127696311035eba07a0696235497b7",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    },
+    {
+      "filename": "fe8376dc9eb502d7106d342d670e01e6eb5d0fcde4b6dd624ef5081099042b2e.pdf",
+      "count": 1,
+      "hash": "fe8376dc9eb502d7106d342d670e01e6eb5d0fcde4b6dd624ef5081099042b2e",
+      "type": "Regulatory or Administrative Document",
+      "title": "Cold Storage Test Regulations"
+    }
+  ]
+}
