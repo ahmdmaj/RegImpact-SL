@@ -326,9 +326,19 @@ export default function Home() {
                   <BookOpen className="w-3.5 h-3.5 text-zinc-400" />
                   <span>Verified Statutory Corpus</span>
                 </div>
-                <span className="text-[10px] font-mono text-zinc-500">
-                  {regulations.length > 0 ? `${regulations.length} Indexed Clauses` : "Official Gazettes"}
-                </span>
+                {currentRole === "admin" ? (
+                  <Link
+                    href="/admin/reviews?tab=upload"
+                    className="text-[10px] font-mono text-zinc-400 hover:text-white flex items-center gap-1 px-1.5 py-0.5 rounded bg-zinc-800 border border-zinc-700 transition-colors"
+                  >
+                    <UploadCloud className="w-3 h-3 text-zinc-400" />
+                    <span>+ Ingest PDF</span>
+                  </Link>
+                ) : (
+                  <span className="text-[10px] font-mono text-zinc-500">
+                    {regulations.length > 0 ? `${regulations.length} Indexed Clauses` : "Official Gazettes"}
+                  </span>
+                )}
               </div>
 
               <div className="space-y-2 text-xs max-h-72 overflow-y-auto pr-1">
