@@ -85,6 +85,15 @@ export default function AdminReviewsPage() {
   useEffect(() => {
     const role = getCurrentUserRole();
     setCurrentRole(role);
+
+    // Check ?tab=upload query parameter
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get("tab") === "upload" && role === "admin") {
+        setActiveTab("upload");
+      }
+    }
+
     if (role === "reviewer" && activeTab === "upload") {
       setActiveTab("queue");
     }
@@ -305,17 +314,22 @@ export default function AdminReviewsPage() {
                 >
                   Review Queue ({reviews.length})
                 </button>
-                {currentRole === "admin" && (
+                {currentRole === "admin" ? (
                   <button
                     onClick={() => setActiveTab("upload")}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
                       activeTab === "upload"
                         ? "bg-zinc-800 text-zinc-100 border border-zinc-700 shadow-sm"
                         : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50"
                     }`}
                   >
-                    Ingest Document (PDF)
+                    <UploadCloud className="w-3.5 h-3.5 text-zinc-400" />
+                    <span>Ingest Document (PDF)</span>
                   </button>
+                ) : (
+                  <span className="text-[11px] text-zinc-500 font-mono hidden md:inline-block px-1">
+                    (Document Ingestion restricted to Admin role)
+                  </span>
                 )}
                 <button
                   onClick={fetchQueue}
