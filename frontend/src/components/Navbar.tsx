@@ -12,7 +12,8 @@ import {
   Menu,
   X,
   Shield,
-  Layers
+  Layers,
+  UploadCloud,
 } from "lucide-react";
 
 export const Navbar: React.FC = () => {
@@ -89,6 +90,14 @@ export const Navbar: React.FC = () => {
       active: pathname.startsWith("/evaluation"),
       visible: role === "admin",
       description: "Empirical benchmark metrics & ablations",
+    },
+    {
+      name: "Ingest Gazette",
+      href: "/admin/reviews?tab=upload",
+      icon: UploadCloud,
+      active: pathname.startsWith("/admin") && typeof window !== "undefined" && window.location.search.includes("tab=upload"),
+      visible: role === "admin",
+      description: "Upload and ingest official PDF Gazettes",
     },
   ].filter((item) => item.visible);
 
