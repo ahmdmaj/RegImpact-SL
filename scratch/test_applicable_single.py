@@ -17,3 +17,4 @@ with session_scope() as s:
     print("Status:", res.status.value)
     print("Reason:", res.reason)
     print("Trace:", res.evaluation_trace)
+

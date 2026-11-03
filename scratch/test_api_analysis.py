@@ -45,3 +45,4 @@ try:
         print(f" - Rule: {ev.get('rule_id')} | Status: {ev.get('status')} | Doc: {ev.get('document_title')} | Gap: {ev.get('coverage_gap')}")
 except Exception as e:
     print("Error parsing response:", e, resp.text)
+

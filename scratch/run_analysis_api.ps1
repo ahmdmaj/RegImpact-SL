@@ -37,3 +37,4 @@ Write-Output "Unsupported: $($response.unsupported_rules_count)"
 foreach ($ev in $response.evaluations) {
     Write-Output " - Rule: $($ev.rule_id) | Status: $($ev.status) | CoverageGap: $($ev.coverage_gap) | Doc: $($ev.document_title)"
 }
+
