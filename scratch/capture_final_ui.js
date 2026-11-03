@@ -5,7 +5,7 @@ const path = require('path');
 
 const EDGE_PATH = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
 const USER_DATA_DIR = 'C:\\Users\\HP\\AppData\\Local\\Temp\\edge_cdp_final_ui_' + Date.now();
-const PORT = 9248;
+const PORT = 9255;
 const EVIDENCE_DIR = path.resolve(__dirname, '../docs/evidence/final_ui');
 
 if (!fs.existsSync(EVIDENCE_DIR)) {
@@ -98,13 +98,15 @@ async function captureAll() {
     '--disable-gpu',
     '--remote-debugging-port=' + PORT,
     '--user-data-dir=' + USER_DATA_DIR,
-    '--window-size=1440,960',
     'about:blank',
   ]);
 
+  edge.stderr.on('data', d => console.log('[Edge STDERR]:', d.toString().trim()));
+  edge.stdout.on('data', d => console.log('[Edge STDOUT]:', d.toString().trim()));
+
   let targets = null;
-  for (let i = 0; i < 25; i++) {
-    await wait(400);
+  for (let i = 0; i < 40; i++) {
+    await wait(500);
     try {
       targets = await getJson(`http://127.0.0.1:${PORT}/json/list`);
       if (targets && targets.length > 0) break;
