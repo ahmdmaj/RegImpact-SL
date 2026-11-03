@@ -52,35 +52,40 @@ export const StatutoryCitationCard: React.FC<StatutoryCitationCardProps> = ({
   const isCoverageGap = ev.coverage_gap || ev.status === "UNSUPPORTED";
   const gazetteTitle = formatGazetteTitle(ev.document_title || ev.instrument, ev.document_id);
 
-  // Status configuration with minimal dots instead of loud colored blocks
+  // Status configuration using exact semantic classes and strict labels
   const getStatusConfig = () => {
     if (isCoverageGap) {
       return {
-        badge: "GAZETTE NOTICE",
-        dotColor: "bg-zinc-400",
+        badge: "COVERAGE GAP — STATUTORY CLAUSE IDENTIFIED (AWAITING LEGAL REVIEW)",
+        dotColor: "bg-slate-400",
+        badgeClass: "status-badge-coverage-gap",
       };
     }
     if (ev.status === "APPLICABLE") {
       return {
-        badge: "MANDATORY",
+        badge: "MANDATORY OBLIGATION",
         dotColor: "bg-emerald-400",
+        badgeClass: "status-badge-applicable",
       };
     }
     if (ev.status === "CONDITIONAL_MISSING_DATA") {
       return {
-        badge: "DATA NEEDED",
+        badge: "INFORMATION REQUIRED",
         dotColor: "bg-amber-400",
+        badgeClass: "status-badge-missing-data",
       };
     }
     if (ev.status === "CONDITIONAL_RULE") {
       return {
-        badge: "CONDITIONAL RULE",
+        badge: "CONDITIONAL STATUTORY RULE",
         dotColor: "bg-sky-400",
+        badgeClass: "status-badge-conditional",
       };
     }
     return {
-      badge: "EXEMPT",
+      badge: "EXEMPT / NOT APPLICABLE",
       dotColor: "bg-zinc-500",
+      badgeClass: "status-badge-not-applicable",
     };
   };
 
@@ -95,8 +100,8 @@ export const StatutoryCitationCard: React.FC<StatutoryCitationCardProps> = ({
         className="w-full p-3.5 flex items-center justify-between gap-3 text-left hover:bg-zinc-850/50 transition-colors cursor-pointer"
       >
         <div className="flex items-center gap-2.5 flex-wrap">
-          {/* Subtle Status Badge */}
-          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-zinc-800 text-[10px] font-mono font-medium text-zinc-300 border border-zinc-700">
+          {/* Strict Status Badge */}
+          <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-[10px] font-mono font-medium ${statusConfig.badgeClass}`}>
             <span className={`w-1.5 h-1.5 rounded-full ${statusConfig.dotColor}`} />
             <span>{statusConfig.badge}</span>
           </span>
@@ -111,7 +116,7 @@ export const StatutoryCitationCard: React.FC<StatutoryCitationCardProps> = ({
                 &bull; {gazetteTitle}
               </span>
               {ev.review_status && ev.review_status.includes("APPROVED") && (
-                <span className="text-[10px] font-mono px-1 py-0.2 rounded bg-zinc-800 text-zinc-300 border border-zinc-700">
+                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-300 border border-zinc-700">
                   Certified
                 </span>
               )}

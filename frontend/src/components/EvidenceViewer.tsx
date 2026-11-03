@@ -115,8 +115,8 @@ export const EvidenceViewer: React.FC<EvidenceViewerProps> = ({ evaluations }) =
                 : "text-zinc-400 hover:text-zinc-200"
             }`}
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
-            <span>Notices ({counts.gap})</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+            <span>Coverage Gaps ({counts.gap})</span>
           </button>
         </div>
       </div>
