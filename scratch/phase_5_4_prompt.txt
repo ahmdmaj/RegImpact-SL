@@ -1,0 +1,336 @@
+﻿<USER_REQUEST>
+# RegImpact-SL â€” Phase 5.4: Final UAT Readiness & Core Prototype Acceptance Audit
+
+**Role:** Senior Software Quality Assurance Engineer, Regulatory Systems Auditor, and Final UAT Lead
+
+**Project:** RegImpact-SL
+
+**Governing Specification:** `RegImpact-SL_Project_Proposal_v4_FINAL.md`
+
+**Previous Evidence:**
+- `docs/PHASE_5_2_LIVE_INTEGRATION_ACCEPTANCE_REPORT.md`
+- `docs/PHASE_5_3B_LIVE_GAZETTE_INGESTION_UAT_REPORT.md`
+- `docs/PHASE_5_3C_COMPILATION_RECOVERY_READINESS_REPORT.md`
+- Any subsequent Phase 5.3D report, if available.
+
+---
+
+## 1. Objective
+
+We are moving RegImpact-SL towards final UAT and project closure.
+
+Our decision is:
+
+- Stop LLM provider migration.
+- Do not purchase additional API access.
+- Do not integrate DeepSeek or another LLM provider.
+- Do not expand project scope.
+- Do not upload the Gazette again.
+- Do not attempt to recover the blocked compilation process.
+- Do not introduce synthetic data or manually fabricated rules.
+- Do not perform unnecessary refactoring or architectural changes.
+
+Our objective is to establish whether the existing application can demonstrate its complete CORE decision-support workflow using the existing authentic regulatory corpus.
+
+The newly uploaded Gazette 2332/03 must remain preserved as an ingested document. Its compilation failure must be documented honestly. It must not be presented as successfully compiled.
+
+**This is an acceptance audit, not a development task.**
+
+## 2. Primary Acceptance Question
+
+Can the existing RegImpact-SL application demonstrate the following workflow using authentic regulatory records, without relying on synthetic seed records?
+
+1. An SME submits a business/product profile through the application.
+2. The system constructs a meaningful regulatory retrieval query.
+3. The retrieval system retrieves relevant authentic regulatory clauses.
+4. The system identifies applicable approved regulatory rules.
+5. The deterministic applicability engine evaluates the rules.
+6. The system handles missing information and conditional requirements correctly.
+7. The system produces an understandable decision-support result.
+8. The result provides traceable regulatory evidence.
+9. The SME can inspect the assessment through the actual frontend.
+
+If this workflow is demonstrable, we can proceed towards final UAT.
+
+Do not require the newly uploaded Gazette to have compiled successfully for this acceptance test. The existing approved authentic corpus is the intended basis.
+
+## 3. Critical Audit Areas
+
+### A. Authentic Corpus Verification
+
+Inspect the actual running database and repository.
+
+Establish:
+
+- Total regulatory documents.
+- Total clauses.
+- Total rules.
+- Authentic versus synthetic records.
+- Approved versus pending versus rejected rules.
+- Rules associated with actual source documents.
+- Rules with valid clause references and evidence.
+- Rules available for actual execution.
+
+Identify the exact approved authentic rules that can support the final demonstration.
+
+Important:
+
+- Do not count synthetic fixtures as authentic data.
+- Do not assume that a local code filter proves database integrity.
+- Inspect the actual runtime retrieval and execution paths.
+- Identify any synthetic records that could contaminate the final demonstration.
+- Do not delete or modify records during this audit.
+
+For Gazette 2332/03, verify and report:
+
+- Document ID: `doc_2332_03_e`
+- 15 ingested pages.
+- 21 segmented clauses.
+- 21 embeddings.
+- Zero compiled rules, if this remains the actual database state.
+
+Keep this document separate from claims about successfully compiled rules.
+
+### B. Retrieval Verification
+
+Test the existing retrieval mechanisms:
+
+- BM25.
+- Dense retrieval.
+- Hybrid RRF retrieval.
+
+Use meaningful SME product/profile queries that correspond to actual regulatory documents.
+
+Verify:
+
+- Whether retrieved clauses originate from authentic documents.
+- Whether their clause references are correct.
+- Whether retrieval scores/ranks are genuine.
+- Whether dense retrieval actually works in the running environment.
+- Whether hybrid retrieval genuinely combines the available retrieval results.
+- Whether the application reports the actual retrieval method used.
+
+Do not claim that a retrieval mechanism works merely because its code exists.
+
+If one retrieval method is unavailable, document it and determine whether the remaining working methods are sufficient for the core workflow.
+
+### C. Deterministic Rule Execution
+
+Inspect the existing approved authentic rules.
+
+Select suitable real rules for testing.
+
+Verify:
+
+- Applicability evaluation.
+- NOT_APPLICABLE handling.
+- CONDITIONAL_MISSING_DATA handling.
+- CONDITIONAL_RULE handling.
+- UNSUPPORTED handling.
+- Threshold and exception handling where relevant.
+- Temporal applicability where implemented.
+- Evidence linkage between executed rules and source clauses.
+
+Do not manufacture scenarios or expected results.
+
+Use existing genuine rule definitions and realistic SME profiles.
+
+Clearly distinguish actual verified outcomes from test assumptions.
+
+### D. End-to-End SME Workflow
+
+The primary acceptance test must use the actual running frontend and backend.
+
+Use the browser UI.
+
+Do not replace the UI workflow with direct database insertion, direct API calls, CLI scripts, or manually constructed responses.
+
+Test:
+
+1. Open the SME application.
+2. Enter or select a suitable business profile.
+3. Submit a regulatory assessment.
+4. Observe the retrieval process/result.
+5. Inspect the applicable requirements.
+6. Inspect exemptions or non-applicable rules where available.
+7. Inspect missing-data or conditional outcomes where available.
+8. Open the supporting regulatory evidence.
+9. Verify that the result is understandable and traceable.
+
+Capture screenshots and actual outputs.
+
+If a step fails, record the exact failure. Do not silently bypass it.
+
+### E. Reviewer and Admin Workflow
+
+Check whether the existing Reviewer and Admin workflows are operational.
+
+Verify:
+
+- Reviewer can inspect existing pending candidates.
+- Reviewer decisions are recorded correctly.
+- Pending rules cannot be executed by SME assessments.
+- Admin can access the expected administrative functions.
+- Existing approved authentic rules remain available.
+- Role restrictions operate as expected in the current demo environment.
+
+Remember the Phase 5.2 limitation: `X-User-Role` and localStorage-based role switching are not production-grade authentication.
+
+Do not claim production security.
+
+The new Gazette 2332/03 has zero compiled rules according to the previous audit, so do not claim that its reviewer lifecycle has been demonstrated.
+
+## 4. Synthetic Data Exclusion
+
+This is a strict requirement.
+
+We must be able to demonstrate the core workflow without depending on synthetic seed data.
+
+Inspect:
+
+- `seed_corpus.py`
+- `seed_real_slice.py`
+- Existing database contents.
+- Runtime retrieval filters.
+- Runtime rule-execution filters.
+- Any synthetic fixtures used by tests.
+
+Do not execute a seed script.
+
+Do not delete synthetic records.
+
+Do not modify the database.
+
+Determine whether the current live application can operate using authentic approved regulatory records alone.
+
+If isolation is needed, describe the smallest safe solution, but do not implement it during this audit.
+
+## 5. Test and Build Verification
+
+Inspect and execute appropriate existing tests without changing their expected results merely to obtain a pass.
+
+Run:
+
+- Relevant backend tests.
+- Existing retrieval tests.
+- Existing rule-engine tests.
+- Existing API and permission tests.
+- Frontend production build.
+
+Pay particular attention to the three previously reported full-suite failures:
+
+- `test_missing_live_providers_produce_explicit_errors`
+- `test_bm25_retrieval_operational_without_dense_or_llm`
+- `test_hybrid_retrieval_truthful_method_reporting`
+
+Investigate their actual status.
+
+Do not dismiss failures simply because the Docker environment differs from the test environment.
+
+Report:
+
+- Passed tests.
+- Failed tests.
+- Skipped tests.
+- Warnings.
+- Build status.
+- Any environmental limitations.
+
+Do not change code to make tests pass during this audit.
+
+## 6. Strict Restrictions
+
+During this phase:
+
+- READ-ONLY AUDIT.
+- ZERO source-code modifications.
+- ZERO database mutations.
+- ZERO synthetic data creation.
+- ZERO seed script execution.
+- ZERO LLM API calls.
+- ZERO provider migration.
+- ZERO document re-upload.
+- ZERO unnecessary Docker image rebuilds.
+- ZERO Git commits or resets.
+
+Preserve the current working application and its data.
+
+If a live test would modify persistent data, stop and identify the risk before proceeding.
+
+## 7. Final Acceptance Decision
+
+Produce a clear decision using exactly one of these outcomes:
+
+### A. READY FOR FINAL UAT
+
+Use only if the core SME decision-support workflow is demonstrably functional using authentic approved regulatory data, with no synthetic seed dependency.
+
+Minor non-blocking limitations may be documented.
+
+### B. READY AFTER MINOR FIXES
+
+Use when the core workflow is functional but one or more small, clearly bounded defects prevent final acceptance.
+
+List only the necessary fixes.
+
+Do not recommend architectural redesign.
+
+### C. NOT READY FOR FINAL UAT
+
+Use when the core workflow cannot be demonstrated using authentic approved regulatory records.
+
+Identify the exact blocking defects and their evidence.
+
+Do not invent a workaround.
+
+## 8. Required Deliverable
+
+Create:
+
+`docs/PHASE_5_4_FINAL_UAT_READINESS_AUDIT_REPORT.md`
+
+The report must include:
+
+1. Executive summary.
+2. Final acceptance decision.
+3. Actual database/corpus inventory.
+4. Authentic versus synthetic data verification.
+5. Retrieval verification results.
+6. Deterministic rule-execution verification.
+7. Actual SME UI end-to-end results.
+8. Reviewer/Admin verification.
+9. Test and frontend build results.
+10. Gazette 2332/03 limitation.
+11. Screenshots and evidence references.
+12. Exact remaining blockers, if any.
+13. Recommended next action.
+
+For every acceptance claim, provide supporting evidence such as logs, test output, database read-only queries, screenshots, or actual UI observations.
+
+Do not mark an item PASS simply because the relevant functionality exists in source code.
+
+---
+
+## Final Instruction
+
+Think like an independent acceptance auditor, not a developer trying to justify the project.
+
+We are not trying to prove that every proposed research target has been achieved.
+
+We are trying to establish whether the existing authentic-data prototype delivers its core promised decision-support workflow.
+
+If it works, recommend final UAT and project freeze.
+
+If there are only minor defects, recommend only those fixes.
+
+If it does not work, clearly explain why.
+
+**Do not expand the project. Do not start another development cycle. Preserve what is already working.**
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-11-03T16:07:07+05:30.
+
+The user's current state is as follows:
+Active Document: c:\Users\HP\Desktop\PROJECTS\RegImpact-SL\scratch\uat_phase_5_3b.js (LANGUAGE_UNSPECIFIED)
+Cursor is on line: 20
+</ADDITIONAL_METADATA>
