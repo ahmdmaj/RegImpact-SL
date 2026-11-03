@@ -1,0 +1,325 @@
+﻿{
+    "as_at_date":  "2026-07-01",
+    "total_rules_evaluated":  7,
+    "applicable_rules_count":  1,
+    "conditional_rules_count":  0,
+    "not_applicable_rules_count":  1,
+    "unsupported_rules_count":  5,
+    "conditional_missing_data_count":  0,
+    "conditional_rule_count":  0,
+    "missing_fields":  [
+
+                       ],
+    "clarifying_questions":  [
+
+                             ],
+    "action_checklist":  [
+                             "Fulfill specific requirement: Food contained in a package or container must be labelled in accordance with the Food (Labelling and Advertising) Regulations 2026.",
+                             "Update product packaging artwork to incorporate mandatory declarations required under Sri Lanka Gazette Extraordinary No. 2494/47: Food (Labelling and Advertising) Regulations 2026 (Regulation 3).",
+                             "Ensure packaging displays required trilingual text (Sinhala, Tamil, English) adhering to prescribed font dimensions.",
+                             "Verify batch coding, net content, manufacturer name, and expiry date format on production line.",
+                             "Conduct pre-market label compliance audit against Food Control Administration Unit (FCAU) guidelines.",
+                             "Audit current label stock inventory and plan transition to compliant packaging before deadline."
+                         ],
+    "affected_activities":  [
+                                "Product packaging design and retail artwork finalisation",
+                                "Packaging line printing, batch coding, and label application",
+                                "Finished product quality inspection and regulatory compliance verification",
+                                "Labelling management and review",
+                                "Packaging management and review",
+                                "Retail Distribution management and review"
+                            ],
+    "affected_documents":  [
+                               "Retail product packaging artwork and label specifications",
+                               "Nutritional information panels and ingredient declaration sheets",
+                               "Batch coding, manufacturing date, and expiry date records",
+                               "Trilingual label translation records (Sinhala, Tamil, English)"
+                           ],
+    "narrative_summary":  "**Executive Summary: Regulatory Compliance Update**\n\n**As-At Date:** 2026-07-01\n\nThis summary outlines the regulatory impact of the Food (Labelling and Advertising) Regulations 2026 on your business. Of the 7 rules evaluated, 1 is applicable.\n\n**Key Finding:** Regulation 3 of the Food (Labelling and Advertising) Regulations 2026 mandates specific labelling requirements for prepackaged food.\n\n**Mandatory Actions:**\n*   Update product packaging artwork to include mandatory declarations.\n*   Ensure trilingual text (Sinhala, Tamil, English) with correct font dimensions.\n*   Verify batch coding, net content, manufacturer name, and expiry date format.\n*   Conduct a pre-market label compliance audit.\n*   Audit current label stock and plan for compliant packaging transition.\n\nThese actions are crucial to ensure compliance with the new regulations.",
+    "evaluations":  [
+                        {
+                            "rule_id":  "CLAUSE-DOC_GAZETTE_2443_27-REGULATION-14",
+                            "clause":  "regulation 14",
+                            "instrument":  "The Sri Lanka Gazette Extraordinary 2443/27",
+                            "authority":  "Statutory Authority",
+                            "status":  "UNSUPPORTED",
+                            "reason":  "Coverage Gap (System P): Candidate clause \u0027CLAUSE-DOC_GAZETTE_2443_27-REGULATION-14\u0027 (regulation 14) was retrieved by hybrid search but does not yet have an approved executable rule.",
+                            "temporal_status":  null,
+                            "quote_span":  "in regulation 14 thereof-\n \n(a) by the insertion immediately after the definition of the expression âbioactive componentsâ, of the following new \ndefinition: -\n\t\n\t âBusiness-to-business food productsâ means food products that are-\n \n(a) not offered for direct sale to the consumer; and\n\t\n(b)\t only used for further food processing or preparation;\n \n(b) by the insertion immediately after the definition of the expression âcommon nameâ, of the following new \ndefinition: -\n\t\n\t âCottage industryâ means a small-scale manufacturing business carried out within a household;â;\n \n(c) by the insertion immediately after the definition of the expression âmain panelâ, of the following new \ndefinition: -\n\t\n\t âMilk-based productâ means products exclusively derived from milk to which other substances necessary for \nits manufacture may have been added, and it shall contain not less than eighty per centum by mass \n(80% m/m) of milk and not less than two point eight per centum by mass (2.8% m/m) total fat.\nProvided that such substances added do not replace in part or in whole any milk constituent, and milk-\nbased products intended for young children shall contain not less than ninety per centum by mass \n(90% m/m) of milk constituents;â;\n\t (9)\t\nin Schedule IV thereof-",
+                            "missing_fields":  [
+
+                                               ],
+                            "counterfactuals":  [
+
+                                                ],
+                            "evaluation_trace":  [
+
+                                                 ],
+                            "impact":  null,
+                            "document_title":  "The Sri Lanka Gazette Extraordinary 2443/27",
+                            "document_id":  "doc_gazette_2443_27",
+                            "page_number":  4,
+                            "char_start":  206,
+                            "char_end":  1473,
+                            "review_status":  "UNVERIFIED_SOURCE_CLAUSE",
+                            "coverage_gap":  true
+                        },
+                        {
+                            "rule_id":  "CLAUSE-DOC_GAZETTE_2494_47-REGULATION-5",
+                            "clause":  "regulation 5",
+                            "instrument":  "Sri Lanka Gazette Extraordinary No. 2494/47: Food (Labelling and Advertising) Regulations 2026",
+                            "authority":  "Statutory Authority",
+                            "status":  "UNSUPPORTED",
+                            "reason":  "Coverage Gap (System P): Candidate clause \u0027CLAUSE-DOC_GAZETTE_2494_47-REGULATION-5\u0027 (regulation 5) was retrieved by hybrid search but does not yet have an approved executable rule.",
+                            "temporal_status":  null,
+                            "quote_span":  "declaration required to be made on the label under regulation 5. Such code shall be printed, painted or aîxed in a\nmanner that does not distort, deface, erase or obliterate any information on the original label, and any information\nmade available through such code shall not be false, misleading, deceptive or shall not be in violation of any\nprovision of these regulations.\n5. (1)\nThe following declarations shall be made indelibly and legibly on the main panel-\n(a) common name of the product in bold type in all three languages or in any two of the three languages on the\nmain panel and the other language on any panel;\nProvided that the common name may be substituted by any other name as set out in Schedule I hereto;\n(b) trade name and brand name (if any), in any one or more of the three languages in a manner that shall not be\ndeceptive or mislead any person; and\n(c) the net contents of the package or container expressed in SI units (SystÃ¨me International d\u0027UnitÃ©s) or by the\ninternational symbols âgâ or âkgâ in the case of solids, âmlâ or âlâ in the case of liquids and, if packaged in\nliquid medium, the net drained weight expressed as âgâ or âkgâ.\n(2)\n(a)\nThe following declarations shall be made indelibly and legibly on any panel in any one or more of the three\nlanguages â\n(i)\na complete list of ingredients used in the food by their common names in descending order of ingoing\nweight (m/m) at the time of manufacture of the food including any permitted food additive by its\ncommon name and INS number as prescribed by regulations made under the Act.\nHowever, processing aids that are not carried over to foods are exempted from declaration in the list\nof ingredients:\nProvided that, such exemption shall not apply to the processing aids which contain following items-\n(A) cereals containing gluten; that is wheat, spelt, rye, barley, oats or their hybridized strains\nand its products;\n(B) crustacea and its products;\n(C) eggs and egg products;\n(D) îsh and îsh products;\n(E) peanuts, soybeans and its products;\n(F) milk and milk products; (lactose included); and\n(G) tree nuts and nut products;",
+                            "missing_fields":  [
+
+                                               ],
+                            "counterfactuals":  [
+
+                                                ],
+                            "evaluation_trace":  [
+
+                                                 ],
+                            "impact":  null,
+                            "document_title":  "Sri Lanka Gazette Extraordinary No. 2494/47: Food (Labelling and Advertising) Regulations 2026",
+                            "document_id":  "doc_gazette_2494_47",
+                            "page_number":  3,
+                            "char_start":  820,
+                            "char_end":  2932,
+                            "review_status":  "UNVERIFIED_SOURCE_CLAUSE",
+                            "coverage_gap":  true
+                        },
+                        {
+                            "rule_id":  "CLAUSE-DOC_3F85F3EF96B7622BDD3E45D7CC642FD96FDBD83A9F84F35F048121EAB3E4016F-REGULATION-5",
+                            "clause":  "Regulation 5",
+                            "instrument":  "The Sri Lanka Gazette Extraordinary No. 2113/16 (Food Preservatives Regulations 2019)",
+                            "authority":  "Statutory Authority",
+                            "status":  "UNSUPPORTED",
+                            "reason":  "Coverage Gap (System P): Candidate clause \u0027CLAUSE-DOC_3F85F3EF96B7622BDD3E45D7CC642FD96FDBD83A9F84F35F048121EAB3E4016F-REGULATION-5\u0027 (Regulation 5) was retrieved by hybrid search but does not yet have an approved executable rule.",
+                            "temporal_status":  null,
+                            "quote_span":  "5. Any compounded food may contain any permitted preservative - (a) introduced in the process of preparing such food using one or more specified foods, if the permitted preservative :- (i) is present in any specified food used in the compounded food ; and (ii) is present in the specified food used, in no greater proportion than the proportion specified in relation to the proportion specified in Column III of Schedule II. (b) if the compounded food is a specified food and does not contain any permitted preservatives in any greater proportion than is specified in Column III thereto.",
+                            "missing_fields":  [
+
+                                               ],
+                            "counterfactuals":  [
+
+                                                ],
+                            "evaluation_trace":  [
+
+                                                 ],
+                            "impact":  null,
+                            "document_title":  "The Sri Lanka Gazette Extraordinary No. 2113/16 (Food Preservatives Regulations 2019)",
+                            "document_id":  "doc_3f85f3ef96b7622bdd3e45d7cc642fd96fdbd83a9f84f35f048121eab3e4016f",
+                            "page_number":  2,
+                            "char_start":  0,
+                            "char_end":  0,
+                            "review_status":  "UNVERIFIED_SOURCE_CLAUSE",
+                            "coverage_gap":  true
+                        },
+                        {
+                            "rule_id":  "CLAUSE-DOC_GAZETTE_2443_27-REGULATION-9",
+                            "clause":  "regulation 9",
+                            "instrument":  "The Sri Lanka Gazette Extraordinary 2443/27",
+                            "authority":  "Statutory Authority",
+                            "status":  "UNSUPPORTED",
+                            "reason":  "Coverage Gap (System P): Candidate clause \u0027CLAUSE-DOC_GAZETTE_2443_27-REGULATION-9\u0027 (regulation 9) was retrieved by hybrid search but does not yet have an approved executable rule.",
+                            "temporal_status":  null,
+                            "quote_span":  "in regulation 9 thereof-\n\t\n(a)\t\nin sub regulation (3) thereof, by the repeal of paragraph (b) thereof and the substitution therefor of the following \nparagraph: -\n\t\nâ(b)\t\nSweeteners can be used partially in place of sugar, where there is at least thirty per centum energy reduction \ncompared to a similar or the original product and a declaration of âenergy reducedâ may be made on the \nlabel,â;\n\t\n(b)\t\nby the insertion of the following proviso immediately after sub-regulation (5) thereof: -\n\t\nâ \tâ âProvided that dairy ingredients, bee honey, bee wax, added micronutrients, food additives and processing \naids may be exempted from this requirement.â\n\t (6)",
+                            "missing_fields":  [
+
+                                               ],
+                            "counterfactuals":  [
+
+                                                ],
+                            "evaluation_trace":  [
+
+                                                 ],
+                            "impact":  null,
+                            "document_title":  "The Sri Lanka Gazette Extraordinary 2443/27",
+                            "document_id":  "doc_gazette_2443_27",
+                            "page_number":  3,
+                            "char_start":  386,
+                            "char_end":  1045,
+                            "review_status":  "UNVERIFIED_SOURCE_CLAUSE",
+                            "coverage_gap":  true
+                        },
+                        {
+                            "rule_id":  "CLAUSE-DOC_2332_03_E-REGULATION-12",
+                            "clause":  "Regulation 12",
+                            "instrument":  "2332 03 E",
+                            "authority":  "Statutory Authority",
+                            "status":  "UNSUPPORTED",
+                            "reason":  "Coverage Gap (System P): Candidate clause \u0027CLAUSE-DOC_2332_03_E-REGULATION-12\u0027 (Regulation 12) was retrieved by hybrid search but does not yet have an approved executable rule.",
+                            "temporal_status":  null,
+                            "quote_span":  "Iodized food grade salt in powdered form shall-\n(a)\t not contain more than-\n(i)\t\n0.5 per centum (0.5%) m/m moisture; and\n(ii)\t\n0.5 per centum (0.5%) m/m matter insoluble in water, on dry basis;\n(b)\t contain not less than ninety-eight per centum (98%) m/m Sodium chloride (NaCI) on dry basis; \n(c)\t be where a minimum of ninety-five per centum (95%) m/m is capable of passing through a sieve with an \naperture of one millimeter (1 mm) {B.S. 16};\n(d)\t not contain more than one per centum (1.0%) m/m matter soluble in water other than Sodium chloride (NaCI) \non dry basis; and\n(e)\t contain, on dry basis, not less than fifteen milligrams per kilogram (15mg/kg) Iodine (I) at retail level and not \nmore than thirty-five milligrams per kilogram (35mg/kg) Iodine (I) at manufacturing or importing levels.",
+                            "missing_fields":  [
+
+                                               ],
+                            "counterfactuals":  [
+
+                                                ],
+                            "evaluation_trace":  [
+
+                                                 ],
+                            "impact":  null,
+                            "document_title":  "2332 03 E",
+                            "document_id":  "doc_2332_03_e",
+                            "page_number":  4,
+                            "char_start":  0,
+                            "char_end":  799,
+                            "review_status":  "UNVERIFIED_SOURCE_CLAUSE",
+                            "coverage_gap":  true
+                        },
+                        {
+                            "rule_id":  "RULE-FCAU-2494-47-REG-3",
+                            "clause":  "Regulation 3",
+                            "instrument":  "Sri Lanka Gazette Extraordinary No. 2494/47: Food (Labelling and Advertising) Regulations 2026",
+                            "authority":  "Minister of Health and Mass Media / Food Advisory Committee",
+                            "status":  "APPLICABLE",
+                            "reason":  "All applicability conditions satisfied and rule is currently in force.",
+                            "temporal_status":  "IN_FORCE",
+                            "quote_span":  "A person shall not import, transport, distribute, store, sell, offer for sale, expose or keep for sale or advertise, any food contained in a package or container, unless such package or container is labelled in accordance with these regulations:",
+                            "missing_fields":  [
+
+                                               ],
+                            "counterfactuals":  [
+                                                    "If products were not prepackaged, this obligation would not apply."
+                                                ],
+                            "evaluation_trace":  [
+                                                     {
+                                                         "field":  "activity",
+                                                         "op":  "in",
+                                                         "target_value":  [
+                                                                              "food_manufacturing",
+                                                                              "catering",
+                                                                              "retail_trade",
+                                                                              "distribution",
+                                                                              "import",
+                                                                              "storage"
+                                                                          ],
+                                                         "observed_value":  "food_manufacturing",
+                                                         "result":  "TRUE",
+                                                         "block":  "all"
+                                                     },
+                                                     {
+                                                         "field":  "products.prepackaged",
+                                                         "op":  "eq",
+                                                         "target_value":  true,
+                                                         "observed_value":  [
+                                                                                true
+                                                                            ],
+                                                         "result":  "TRUE",
+                                                         "block":  "all"
+                                                     },
+                                                     {
+                                                         "field":  "packaged_in_presence_of_purchaser",
+                                                         "op":  "eq",
+                                                         "target_value":  true,
+                                                         "observed_value":  false,
+                                                         "result":  "FALSE",
+                                                         "block":  "exceptions"
+                                                     },
+                                                     {
+                                                         "field":  "market.b2b_only",
+                                                         "op":  "eq",
+                                                         "target_value":  true,
+                                                         "observed_value":  false,
+                                                         "result":  "FALSE",
+                                                         "block":  "exceptions"
+                                                     }
+                                                 ],
+                            "impact":  {
+                                           "obligation_type":  "labelling",
+                                           "affected_activities":  [
+                                                                       "Product packaging design and retail artwork finalisation",
+                                                                       "Packaging line printing, batch coding, and label application",
+                                                                       "Finished product quality inspection and regulatory compliance verification",
+                                                                       "Labelling management and review",
+                                                                       "Packaging management and review",
+                                                                       "Retail Distribution management and review"
+                                                                   ],
+                                           "affected_documents":  [
+                                                                      "Retail product packaging artwork and label specifications",
+                                                                      "Nutritional information panels and ingredient declaration sheets",
+                                                                      "Batch coding, manufacturing date, and expiry date records",
+                                                                      "Trilingual label translation records (Sinhala, Tamil, English)"
+                                                                  ],
+                                           "action_items":  [
+                                                                "Fulfill specific requirement: Food contained in a package or container must be labelled in accordance with the Food (Labelling and Advertising) Regulations 2026.",
+                                                                "Update product packaging artwork to incorporate mandatory declarations required under Sri Lanka Gazette Extraordinary No. 2494/47: Food (Labelling and Advertising) Regulations 2026 (Regulation 3).",
+                                                                "Ensure packaging displays required trilingual text (Sinhala, Tamil, English) adhering to prescribed font dimensions.",
+                                                                "Verify batch coding, net content, manufacturer name, and expiry date format on production line.",
+                                                                "Conduct pre-market label compliance audit against Food Control Administration Unit (FCAU) guidelines.",
+                                                                "Audit current label stock inventory and plan transition to compliant packaging before deadline."
+                                                            ],
+                                           "timeline_note":  "Immediate compliance required (in force since 2026-07-01)."
+                                       },
+                            "document_title":  "Sri Lanka Gazette Extraordinary No. 2494/47: Food (Labelling and Advertising) Regulations 2026",
+                            "document_id":  "doc_gazette_2494_47",
+                            "page_number":  3,
+                            "char_start":  826,
+                            "char_end":  1226,
+                            "review_status":  "APPROVED by PRIMARY_ANNOTATOR",
+                            "coverage_gap":  false
+                        },
+                        {
+                            "rule_id":  "RULE-FCAU-2494-47-REG-3-B2B",
+                            "clause":  "Regulation 3 Proviso (b)",
+                            "instrument":  "Sri Lanka Gazette Extraordinary No. 2494/47: Food (Labelling and Advertising) Regulations 2026",
+                            "authority":  "Minister of Health and Mass Media / Food Advisory Committee",
+                            "status":  "NOT_APPLICABLE",
+                            "reason":  "Rule applicability conditions not satisfied.",
+                            "temporal_status":  "IN_FORCE",
+                            "quote_span":  "business-to-business food products that are exempted from other labelling requirements in these regulations except the following mandatory labelling requirements- (i) common name (in either of the three languages); (ii) trade name (if applicable); (iii) net contents; (iv) date of manufacture; (v) date of expiry; (vi) batch number; (vii) manufacturer\u0027s name and address; (viii) distributor\u0027s name and address; (ix) country of origin in case of imported foods; and (x) a complete list of ingredients. Provided further that the statement \"Not for retail sale\" shall be printed on the label or affixed through a supplementary label of such business-to-business food products clearly and conspicuously in bold type and font size of not less than three millimetres (3 mm).",
+                            "missing_fields":  [
+
+                                               ],
+                            "counterfactuals":  [
+                                                    "If market.b2b_only were True, this obligation would apply."
+                                                ],
+                            "evaluation_trace":  [
+                                                     {
+                                                         "field":  "activity",
+                                                         "op":  "in",
+                                                         "target_value":  [
+                                                                              "food_manufacturing",
+                                                                              "distribution",
+                                                                              "import",
+                                                                              "storage"
+                                                                          ],
+                                                         "observed_value":  "food_manufacturing",
+                                                         "result":  "TRUE",
+                                                         "block":  "all"
+                                                     },
+                                                     {
+                                                         "field":  "products.prepackaged",
+                                                         "op":  "eq",
+                                                         "target_value":  true,
+                                                         "observed_value":  [
+                                                                                true
+                                                                            ],
+                                                         "result":  "TRUE",
+                                                         "block":  "all"
+                                                     },
+                                                     {
+                                                         "field":  "market.b2b_only",
+                                                         "op":  "eq",
+                                                         "target_value":  true,
+                                                         "observed_value":  false,
+                                                         "result":  "FALSE",
+                                                         "block":  "all"
+                                                     }
+                                                 ],
+                            "impact":  null,
+                            "document_title":  "Sri Lanka Gazette Extraordinary No. 2494/47: Food (Labelling and Advertising) Regulations 2026",
+                            "document_id":  "doc_gazette_2494_47",
+                            "page_number":  3,
+                            "char_start":  826,
+                            "char_end":  1226,
+                            "review_status":  "APPROVED by PRIMARY_ANNOTATOR",
+                            "coverage_gap":  false
+                        }
+                    ]
+}
