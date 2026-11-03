@@ -76,7 +76,6 @@ def run_corpus_audit():
         
         approved_list = []
         for r in approved_rules:
-            # find document
             clause = session.get(ClauseORM, (r.clause_id, r.clause_version))
             doc = session.get(SourceDocumentORM, clause.document_id) if clause else None
             approved_list.append({
@@ -151,25 +150,20 @@ def run_corpus_audit():
                 "records": [
                     {
                         "rule_id": a.rule_id,
-                        "action": a.action,
+                        "decision": a.decision,
                         "reviewer_id": a.reviewer_id,
+                        "reviewer_role": a.reviewer_role,
                         "rationale": a.rationale,
-                        "timestamp": a.created_at.isoformat() if a.created_at else None,
+                        "reviewed_at": a.reviewed_at.isoformat() if a.reviewed_at else None,
                     }
                     for a in audit_records
                 ]
             }
         }
         
-        with open("scratch/corpus_audit_report.json", "w", encoding="utf-8") as f:
-            json.dump(report, f, indent=2)
-            
-        print("Corpus audit completed successfully! Written to scratch/corpus_audit_report.json")
-        print(f"Total documents: {doc_count}")
-        print(f"Total pages: {total_pages}")
-        print(f"Total clauses: {total_clauses} (with embeddings: {clauses_with_embedding})")
-        print(f"Total rules: {total_rules} (Approved: {len(approved_rules)}, Pending: {len(pending_rules)}, Rejected: {len(rejected_rules)})")
-        print(f"doc_2332_03_e: pages={len(doc_2332_pages)}, clauses={len(doc_2332_clauses)}, embeddings={doc_2332_clauses_with_emb}, rules={len(doc_2332_rules)}")
+        print("AUDIT_JSON_START")
+        print(json.dumps(report))
+        print("AUDIT_JSON_END")
 
 if __name__ == "__main__":
     run_corpus_audit()
