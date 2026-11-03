@@ -29,6 +29,7 @@ import {
   Scale,
   Building2,
   BarChart3,
+  UploadCloud,
 } from "lucide-react";
 
 export default function Home() {
@@ -249,6 +250,13 @@ export default function Home() {
                 </div>
               </div>
               <div className="flex items-center gap-2 flex-wrap">
+                <Link
+                  href="/admin/reviews?tab=upload"
+                  className="px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-100 text-xs font-medium border border-zinc-700 transition-colors flex items-center gap-1.5 cursor-pointer"
+                >
+                  <UploadCloud className="w-3.5 h-3.5 text-zinc-400" />
+                  <span>Ingest Gazette (PDF)</span>
+                </Link>
                 <Link
                   href="/admin/reviews"
                   className="px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-100 text-xs font-medium border border-zinc-700 transition-colors flex items-center gap-1.5 cursor-pointer"
