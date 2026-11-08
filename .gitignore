@@ -5,6 +5,9 @@
 *.env
 !.env.example
 
+# Scratch and exploratory scripts
+scratch/
+
 # Local regulatory source documents and raw PDFs (authoritative corpus files)
 *.pdf
 *.PDF
