@@ -938,9 +938,15 @@ async def upload_document(
     if not file.filename or not file.filename.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Only PDF files (.pdf) are supported.")
 
+    MAX_FILE_SIZE = 25 * 1024 * 1024  # 25 MB safety limit
     content = await file.read()
     if not content:
         raise HTTPException(status_code=400, detail="Uploaded file is empty.")
+    if len(content) > MAX_FILE_SIZE:
+        raise HTTPException(
+            status_code=413,
+            detail=f"File exceeds maximum allowed size of 25MB ({len(content) / (1024 * 1024):.1f}MB uploaded)."
+        )
 
     raw_dir = Path("backend/data/raw_sources")
     raw_dir.mkdir(parents=True, exist_ok=True)
