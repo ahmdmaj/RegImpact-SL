@@ -10,6 +10,7 @@ Exposes REST APIs for:
 from contextlib import asynccontextmanager
 import json
 import logging
+import os
 import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
@@ -320,10 +321,13 @@ app.state.llm_client = None
 app.state.explanation_generator = ExplanationGenerator()
 app.state.evidence_checker = EvidenceChecker()
 
-# Enable CORS for local development (Section 8.7 thin UI)
+# Enable CORS for local development and production deployment
+allowed_origins_raw = os.environ.get("ALLOWED_ORIGINS", "")
+allowed_origins = [o.strip() for o in allowed_origins_raw.split(",") if o.strip()] or ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
